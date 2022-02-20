@@ -22,12 +22,12 @@ public class ServerHandler {
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
-            ServerHandler.setServerMaxPlayers(maxPlayers);
-            minecraft.getSingleplayerServer().setPvpAllowed(false); // debug pvp
-            minecraft.getSingleplayerServer().setUsesAuthentication(false); // debug license
+            ServerHandler.setMaxPlayers(maxPlayers);
+            ServerHandler.setPvpAllowed(true);
+            ServerHandler.setLicenseGameRequired(false);
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
         } else {
-            minecraft.gui.getChat().addMessage(new TranslatableComponent("commands.publish.failed"));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
             UPnPHandler.closePort(port);
             return false;
         }
@@ -39,7 +39,15 @@ public class ServerHandler {
         return !minecraft.hasSingleplayerServer() || minecraft.getSingleplayerServer().isPublished();
     }
 
-    private static boolean setServerMaxPlayers(int maxPlayers) {
+    private static void setLicenseGameRequired(boolean requireLicense) {
+        minecraft.getSingleplayerServer().setUsesAuthentication(requireLicense);
+    }
+
+    private static void setPvpAllowed(boolean allowPvp) {
+        minecraft.getSingleplayerServer().setPvpAllowed(allowPvp);
+    }
+
+    private static boolean setMaxPlayers(int maxPlayers) {
         PlayerList playerList = minecraft.getSingleplayerServer().getPlayerList();
         try {
             Field field = PlayerList.class.getDeclaredField("f_11193_"); // Works only in build version
@@ -59,9 +67,12 @@ public class ServerHandler {
         try {
             String currentIP = new BufferedReader(new InputStreamReader(new URL("https://checkip.amazonaws.com").openStream())).readLine();
             String lastIP = OpenToOnlineConfig.lastIP.get();
+
+            // 0.0.0.0 is a default value
             if (!currentIP.equals(lastIP) && !lastIP.equals("0.0.0.0")){
                 minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.ipIsChanged", ModChatTranslatableComponent.MessageTypes.WARN));
             }
+
             OpenToOnlineConfig.lastIP.set(currentIP);
             return currentIP;
         } catch (IOException e) {

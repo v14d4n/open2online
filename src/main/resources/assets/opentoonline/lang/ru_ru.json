@@ -11,6 +11,7 @@
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
   "chat.opentoonline.error.portOpening": "Ошибка при открытии порта",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
+  "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
 
   "chat.opentoonline.warn.settingMaxPlayers": "Не удалось установить пользовательское максимальное количество игроков",
   "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
@@ -21,5 +22,7 @@
   "chat.opentoonline.startingServer": "Запуск сервера...",
   "chat.opentoonline.openingTcpPort": "Открытие TCP порта",
   "chat.opentoonline.gameHostedOn": "Игра размещена на:",
-  "chat.opentoonline.ipIsChanged": "Внешний IP изменился"
+  "chat.opentoonline.ipIsChanged": "Внешний IP изменился",
+  "chat.opentoonline.update": "Доступно обновление:",
+  "chat.opentoonline.link": "Ссылка"
 }
