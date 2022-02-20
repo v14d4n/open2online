@@ -24,6 +24,6 @@
   "chat.opentoonline.gameHostedOn": "Your game is hosted on:",
   "chat.opentoonline.ipIsChanged": "External IP has changed",
   "chat.opentoonline.update": "Update available:",
-  "chat.opentoonline.link": "Link"
-
+  "chat.opentoonline.link": "Link",
+  "chat.opentoonline.openUrl": "Open URL"
 }

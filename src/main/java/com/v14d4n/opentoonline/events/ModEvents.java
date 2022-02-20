@@ -53,22 +53,27 @@ public class ModEvents {
         String newPlayerName = event.getPlayer().getName().getString();
         if (newPlayerName.equals(hostName)) {
 
-            IModInfo modInfo = ModList.get().getModContainerById(OpenToOnline.MOD_ID).get().getModInfo();
-            VersionChecker.CheckResult updateCheckResult = VersionChecker.getResult(modInfo);
+            checkUpdates();
+        }
+    }
 
-            minecraft.gui.getChat().addMessage(new TextComponent(updateCheckResult.status().toString()));
+    private static void checkUpdates() {
+        IModInfo modInfo = ModList.get().getModContainerById(OpenToOnline.MOD_ID).get().getModInfo();
+        VersionChecker.CheckResult updateCheckResult = VersionChecker.getResult(modInfo);
 
-            if (updateCheckResult.status().equals(BETA_OUTDATED)) {
-                String currentVersion = modInfo.getVersion().toString().substring(modInfo.getVersion().toString().lastIndexOf('-') + 1);
-                String actualVersion = updateCheckResult.target().toString().substring(updateCheckResult.target().toString().lastIndexOf('-') + 1);
+        if (updateCheckResult.status().equals(BETA_OUTDATED)) {
+            String currentVersion = modInfo.getVersion().toString().substring(modInfo.getVersion().toString().lastIndexOf('-') + 1);
+            String actualVersion = updateCheckResult.target().toString().substring(updateCheckResult.target().toString().lastIndexOf('-') + 1);
 
-                String mainText = new ModChatTranslatableComponent("chat.opentoonline.update").getString() + " \u00A7c" + currentVersion + "\u00A7r -> \u00A7a" + actualVersion + "\u00A7r";
-                MutableComponent link = new TranslatableComponent("chat.opentoonline.link").setStyle(Style.EMPTY.setUnderlined(true).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url())));
+            String mainText = new ModChatTranslatableComponent("chat.opentoonline.update", ModChatTranslatableComponent.MessageTypes.WARN).getString() + " \u00A7c" + currentVersion + "\u00A7r -> \u00A7a" + actualVersion + "\u00A7r";
+            MutableComponent link = new TranslatableComponent("chat.opentoonline.link")
+                    .setStyle(Style.EMPTY.setUnderlined(true)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url()))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.opentoonline.openUrl"))));
 
-                MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
+            MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
 
-                minecraft.gui.getChat().addMessage(message);
-            }
+            minecraft.gui.getChat().addMessage(message);
         }
     }
 

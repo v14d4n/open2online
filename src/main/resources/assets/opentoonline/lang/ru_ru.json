@@ -24,5 +24,6 @@
   "chat.opentoonline.gameHostedOn": "Игра размещена на:",
   "chat.opentoonline.ipIsChanged": "Внешний IP изменился",
   "chat.opentoonline.update": "Доступно обновление:",
-  "chat.opentoonline.link": "Ссылка"
+  "chat.opentoonline.link": "Ссылка",
+  "chat.opentoonline.openUrl": "Перейти по ссылке"
 }
