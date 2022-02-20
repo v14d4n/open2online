@@ -1,0 +1,25 @@
+{
+  "gui.opentoonline.onlineWorld": "Онлайн мир",
+  "gui.opentoonline.portInfo": "Порт онлайн мира",
+  "gui.opentoonline.maxPlayersInfo": "Максимум игроков",
+  "gui.opentoonline.startOnlineWorld": "Открыть мир для сети",
+  "gui.opentoonline.copy": "Нажмите, чтобы скопировать",
+  "gui.opentoonline.advancedSettings": "Расширенные настройки",
+  "gui.opentoonline.recreateRules": "Пересоздать правила",
+  "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
+
+  "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
+  "chat.opentoonline.error.portOpening": "Ошибка при открытии порта",
+  "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
+
+  "chat.opentoonline.warn.settingMaxPlayers": "Не удалось установить пользовательское максимальное количество игроков",
+  "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
+
+  "chat.opentoonline.upnpIsAvailable": "UPnP доступен",
+  "chat.opentoonline.portIsAlreadyOpen": "Порт уже открыт",
+  "chat.opentoonline.portIsOpen": "Порт открыт",
+  "chat.opentoonline.startingServer": "Запуск сервера...",
+  "chat.opentoonline.openingTcpPort": "Открытие TCP порта",
+  "chat.opentoonline.gameHostedOn": "Игра размещена на:",
+  "chat.opentoonline.ipIsChanged": "Внешний IP изменился"
+}

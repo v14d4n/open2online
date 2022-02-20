@@ -1,0 +1,25 @@
+{
+  "gui.opentoonline.onlineWorld": "Online World",
+  "gui.opentoonline.portInfo": "Online World Port",
+  "gui.opentoonline.maxPlayersInfo": "Max Players",
+  "gui.opentoonline.startOnlineWorld": "Start Online World",
+  "gui.opentoonline.copy": "Click to copy",
+  "gui.opentoonline.advancedSettings": "Advanced Settings",
+  "gui.opentoonline.recreateRules": "Recreate Rules",
+  "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
+
+  "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
+  "chat.opentoonline.error.portOpening": "Port opening error",
+  "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
+
+  "chat.opentoonline.warn.settingMaxPlayers": "Failed to set custom Max Players",
+  "chat.opentoonline.warn.gettingAnExternalIP": "Failed to get external IP",
+
+  "chat.opentoonline.upnpIsAvailable": "UPnP is available",
+  "chat.opentoonline.portIsAlreadyOpen": "Port is already open",
+  "chat.opentoonline.portIsOpen": "Port is open",
+  "chat.opentoonline.startingServer": "Starting server...",
+  "chat.opentoonline.openingTcpPort": "Opening TCP port",
+  "chat.opentoonline.gameHostedOn": "Your game is hosted on:",
+  "chat.opentoonline.ipIsChanged": "External IP has changed"
+}
