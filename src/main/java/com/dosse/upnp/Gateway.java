@@ -31,6 +31,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
+// Beginning of the new imports
+import org.apache.logging.log4j.LogManager;
+// End of the new imports
 
 /**
  * 
@@ -159,8 +162,20 @@ class Gateway {
         params.put("NewLeaseDuration", "0");
         try {
             Map<String, String> r = command("AddPortMapping", params);
-            return r.get("errorCode") == null;
+
+//            Beginning of the modified part of the code
+            String errorCode = r.get("errorCode");
+            LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT ERROR CODE: " + errorCode);
+            return errorCode == null;
+//            End of the modified part of the code
+
+//            Beginning of the deleted part of the code
+//          return r.get("errorCode") == null;
+//            End of the deleted part of the code
         } catch (Exception ex) {
+//            Beginning of the modified part of the code
+            LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT EXCEPTION: " + ex.getMessage());
+//            End of the modified part of the code
             return false;
         }
     }
