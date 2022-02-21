@@ -5,6 +5,7 @@
   "gui.opentoonline.startOnlineWorld": "Start Online World",
   "gui.opentoonline.copy": "Click to copy",
   "gui.opentoonline.advancedSettings": "Advanced Settings",
+  "gui.opentoonline.advancedServerSettings": "Advanced Server Settings",
   "gui.opentoonline.recreateRules": "Recreate Rules",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 

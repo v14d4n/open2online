@@ -29,6 +29,11 @@ public class RecreateFirewallRulesScreen extends Screen {
     }
 
     @Override
+    public void onClose() {
+        this.minecraft.setScreen(lastScreen);
+    }
+
+    @Override
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         int pX = this.width / 2 - 140;
         int pY = this.height / 4 - 60 + 60;

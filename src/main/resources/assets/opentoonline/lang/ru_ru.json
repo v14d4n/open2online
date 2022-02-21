@@ -5,6 +5,7 @@
   "gui.opentoonline.startOnlineWorld": "Открыть мир для сети",
   "gui.opentoonline.copy": "Нажмите, чтобы скопировать",
   "gui.opentoonline.advancedSettings": "Расширенные настройки",
+  "gui.opentoonline.advancedServerSettings": "Расширенные настройки сервера",
   "gui.opentoonline.recreateRules": "Пересоздать правила",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
