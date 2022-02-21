@@ -4,10 +4,13 @@ import com.dosse.upnp.UPnP;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 public class UPnPHandler {
+
+    private static boolean closePortAfterLogout;
 
     private static boolean isUPnPAvailable() {
         if (UPnP.isUPnPAvailable()) {
@@ -49,5 +52,23 @@ public class UPnPHandler {
         }
 
         return 1;
+    }
+
+    public static void closePortAfterLogout(boolean closePortAfterLogout) {
+        UPnPHandler.closePortAfterLogout = closePortAfterLogout;
+    }
+
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        String clientPlayerName = minecraft.getUser().getName();
+        String loggedOutPlayerName = event.getPlayer().getName().getString();
+
+        if (clientPlayerName.equals(loggedOutPlayerName) && UPnPHandler.closePortAfterLogout) {
+            UPnPHandler.closePortAfterLogout(false);
+
+            int port = OpenToOnlineConfig.port.get();
+            if (UPnP.isMappedTCP(port)) {
+                UPnP.closePortTCP(port);
+            }
+        }
     }
 }

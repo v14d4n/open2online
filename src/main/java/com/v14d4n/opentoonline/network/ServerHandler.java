@@ -1,11 +1,14 @@
 package com.v14d4n.opentoonline.network;
 
+import com.mojang.authlib.GameProfile;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +18,7 @@ import java.net.URL;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
+@OnlyIn(Dist.CLIENT)
 public class ServerHandler {
 
     public static boolean startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands) {
@@ -22,6 +26,7 @@ public class ServerHandler {
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
+            UPnPHandler.closePortAfterLogout(true);
             ServerHandler.setMaxPlayers(maxPlayers);
             ServerHandler.setPvpAllowed(true);
             ServerHandler.setLicenseGameRequired(false);
@@ -35,7 +40,7 @@ public class ServerHandler {
         return true;
     }
 
-    public static boolean isServerAlreadyPublished() {
+    public static boolean isServerPublished() {
         return !minecraft.hasSingleplayerServer() || minecraft.getSingleplayerServer().isPublished();
     }
 
@@ -69,10 +74,9 @@ public class ServerHandler {
             String lastIP = OpenToOnlineConfig.lastIP.get();
 
             // 0.0.0.0 is a default value
-            if (!currentIP.equals(lastIP) && !lastIP.equals("0.0.0.0")){
+            if (!currentIP.equals(lastIP) && !lastIP.equals("0.0.0.0")) {
                 minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.ipIsChanged", ModChatTranslatableComponent.MessageTypes.WARN));
             }
-
             OpenToOnlineConfig.lastIP.set(currentIP);
             return currentIP;
         } catch (IOException e) {
@@ -88,5 +92,9 @@ public class ServerHandler {
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("gui.opentoonline.copy"))));
 
         return new TextComponent(" [").append(serverAddress).append("]");
+    }
+
+    public static boolean isPlayerServerOwner(GameProfile gameProfile) {
+        return minecraft.getSingleplayerServer().isSingleplayerOwner(gameProfile);
     }
 }

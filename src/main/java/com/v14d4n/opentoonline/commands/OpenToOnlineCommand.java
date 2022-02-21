@@ -1,5 +1,6 @@
 package com.v14d4n.opentoonline.commands;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.ServerHandler;
@@ -26,7 +27,7 @@ public class OpenToOnlineCommand {
 
     public static int open(int port, int maxPlayers, GameType gameMode, boolean allowCommands) {
 
-        if (ServerHandler.isServerAlreadyPublished()) {
+        if (ServerHandler.isServerPublished()) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.serverIsAlreadyPublished", ModChatTranslatableComponent.MessageTypes.ERROR));
             return 0;
         }

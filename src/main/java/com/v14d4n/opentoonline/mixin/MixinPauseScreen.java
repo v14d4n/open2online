@@ -23,7 +23,7 @@ public abstract class MixinPauseScreen extends Screen {
 
     @Inject(method = "createPauseMenu()V", at = @At("TAIL"))
     protected void onInit(CallbackInfo ci) {
-        boolean active = !ServerHandler.isServerAlreadyPublished();
+        boolean active = !ServerHandler.isServerPublished();
         createOpenToOnlineMenuButton(active);
     }
 

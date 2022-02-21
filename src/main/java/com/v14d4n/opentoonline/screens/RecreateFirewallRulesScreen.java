@@ -47,8 +47,8 @@ public class RecreateFirewallRulesScreen extends Screen {
         drawString(pPoseStack, this.font, "When you click on \"Recreate Rules\" button, the old Minecraft", pX, pY + 54, 10526880);
         drawString(pPoseStack, this.font, "firewall rules will be deleted and new correct ones will be", pX, pY + 63, 10526880);
         drawString(pPoseStack, this.font, "created.", pX, pY + 72, 10526880);
-        drawString(pPoseStack, this.font, "This only works on Windows.", pX, pY + 90, 10526880);
-        drawString(pPoseStack, this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 99, 10526880);
+        drawString(pPoseStack, this.font, "This only works on Windows.", pX, pY + 91, 10526880);
+        drawString(pPoseStack, this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 100, 10526880);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
     }
 
