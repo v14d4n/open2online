@@ -10,7 +10,8 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
-  "chat.opentoonline.error.portOpening": "Port opening error",
+  "chat.opentoonline.error.portOpening": "Failed to open port",
+  "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
 
@@ -26,5 +27,8 @@
   "chat.opentoonline.ipIsChanged": "External IP has changed",
   "chat.opentoonline.update": "Update available:",
   "chat.opentoonline.link": "Link",
-  "chat.opentoonline.openUrl": "Open URL"
+  "chat.opentoonline.openUrl": "Open URL",
+
+  "options.opentoonline.allowPvp": "Allow PVP",
+  "options.opentoonline.licenseRequired": "Require a Licensed Game"
 }

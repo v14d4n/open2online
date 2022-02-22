@@ -40,6 +40,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        // TODO: добавить уведомление, о том что мод находится в разработке
         String loggedInPlayerName = event.getPlayer().getName().getString();
         if (clientPlayerName.equals(loggedInPlayerName)) {
             checkUpdates(event.getPlayer());

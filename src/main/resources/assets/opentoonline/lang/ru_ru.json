@@ -10,7 +10,8 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Ошибка при открытии порта",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт",
+  "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
 

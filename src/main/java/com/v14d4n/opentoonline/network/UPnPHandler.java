@@ -40,18 +40,19 @@ public class UPnPHandler {
         return true;
     }
 
-    public static int closePort(int port) {
+    public static boolean closePort(int port) {
         minecraft.gui.getChat().addMessage(new TextComponent("Closing TCP port " + port + "..."));
-
+        // TODO: перенести в en_us.json
         if (!UPnP.isMappedTCP(port)) {
             minecraft.gui.getChat().addMessage(new TextComponent("Port is already closed"));
         } else if (UPnP.closePortTCP(port)) {
             minecraft.gui.getChat().addMessage(new TextComponent("Port is closed"));
         } else {
-            minecraft.gui.getChat().addMessage(new TextComponent("Some error occurred while closing the port."));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portClosing", ModChatTranslatableComponent.MessageTypes.ERROR));
+            return false;
         }
 
-        return 1;
+        return true;
     }
 
     public static void closePortAfterLogout(boolean closePortAfterLogout) {

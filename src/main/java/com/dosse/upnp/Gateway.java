@@ -165,8 +165,12 @@ class Gateway {
 
 //            Beginning of the modified part of the code
             String errorCode = r.get("errorCode");
-            LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT ERROR CODE: " + errorCode);
-            return errorCode == null;
+            if (errorCode == null) {
+                return true;
+            } else {
+                LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT ERROR CODE: " + errorCode);
+                return false;
+            }
 //            End of the modified part of the code
 
 //            Beginning of the deleted part of the code
@@ -192,6 +196,9 @@ class Gateway {
             command("DeletePortMapping", params);
             return true;
         } catch (Exception ex) {
+//            Beginning of the modified part of the code
+            LogManager.getLogger().info("[Open2Online-Debug] CLOSING PORT EXCEPTION: " + ex.getMessage());
+//            End of the modified part of the code
             return false;
         }
     }
