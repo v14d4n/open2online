@@ -30,5 +30,9 @@
   "chat.opentoonline.openUrl": "Open URL",
 
   "options.opentoonline.allowPvp": "Allow PVP",
-  "options.opentoonline.licenseRequired": "Require a Licensed Game"
+  "options.opentoonline.licenseRequired": "Require License",
+  "options.opentoonline.library": "Library",
+
+  "tooltip.opentoonline.library": "Library for port opening. Don't change it if everything works fine",
+  "tooltip.opentoonline.licenseRequired": "Require an online connection and licensed version of the game"
 }

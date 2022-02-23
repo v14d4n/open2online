@@ -26,10 +26,11 @@ public class ServerHandler {
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
+            // TODO: сделать с этим что-нибудь
             UPnPHandler.closePortAfterLogout(true);
             ServerHandler.setMaxPlayers(maxPlayers);
-            ServerHandler.setPvpAllowed(true);
-            ServerHandler.setLicenseGameRequired(false);
+            ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
+            ServerHandler.setLicenseGameRequired(OpenToOnlineConfig.licenseRequired.get());
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
@@ -59,12 +60,12 @@ public class ServerHandler {
             //Field field = PlayerList.class.getDeclaredField("maxPlayers"); // Works only if you run client from IDE
             field.setAccessible(true);
             field.setInt(playerList, maxPlayers);
-            OpenToOnlineConfig.maxPlayers.set(maxPlayers);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.warn.settingMaxPlayers", ModChatTranslatableComponent.MessageTypes.WARN));
             return false;
         }
 
+        OpenToOnlineConfig.maxPlayers.set(maxPlayers);
         return true;
     }
 
