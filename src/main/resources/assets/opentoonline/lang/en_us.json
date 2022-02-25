@@ -10,8 +10,8 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
-  "chat.opentoonline.error.portOpening": "Failed to open port",
-  "chat.opentoonline.error.portClosing": "Failed to close port",
+  "chat.opentoonline.error.portOpening": "Failed to open port. Check ./logs/latest.log",
+  "chat.opentoonline.error.portClosing": "Failed to close port. Check ./logs/latest.log",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
 
@@ -33,6 +33,6 @@
   "options.opentoonline.licenseRequired": "Require License",
   "options.opentoonline.library": "Library",
 
-  "tooltip.opentoonline.library": "Library for port opening. Don't change it if everything works fine",
-  "tooltip.opentoonline.licenseRequired": "Require an online connection and licensed version of the game"
+  "tooltip.opentoonline.library": "Library for opening a port. Don't change if everything works fine",
+  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game"
 }

@@ -10,8 +10,8 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Не удалось открыть порт",
-  "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Проверь ./logs/latest.log",
+  "chat.opentoonline.error.portClosing": "Не удалось закрыть порт. Проверь ./logs/latest.log",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
 
@@ -27,5 +27,12 @@
   "chat.opentoonline.ipIsChanged": "Внешний IP изменился",
   "chat.opentoonline.update": "Доступно обновление:",
   "chat.opentoonline.link": "Ссылка",
-  "chat.opentoonline.openUrl": "Перейти по ссылке"
+  "chat.opentoonline.openUrl": "Перейти по ссылке",
+
+  "options.opentoonline.allowPvp": "Разрешить ПВП",
+  "options.opentoonline.licenseRequired": "Требовать лицензию",
+  "options.opentoonline.library": "Библиотека",
+
+  "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально",
+  "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры"
 }

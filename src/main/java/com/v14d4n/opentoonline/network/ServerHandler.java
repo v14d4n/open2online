@@ -26,11 +26,8 @@ public class ServerHandler {
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
-            // TODO: сделать с этим что-нибудь
-            UPnPHandler.closePortAfterLogout(true);
             ServerHandler.setMaxPlayers(maxPlayers);
-            ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
-            ServerHandler.setLicenseGameRequired(OpenToOnlineConfig.licenseRequired.get());
+            setupServerConfiguration();
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
@@ -39,6 +36,13 @@ public class ServerHandler {
         }
 
         return true;
+    }
+
+    private static void setupServerConfiguration() {
+        UPnPHandler.closePortAfterLogout(true);
+
+        ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
+        ServerHandler.setLicenseGameRequired(OpenToOnlineConfig.licenseRequired.get());
     }
 
     public static boolean isServerPublished() {

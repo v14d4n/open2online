@@ -168,7 +168,7 @@ class Gateway {
             if (errorCode == null) {
                 return true;
             } else {
-                LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT ERROR CODE: " + errorCode);
+                LogManager.getLogger().info("[Open2Online-Debug] Router error code: " + errorCode);
                 return false;
             }
 //            End of the modified part of the code
@@ -178,7 +178,7 @@ class Gateway {
 //            End of the deleted part of the code
         } catch (Exception ex) {
 //            Beginning of the modified part of the code
-            LogManager.getLogger().info("[Open2Online-Debug] OPENING PORT EXCEPTION: " + ex.getMessage());
+            LogManager.getLogger().info("[Open2Online-Debug] Exception: " + ex.getMessage());
 //            End of the modified part of the code
             return false;
         }
@@ -197,7 +197,7 @@ class Gateway {
             return true;
         } catch (Exception ex) {
 //            Beginning of the modified part of the code
-            LogManager.getLogger().info("[Open2Online-Debug] CLOSING PORT EXCEPTION: " + ex.getMessage());
+            LogManager.getLogger().info("[Open2Online-Debug] Exception: " + ex.getMessage());
 //            End of the modified part of the code
             return false;
         }
