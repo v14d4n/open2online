@@ -3,7 +3,6 @@
   "gui.opentoonline.portInfo": "Порт онлайн мира",
   "gui.opentoonline.maxPlayersInfo": "Максимум игроков",
   "gui.opentoonline.startOnlineWorld": "Открыть мир для сети",
-  "gui.opentoonline.copy": "Нажмите, чтобы скопировать",
   "gui.opentoonline.advancedSettings": "Расширенные настройки",
   "gui.opentoonline.advancedServerSettings": "Расширенные настройки сервера",
   "gui.opentoonline.recreateRules": "Пересоздать правила",
@@ -20,19 +19,24 @@
 
   "chat.opentoonline.upnpIsAvailable": "UPnP доступен",
   "chat.opentoonline.portIsAlreadyOpen": "Порт уже открыт",
+  "chat.opentoonline.portIsAlreadyClosed": "Порт уже закрыт",
   "chat.opentoonline.portIsOpen": "Порт открыт",
+  "chat.opentoonline.portIsClosed": "Порт закрыт",
   "chat.opentoonline.startingServer": "Запуск сервера...",
   "chat.opentoonline.openingTcpPort": "Открытие TCP порта",
+  "chat.opentoonline.closingTcpPort": "Закрытие TCP порта",
   "chat.opentoonline.gameHostedOn": "Игра размещена на:",
   "chat.opentoonline.ipIsChanged": "Внешний IP изменился",
   "chat.opentoonline.update": "Доступно обновление:",
   "chat.opentoonline.link": "Ссылка",
-  "chat.opentoonline.openUrl": "Перейти по ссылке",
 
   "options.opentoonline.allowPvp": "Разрешить ПВП",
   "options.opentoonline.licenseRequired": "Требовать лицензию",
   "options.opentoonline.library": "Библиотека",
 
-  "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально",
-  "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры"
+  "tooltip.opentoonline.copy": "Нажмите, чтобы скопировать",
+  "tooltip.opentoonline.openUrl": "Перейти по ссылке",
+  "tooltip.opentoonline.recreateFirewallRules": "Это может помочь, если никто не может подключиться к серверу.",
+  "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально.",
+  "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры."
 }

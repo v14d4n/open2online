@@ -3,7 +3,6 @@ package com.v14d4n.opentoonline.network;
 import com.dosse.upnp.UPnP;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
@@ -41,12 +40,11 @@ public class UPnPHandler {
     }
 
     public static boolean closePort(int port) {
-        minecraft.gui.getChat().addMessage(new TextComponent("Closing TCP port " + port + "..."));
-        // TODO: перенести в en_us.json
+        minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.closingTcpPort").append(" " + port + "..."));
         if (!UPnP.isMappedTCP(port)) {
-            minecraft.gui.getChat().addMessage(new TextComponent("Port is already closed"));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsAlreadyClosed"));
         } else if (UPnP.closePortTCP(port)) {
-            minecraft.gui.getChat().addMessage(new TextComponent("Port is closed"));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsClosed"));
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portClosing", ModChatTranslatableComponent.MessageTypes.ERROR));
             return false;

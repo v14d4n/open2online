@@ -59,7 +59,7 @@ public class ModEvents {
             MutableComponent link = new TranslatableComponent("chat.opentoonline.link")
                     .setStyle(Style.EMPTY.setUnderlined(true)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url()))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.opentoonline.openUrl"))));
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.openUrl"))));
 
             MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
 

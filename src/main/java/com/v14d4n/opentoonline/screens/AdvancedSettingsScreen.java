@@ -16,7 +16,6 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.List;
 import java.util.Optional;
 
-// TODO: доделать
 public class AdvancedSettingsScreen extends Screen {
 
     private static final Option[] OPTIONS = new Option[]{ ModServerOptions.ALLOW_PVP, ModServerOptions.LICENSE_REQUIRED };
@@ -57,8 +56,8 @@ public class AdvancedSettingsScreen extends Screen {
         }
     }
 
-    private static List<FormattedCharSequence> tooltipAt(OptionsList p_96288_, int p_96289_, int p_96290_) {
-        Optional<AbstractWidget> optional = p_96288_.getMouseOver(p_96289_, p_96290_);
+    private static List<FormattedCharSequence> tooltipAt(OptionsList p_96288_, int pMouseX, int pMouseY) {
+        Optional<AbstractWidget> optional = p_96288_.getMouseOver(pMouseX, pMouseY);
         return optional.isPresent() && optional.get() instanceof TooltipAccessor ? ((TooltipAccessor)optional.get()).getTooltip() : ImmutableList.of();
     }
 }

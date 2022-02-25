@@ -58,7 +58,7 @@ public class ShareToOnlineScreen extends Screen {
         // Advanced settings button
         createAdvancedSettingsButton();
         // Fix firewall problem button
-        createFixFirewallProblemButton();
+        createRecreateFirewallRulesButton();
         // Cancel button
         createCancelButton();
     }
@@ -73,9 +73,11 @@ public class ShareToOnlineScreen extends Screen {
         }
     }
 
-    private void createFixFirewallProblemButton() {
+    private void createRecreateFirewallRulesButton() {
         this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, new TranslatableComponent("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
             minecraft.setScreen(new RecreateFirewallRulesScreen(this));
+        }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
+            this.renderTooltip(pPoseStack, minecraft.font.split(new TranslatableComponent("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
         }));
     }
 

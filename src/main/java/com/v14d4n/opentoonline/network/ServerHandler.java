@@ -94,7 +94,7 @@ public class ServerHandler {
         String stringAddress = getExternalIP() + ":" + port;
         MutableComponent serverAddress = new TextComponent(stringAddress).setStyle(Style.EMPTY.setUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringAddress))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("gui.opentoonline.copy"))));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.copy"))));
 
         return new TextComponent(" [").append(serverAddress).append("]");
     }
