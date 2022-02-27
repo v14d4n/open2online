@@ -33,7 +33,7 @@ logoFile="logoopen.png" #optional
 # A text field displayed in the mod UI
 authors="v14d4n" #optional
 # The description text for the mod (multi line!) (#mandatory)
-description="This mod allows to play with friends without Realms or LAN emulators"
+description="Adds the ability to create an online server"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.opentoonline]] #optional
     # the modid of the dependency

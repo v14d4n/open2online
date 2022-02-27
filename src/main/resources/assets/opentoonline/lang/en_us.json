@@ -10,7 +10,7 @@
   "gui.opentoonline.whitelistMode": "Whitelist Mode",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
-  "chat.opentoonline.error.portOpening": "Failed to open port",
+  "chat.opentoonline.error.portOpening": "Failed to open port. Try changing the library",
   "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
