@@ -6,6 +6,9 @@ import com.v14d4n.opentoonline.network.upnp.IUPnPLibrary;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
+import java.io.IOException;
+import java.net.Socket;
+
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 public class UPnPHandler {
@@ -75,6 +78,14 @@ public class UPnPHandler {
             if (UPnP.isMappedTCP(port)) {
                 UPnP.closePortTCP(port);
             }
+        }
+    }
+
+    public static boolean isPortAvailable(int port) {
+        try (Socket ignored = new Socket("localhost", port)) {
+            return false;
+        } catch (IOException ignored) {
+            return true;
         }
     }
 }

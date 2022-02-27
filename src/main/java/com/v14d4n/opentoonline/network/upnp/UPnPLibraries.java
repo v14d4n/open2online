@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
 public enum UPnPLibraries {
-    WaifUPnP(0, WaifUPnPLibrary::new),
-    Weupnp(1, WeupnpLibrary::new);
+    Weupnp(0, WeupnpLibrary::new),
+    WaifUPnP(1, WaifUPnPLibrary::new);
 
     private final int id;
     private final Supplier<IUPnPLibrary> librarySupplier;

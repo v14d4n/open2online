@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class AdvancedSettingsScreen extends Screen {
 
-    private static final Option[] OPTIONS = new Option[]{ ModServerOptions.ALLOW_PVP, ModServerOptions.LICENSE_REQUIRED };
+    private static final Option[] OPTIONS = new Option[]{ ModServerOptions.ALLOW_PVP }; // ModServerOptions.WHITELIST_MODE
     private OptionsList optionsList;
     private final Screen lastScreen;
 

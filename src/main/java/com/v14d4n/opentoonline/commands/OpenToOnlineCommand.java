@@ -1,9 +1,9 @@
 package com.v14d4n.opentoonline.commands;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.ServerHandler;
+import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -29,6 +29,11 @@ public class OpenToOnlineCommand {
 
         if (ServerHandler.isServerPublished()) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.serverIsAlreadyPublished", ModChatTranslatableComponent.MessageTypes.ERROR));
+            return 0;
+        }
+
+        if (!UPnPHandler.isPortAvailable(port)) {
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
             return 0;
         }
 

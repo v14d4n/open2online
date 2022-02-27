@@ -2,10 +2,13 @@ package com.v14d4n.opentoonline.events;
 
 import com.v14d4n.opentoonline.OpenToOnline;
 import com.v14d4n.opentoonline.commands.*;
+import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
+import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -40,10 +43,19 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        // TODO: добавить уведомление, о том что мод находится в разработке
         String loggedInPlayerName = event.getPlayer().getName().getString();
         if (clientPlayerName.equals(loggedInPlayerName)) {
             checkUpdates(event.getPlayer());
+        }
+
+        if (ServerHandler.isPlayerServerOwner(minecraft.getUser().getGameProfile()) && OpenToOnlineConfig.whitelistMode.get()) {
+            ServerPlayer serverPlayer = (ServerPlayer) event.getPlayer();
+
+            OpenToOnlineConfig.friends.get().forEach((friendList) -> {
+                if (friendList.equals(serverPlayer.getName().getString()))
+                    return;
+                serverPlayer.connection.disconnect(new TextComponent("asd"));
+            });
         }
     }
 

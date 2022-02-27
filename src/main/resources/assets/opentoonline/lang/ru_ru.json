@@ -16,7 +16,6 @@
 
   "chat.opentoonline.warn.settingMaxPlayers": "Не удалось установить пользовательское максимальное количество игроков",
   "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
-  "chat.opentoonline.warn.libraryNotFound": "Библиотека не найдена. Установлена стандартная",
 
   "chat.opentoonline.upnpIsAvailable": "UPnP доступен",
   "chat.opentoonline.portIsAlreadyOpen": "Порт уже открыт",
@@ -31,7 +30,7 @@
   "chat.opentoonline.update": "Доступно обновление:",
   "chat.opentoonline.link": "Ссылка",
 
-  "options.opentoonline.allowPvp": "Разрешить ПВП",
+  "options.opentoonline.allowPvp": "Разрешить PVP",
   "options.opentoonline.licenseRequired": "Требовать лицензию",
   "options.opentoonline.library": "Библиотека",
 

@@ -42,7 +42,6 @@ public class ServerHandler {
         UPnPHandler.closePortAfterLogout(true);
 
         ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
-        ServerHandler.setLicenseGameRequired(OpenToOnlineConfig.licenseRequired.get());
     }
 
     public static boolean isServerPublished() {

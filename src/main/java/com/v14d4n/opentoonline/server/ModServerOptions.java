@@ -12,7 +12,7 @@ public abstract class ModServerOptions {
 
     private static int libraryId;
     private static boolean allowPvp;
-    private static boolean licenseRequired;
+    private static boolean whitelistMode;
 
     public static final CycleOption<UPnPLibraries> LIBRARY = CycleOption.create("options.opentoonline.library",
             UPnPLibraries.values(),
@@ -32,17 +32,17 @@ public abstract class ModServerOptions {
             (pOptions, pOption, pValue) -> allowPvp = pValue
     );
 
-    public static final CycleOption<Boolean> LICENSE_REQUIRED = CycleOption.createOnOff("options.opentoonline.licenseRequired",
+    public static final CycleOption<Boolean> WHITELIST_MODE = CycleOption.createOnOff("gui.opentoonline.whitelistMode",
             (getter) -> {
-                licenseRequired = OpenToOnlineConfig.licenseRequired.get();
-                return licenseRequired;
+                whitelistMode = OpenToOnlineConfig.whitelistMode.get();
+                return whitelistMode;
             },
-            (pOptions, pOption, pValue) -> licenseRequired = pValue
-    ).setTooltip((pTooltip) -> (p_193636_) -> pTooltip.font.split(new TranslatableComponent("tooltip.opentoonline.licenseRequired"), 200));
+            (pOptions, pOption, pValue) -> whitelistMode = pValue
+    );
 
     public static void save() {
         OpenToOnlineConfig.libraryId.set(libraryId);
         OpenToOnlineConfig.allowPvp.set(allowPvp);
-        OpenToOnlineConfig.licenseRequired.set(licenseRequired);
+        OpenToOnlineConfig.whitelistMode.set(whitelistMode);
     }
 }
