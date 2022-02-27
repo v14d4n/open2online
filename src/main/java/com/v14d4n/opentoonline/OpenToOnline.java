@@ -19,7 +19,7 @@ public class OpenToOnline {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, OpenToOnlineConfig.SPEC, "opentoonline-client.toml");
         MinecraftForge.EVENT_BUS.register(this);
     }
-
+    // TODO: сменить лого и описание мода
     private void setup(final FMLCommonSetupEvent event) {
 
     }

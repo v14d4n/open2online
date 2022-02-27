@@ -9,13 +9,14 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
-  "chat.opentoonline.error.portOpening": "Failed to open port. Check ./logs/latest.log",
-  "chat.opentoonline.error.portClosing": "Failed to close port. Check ./logs/latest.log",
+  "chat.opentoonline.error.portOpening": "Failed to open port",
+  "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
 
   "chat.opentoonline.warn.settingMaxPlayers": "Failed to set custom Max Players",
   "chat.opentoonline.warn.gettingAnExternalIP": "Failed to get external IP",
+  "chat.opentoonline.warn.libraryNotFound": "Library not found. Set to default",
 
   "chat.opentoonline.upnpIsAvailable": "UPnP is available",
   "chat.opentoonline.portIsAlreadyOpen": "Port is already open",

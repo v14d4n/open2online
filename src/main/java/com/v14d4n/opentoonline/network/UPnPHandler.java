@@ -1,8 +1,9 @@
 package com.v14d4n.opentoonline.network;
 
-import com.dosse.upnp.UPnP;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
+import com.v14d4n.opentoonline.network.upnp.IUPnPLibrary;
+import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
@@ -10,8 +11,11 @@ import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 public class UPnPHandler {
 
     private static boolean closePortAfterLogout;
+    private static IUPnPLibrary UPnP;
 
     private static boolean isUPnPAvailable() {
+        UPnP = UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()).getHandler();
+
         if (UPnP.isUPnPAvailable()) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpIsAvailable"));
             return true;
@@ -40,6 +44,9 @@ public class UPnPHandler {
     }
 
     public static boolean closePort(int port) {
+        if (UPnP == null)
+            throw new RuntimeException("UPnP library is not installed");
+
         minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.closingTcpPort").append(" " + port + "..."));
         if (!UPnP.isMappedTCP(port)) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsAlreadyClosed"));

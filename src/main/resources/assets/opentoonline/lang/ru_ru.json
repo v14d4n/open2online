@@ -9,13 +9,14 @@
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Проверь ./logs/latest.log",
-  "chat.opentoonline.error.portClosing": "Не удалось закрыть порт. Проверь ./logs/latest.log",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт",
+  "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
 
   "chat.opentoonline.warn.settingMaxPlayers": "Не удалось установить пользовательское максимальное количество игроков",
   "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
+  "chat.opentoonline.warn.libraryNotFound": "Библиотека не найдена. Установлена стандартная",
 
   "chat.opentoonline.upnpIsAvailable": "UPnP доступен",
   "chat.opentoonline.portIsAlreadyOpen": "Порт уже открыт",

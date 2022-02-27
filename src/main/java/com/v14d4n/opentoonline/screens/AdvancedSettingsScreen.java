@@ -30,7 +30,7 @@ public class AdvancedSettingsScreen extends Screen {
     @Override
     protected void init() {
         this.optionsList = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-        //this.optionsList.addBig(ModServerOptions.LIBRARY);
+        this.optionsList.addBig(ModServerOptions.LIBRARY);
         this.optionsList.addSmall(OPTIONS);
         this.addWidget(this.optionsList);
         this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, CommonComponents.GUI_DONE, (p_96827_) -> {
