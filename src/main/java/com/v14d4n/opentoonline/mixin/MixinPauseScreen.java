@@ -23,7 +23,7 @@ public abstract class MixinPauseScreen extends Screen {
 
     @Inject(method = "createPauseMenu()V", at = @At("TAIL"))
     protected void onInit(CallbackInfo ci) {
-        boolean active = !ServerHandler.isServerAlreadyPublished();
+        boolean active = !ServerHandler.isServerPublished();
         createOpenToOnlineMenuButton(active);
     }
 
@@ -33,8 +33,8 @@ public abstract class MixinPauseScreen extends Screen {
 
         this.addRenderableWidget(new ImageButton(
                 width / 2 + 104, height / 4 + 96 - 16, 20, 20, pXOffset, 0, pYDiff,
-                new ResourceLocation(OpenToOnline.MOD_ID, "textures/gui/button.png"), 40,
-                40, (p_213088_1_) -> this.getMinecraft().setScreen(new ShareToOnlineScreen(this))
+                new ResourceLocation(OpenToOnline.MOD_ID, "textures/gui/button.png"), 64,
+                64, (p_213088_1_) -> this.getMinecraft().setScreen(new ShareToOnlineScreen(this))
         )).active = active;
     }
 }

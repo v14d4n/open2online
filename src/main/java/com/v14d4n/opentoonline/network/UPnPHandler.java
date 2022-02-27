@@ -1,15 +1,24 @@
 package com.v14d4n.opentoonline.network;
 
-import com.dosse.upnp.UPnP;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.network.chat.TextComponent;
+import com.v14d4n.opentoonline.network.upnp.IUPnPLibrary;
+import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+
+import java.io.IOException;
+import java.net.Socket;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 public class UPnPHandler {
 
+    private static boolean closePortAfterLogout;
+    private static IUPnPLibrary UPnP;
+
     private static boolean isUPnPAvailable() {
+        UPnP = UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()).getHandler();
+
         if (UPnP.isUPnPAvailable()) {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpIsAvailable"));
             return true;
@@ -37,17 +46,46 @@ public class UPnPHandler {
         return true;
     }
 
-    public static int closePort(int port) {
-        minecraft.gui.getChat().addMessage(new TextComponent("Closing TCP port " + port + "..."));
+    public static boolean closePort(int port) {
+        if (UPnP == null)
+            throw new RuntimeException("UPnP library is not installed");
 
+        minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.closingTcpPort").append(" " + port + "..."));
         if (!UPnP.isMappedTCP(port)) {
-            minecraft.gui.getChat().addMessage(new TextComponent("Port is already closed"));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsAlreadyClosed"));
         } else if (UPnP.closePortTCP(port)) {
-            minecraft.gui.getChat().addMessage(new TextComponent("Port is closed"));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsClosed"));
         } else {
-            minecraft.gui.getChat().addMessage(new TextComponent("Some error occurred while closing the port."));
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portClosing", ModChatTranslatableComponent.MessageTypes.ERROR));
+            return false;
         }
 
-        return 1;
+        return true;
+    }
+
+    public static void closePortAfterLogout(boolean closePortAfterLogout) {
+        UPnPHandler.closePortAfterLogout = closePortAfterLogout;
+    }
+
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        String clientPlayerName = minecraft.getUser().getName();
+        String loggedOutPlayerName = event.getPlayer().getName().getString();
+
+        if (clientPlayerName.equals(loggedOutPlayerName) && UPnPHandler.closePortAfterLogout) {
+            UPnPHandler.closePortAfterLogout(false);
+
+            int port = OpenToOnlineConfig.port.get();
+            if (UPnP.isMappedTCP(port)) {
+                UPnP.closePortTCP(port);
+            }
+        }
+    }
+
+    public static boolean isPortAvailable(int port) {
+        try (Socket ignored = new Socket("localhost", port)) {
+            return false;
+        } catch (IOException ignored) {
+            return true;
+        }
     }
 }

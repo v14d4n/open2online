@@ -20,12 +20,17 @@ public class RecreateFirewallRulesScreen extends Screen {
     @Override
     protected void init() {
         this.addRenderableWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
-            this.minecraft.setScreen(null);
             recreateFirewallRules();
+            this.minecraft.setScreen(lastScreen);
         }));
         this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, CommonComponents.GUI_CANCEL, (p_96300_) -> {
             this.minecraft.setScreen(lastScreen);
         }));
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(lastScreen);
     }
 
     @Override
@@ -42,8 +47,8 @@ public class RecreateFirewallRulesScreen extends Screen {
         drawString(pPoseStack, this.font, "When you click on \"Recreate Rules\" button, the old Minecraft", pX, pY + 54, 10526880);
         drawString(pPoseStack, this.font, "firewall rules will be deleted and new correct ones will be", pX, pY + 63, 10526880);
         drawString(pPoseStack, this.font, "created.", pX, pY + 72, 10526880);
-        drawString(pPoseStack, this.font, "This only works on Windows.", pX, pY + 90, 10526880);
-        drawString(pPoseStack, this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 99, 10526880);
+        drawString(pPoseStack, this.font, "This only works on Windows.", pX, pY + 91, 10526880);
+        drawString(pPoseStack, this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 100, 10526880);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
     }
 

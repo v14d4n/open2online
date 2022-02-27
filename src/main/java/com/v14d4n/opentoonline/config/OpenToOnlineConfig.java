@@ -2,6 +2,8 @@ package com.v14d4n.opentoonline.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.ArrayList;
+
 public class OpenToOnlineConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
@@ -10,7 +12,9 @@ public class OpenToOnlineConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> maxPlayers;
     public static final ForgeConfigSpec.ConfigValue<String> lastIP;
     public static final ForgeConfigSpec.ConfigValue<Boolean> allowPvp;
-    public static final ForgeConfigSpec.ConfigValue<Boolean> licenseRequired;
+    public static final ForgeConfigSpec.ConfigValue<Integer> libraryId;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> whitelistMode;
+    public static final ForgeConfigSpec.ConfigValue<ArrayList<String>> friends;
 
     static {
         BUILDER.push("Open2Online config");
@@ -19,7 +23,9 @@ public class OpenToOnlineConfig {
         maxPlayers = BUILDER.comment("Server max players. Default value is 8.").define("Max Players", 8);
         lastIP = BUILDER.comment("Your last IP. Default value is \"0.0.0.0\".").define("Last IP", "0.0.0.0");
         allowPvp = BUILDER.comment("Allow PVP on the server. Default value is true.").define("Allow PVP", true);
-        licenseRequired = BUILDER.comment("Require a licensed version of the game to connect. Default value is false.").define("License Required", false);
+        libraryId = BUILDER.comment("Port opening library. Don't change if everything works fine. 0 - Weupnp; 1 - WaifUPnP. Default value is 0.").define("Library", 0);
+        whitelistMode = BUILDER.comment("Enable whitelist mode. Default value is false.").define("Whitelist", false);
+        friends = BUILDER.comment("List of friends who can join the server if the whitelist mode is enabled.").define("FriendList", new ArrayList<>());
 
         BUILDER.pop();
         SPEC = BUILDER.build();

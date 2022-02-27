@@ -1,17 +1,17 @@
 package com.v14d4n.opentoonline.events;
 
-import com.dosse.upnp.UPnP;
 import com.v14d4n.opentoonline.OpenToOnline;
 import com.v14d4n.opentoonline.commands.*;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
+import com.v14d4n.opentoonline.network.ServerHandler;
+import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.*;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.VersionChecker;
@@ -27,7 +27,7 @@ import static net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED;
 public class ModEvents {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final String hostName = minecraft.getUser().getName();
+    private static final String clientPlayerName = minecraft.getUser().getName();
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
@@ -38,26 +38,28 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        String newPlayerName = event.getPlayer().getName().getString();
-        if (newPlayerName.equals(hostName)) {
-
-            int port = OpenToOnlineConfig.port.get();
-            if (UPnP.isMappedTCP(port)){
-                UPnP.closePortTCP(port);
-            }
-        }
+        UPnPHandler.onPlayerLoggedOut(event);
     }
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        String newPlayerName = event.getPlayer().getName().getString();
-        if (newPlayerName.equals(hostName)) {
+        String loggedInPlayerName = event.getPlayer().getName().getString();
+        if (clientPlayerName.equals(loggedInPlayerName)) {
+            checkUpdates(event.getPlayer());
+        }
 
-            checkUpdates();
+        if (ServerHandler.isPlayerServerOwner(minecraft.getUser().getGameProfile()) && OpenToOnlineConfig.whitelistMode.get()) {
+            ServerPlayer serverPlayer = (ServerPlayer) event.getPlayer();
+
+            OpenToOnlineConfig.friends.get().forEach((friendList) -> {
+                if (friendList.equals(serverPlayer.getName().getString()))
+                    return;
+                serverPlayer.connection.disconnect(new TextComponent("asd"));
+            });
         }
     }
 
-    private static void checkUpdates() {
+    private static void checkUpdates(Player player) {
         IModInfo modInfo = ModList.get().getModContainerById(OpenToOnline.MOD_ID).get().getModInfo();
         VersionChecker.CheckResult updateCheckResult = VersionChecker.getResult(modInfo);
 
@@ -69,11 +71,11 @@ public class ModEvents {
             MutableComponent link = new TranslatableComponent("chat.opentoonline.link")
                     .setStyle(Style.EMPTY.setUnderlined(true)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url()))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.opentoonline.openUrl"))));
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.openUrl"))));
 
             MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
 
-            minecraft.gui.getChat().addMessage(message);
+            player.sendMessage(message, UUID.randomUUID());
         }
     }
 

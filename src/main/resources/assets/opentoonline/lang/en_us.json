@@ -3,13 +3,15 @@
   "gui.opentoonline.portInfo": "Online World Port",
   "gui.opentoonline.maxPlayersInfo": "Max Players",
   "gui.opentoonline.startOnlineWorld": "Start Online World",
-  "gui.opentoonline.copy": "Click to copy",
   "gui.opentoonline.advancedSettings": "Advanced Settings",
+  "gui.opentoonline.advancedServerSettings": "Advanced Server Settings",
   "gui.opentoonline.recreateRules": "Recreate Rules",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
+  "gui.opentoonline.whitelistMode": "Whitelist Mode",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
-  "chat.opentoonline.error.portOpening": "Port opening error",
+  "chat.opentoonline.error.portOpening": "Failed to open port. Try changing the library",
+  "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
 
@@ -18,12 +20,24 @@
 
   "chat.opentoonline.upnpIsAvailable": "UPnP is available",
   "chat.opentoonline.portIsAlreadyOpen": "Port is already open",
+  "chat.opentoonline.portIsAlreadyClosed": "Port is already closed",
   "chat.opentoonline.portIsOpen": "Port is open",
+  "chat.opentoonline.portIsClosed": "Port is closed",
   "chat.opentoonline.startingServer": "Starting server...",
   "chat.opentoonline.openingTcpPort": "Opening TCP port",
+  "chat.opentoonline.closingTcpPort": "Closing TCP port",
   "chat.opentoonline.gameHostedOn": "Your game is hosted on:",
   "chat.opentoonline.ipIsChanged": "External IP has changed",
   "chat.opentoonline.update": "Update available:",
   "chat.opentoonline.link": "Link",
-  "chat.opentoonline.openUrl": "Open URL"
+
+  "options.opentoonline.allowPvp": "Allow PVP",
+  "options.opentoonline.licenseRequired": "Require License",
+  "options.opentoonline.library": "Library",
+
+  "tooltip.opentoonline.copy": "Click to copy",
+  "tooltip.opentoonline.openUrl": "Open URL",
+  "tooltip.opentoonline.recreateFirewallRules": "This may help if no one can connect to your server.",
+  "tooltip.opentoonline.library": "Port opening library. Don't change if everything works fine.",
+  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game."
 }

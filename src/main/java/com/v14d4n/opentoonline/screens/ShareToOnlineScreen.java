@@ -58,19 +58,9 @@ public class ShareToOnlineScreen extends Screen {
         // Advanced settings button
         createAdvancedSettingsButton();
         // Fix firewall problem button
-        createFixFirewallProblemButton();
+        createRecreateFirewallRulesButton();
         // Cancel button
         createCancelButton();
-    }
-
-    @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
-        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 22, 16777215);
-        drawCenteredString(pPoseStack, this.font, SETTINGS_INFO_TEXT, this.width / 2, Math.max(52, height / 4 - 8), 16777215);
-        drawString(pPoseStack, this.font, PORT_INFO_TEXT, portEditBox.x, portEditBox.y - (portEditBox.getHeight() / 2) - 1, 16777215);
-        drawString(pPoseStack, this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.x, maxPlayersEditBox.y - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
     }
 
     @Override
@@ -83,18 +73,18 @@ public class ShareToOnlineScreen extends Screen {
         }
     }
 
-    private void createFixFirewallProblemButton() {
+    private void createRecreateFirewallRulesButton() {
         this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, new TranslatableComponent("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
             minecraft.setScreen(new RecreateFirewallRulesScreen(this));
+        }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
+            this.renderTooltip(pPoseStack, minecraft.font.split(new TranslatableComponent("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
         }));
     }
 
     private void createAdvancedSettingsButton() {
         this.addRenderableWidget(new Button(width / 2 + 5, height / 4 + 69, 150, 20, new TranslatableComponent("gui.opentoonline.advancedSettings"), (p_96657_) -> {
-            minecraft.setScreen(this.lastScreen);
-        }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
-            this.renderTooltip(pPoseStack, new TextComponent("Will be added in next updates"), pMouseX, pMouseY);
-        })).active = false;
+            minecraft.setScreen(new AdvancedSettingsScreen(this));
+        }));
     }
 
     private void createCancelButton() {
@@ -144,6 +134,16 @@ public class ShareToOnlineScreen extends Screen {
                 .create(width / 2 - 155, height / 4 + 8, 150, 20, GAME_MODE_LABEL, (p_169429_, p_169430_) -> {
             this.gameMode = p_169430_;
         }));
+    }
+
+    @Override
+    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(pPoseStack);
+        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 22, 16777215);
+        drawCenteredString(pPoseStack, this.font, SETTINGS_INFO_TEXT, this.width / 2, Math.max(52, height / 4 - 8), 16777215);
+        drawString(pPoseStack, this.font, PORT_INFO_TEXT, portEditBox.x, portEditBox.y - (portEditBox.getHeight() / 2) - 1, 16777215);
+        drawString(pPoseStack, this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.x, maxPlayersEditBox.y - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
+        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
     }
 
     private boolean isEditBoxesValuesValid() {
