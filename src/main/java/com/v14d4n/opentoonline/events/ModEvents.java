@@ -7,6 +7,8 @@ import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.User;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +29,7 @@ import static net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED;
 public class ModEvents {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final String clientPlayerName = minecraft.getUser().getName();
+    private static final User clientPlayer = minecraft.getUser();
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
@@ -44,19 +46,31 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         String loggedInPlayerName = event.getPlayer().getName().getString();
-        if (clientPlayerName.equals(loggedInPlayerName)) {
+        if (clientPlayer.getName().equals(loggedInPlayerName)) {
             checkUpdates(event.getPlayer());
         }
 
-        if (ServerHandler.isPlayerServerOwner(minecraft.getUser().getGameProfile()) && OpenToOnlineConfig.whitelistMode.get()) {
-            ServerPlayer serverPlayer = (ServerPlayer) event.getPlayer();
+        // runs only on the host side
+        if (ServerHandler.isClientRunningOnlineServer() && ServerHandler.isPlayerServerOwner(clientPlayer.getGameProfile())) {
 
-            OpenToOnlineConfig.friends.get().forEach((friendList) -> {
-                if (friendList.equals(serverPlayer.getName().getString()))
-                    return;
-                serverPlayer.connection.disconnect(new TextComponent("asd"));
-            });
+            if (OpenToOnlineConfig.whitelistMode.get()) {
+                kickNotWhitelistedPlayer(event.getPlayer());
+            }
+
         }
+
+    }
+
+    private static void kickNotWhitelistedPlayer(Player player) {
+        if (clientPlayer.getName().equals(player.getName().getString()))
+            return;
+
+        for (String friendName : OpenToOnlineConfig.friends.get()) {
+            if (friendName.equals(player.getName().getString())){
+                return;
+            }
+        }
+        ((ServerPlayer)player).connection.disconnect(new TextComponent("Not in the whitelist"));
     }
 
     private static void checkUpdates(Player player) {

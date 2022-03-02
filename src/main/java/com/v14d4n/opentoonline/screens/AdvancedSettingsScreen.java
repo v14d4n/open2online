@@ -33,7 +33,6 @@ public class AdvancedSettingsScreen extends Screen {
         this.optionsList.addBig(ModServerOptions.LIBRARY);
         this.optionsList.addSmall(OPTIONS);
         this.addWidget(this.optionsList);
-        this.optionsList.findOption(ModServerOptions.WHITELIST_MODE).active = false; // временно
         this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, CommonComponents.GUI_DONE, (p_96827_) -> {
             this.minecraft.setScreen(this.lastScreen);
             ModServerOptions.save();

@@ -62,9 +62,9 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     implementation 'org.bitlet:weupnp:0.1.4'
+    embed 'org.bitlet:weupnp:0.1.4'
     implementation fileTree(dir: 'libs', include: '*.jar')
     embed fileTree(dir: 'libs', include: '*.jar')
-    embed('org.bitlet:weupnp:0.1.4')
 }
 
 mixin {

@@ -14,6 +14,7 @@
   "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",
+  "chat.opentoonline.error.code": "Error code",
 
   "chat.opentoonline.warn.settingMaxPlayers": "Failed to set custom Max Players",
   "chat.opentoonline.warn.gettingAnExternalIP": "Failed to get external IP",
