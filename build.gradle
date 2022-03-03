@@ -19,7 +19,7 @@ apply plugin: 'maven-publish'
 // Mixin
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.18.1-0.0.2b'
+version = '1.18.2-0.0.3b'
 group = 'com.v14d4n.opentoonline' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'opentoonline'
 
@@ -58,7 +58,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.1-39.0.76'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.0.1'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     implementation 'org.bitlet:weupnp:0.1.4'
