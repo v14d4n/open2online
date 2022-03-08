@@ -101,4 +101,8 @@ public class ServerHandler {
     public static boolean isPlayerServerOwner(GameProfile gameProfile) {
         return minecraft.getSingleplayerServer().isSingleplayerOwner(gameProfile);
     }
+
+    public static boolean isClientRunningOnlineServer() {
+        return UPnPHandler.getClosePortAfterLogout();
+    }
 }

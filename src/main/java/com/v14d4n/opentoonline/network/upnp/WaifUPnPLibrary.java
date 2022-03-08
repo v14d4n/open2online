@@ -29,10 +29,11 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
     }
 
     private static boolean log(boolean result) {
-        if (result)
+        if (result) {
             return true;
-
-        LOGGER.error("[Open2Online-Log]: WaifUPnP does not support logging.");
-        return false;
+        } else {
+            LOGGER.error("[Open2Online-Log]: WaifUPnP does not support logging.");
+            return false;
+        }
     }
 }

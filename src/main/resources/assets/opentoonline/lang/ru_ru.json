@@ -8,12 +8,14 @@
   "gui.opentoonline.recreateRules": "Пересоздать правила",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
   "gui.opentoonline.whitelistMode": "Белый список",
+  "gui.opentoonline.editWhitelist": "Редактировать белый список",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
   "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуй сменить библиотеку",
   "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
+  "chat.opentoonline.error.code": "Код ошибки",
 
   "chat.opentoonline.warn.settingMaxPlayers": "Не удалось установить пользовательское максимальное количество игроков",
   "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",

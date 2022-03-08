@@ -2,10 +2,17 @@ package com.v14d4n.opentoonline.server;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
+import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
 import net.minecraft.client.CycleOption;
+import net.minecraft.client.Option;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class ModServerOptions {
@@ -39,6 +46,18 @@ public abstract class ModServerOptions {
             },
             (pOptions, pOption, pValue) -> whitelistMode = pValue
     );
+
+    public static final Option EDIT_WHITELIST = new Option("gui.opentoonline.editWhitelist") {
+        @Override
+        public AbstractWidget createButton(Options pOptions, int pX, int pY, int pWidth) {
+
+            return new Button(pX, pY, pWidth, 20, new TranslatableComponent("gui.opentoonline.editWhitelist"),
+                    (onClick) -> {
+                        ModServerOptions.save();
+                        minecraft.setScreen(new EditWhitelistScreen(minecraft.screen));
+                    });
+        }
+    };
 
     public static void save() {
         OpenToOnlineConfig.libraryId.set(libraryId);

@@ -88,4 +88,8 @@ public class UPnPHandler {
             return true;
         }
     }
+
+    public static boolean getClosePortAfterLogout() {
+        return closePortAfterLogout;
+    }
 }
