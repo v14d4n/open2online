@@ -8,6 +8,7 @@
   "gui.opentoonline.recreateRules": "Пересоздать правила",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
   "gui.opentoonline.whitelistMode": "Белый список",
+  "gui.opentoonline.editWhitelist": "Редактировать белый список",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
   "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуй сменить библиотеку",
