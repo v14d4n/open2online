@@ -3,10 +3,14 @@ package com.v14d4n.opentoonline.network;
 import com.mojang.authlib.GameProfile;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.players.PlayerList;
-import net.minecraft.world.level.GameType;
+import net.minecraft.server.management.PlayerList;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
+import net.minecraft.world.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -89,13 +93,13 @@ public class ServerHandler {
         }
     }
 
-    private static MutableComponent getServerFormattedAddress(int port) {
+    private static IFormattableTextComponent getServerFormattedAddress(int port) {
         String stringAddress = getExternalIP() + ":" + port;
-        MutableComponent serverAddress = new TextComponent(stringAddress).setStyle(Style.EMPTY.setUnderlined(true)
+        IFormattableTextComponent serverAddress = new StringTextComponent(stringAddress).setStyle(Style.EMPTY.setUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringAddress))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.copy"))));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("tooltip.opentoonline.copy"))));
 
-        return new TextComponent(" [").append(serverAddress).append("]");
+        return new StringTextComponent(" [").append(serverAddress).append("]");
     }
 
     public static boolean isPlayerServerOwner(GameProfile gameProfile) {

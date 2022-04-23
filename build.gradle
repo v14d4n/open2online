@@ -28,7 +28,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
 
-    mappings channel: 'parchment', version: '2022.03.06-1.18.1'
+    mappings channel: 'parchment', version: '2022.03.06-1.16.5'
 
     runs {
         client {
@@ -58,7 +58,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.0.12'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     implementation 'org.bitlet:weupnp:0.1.4'

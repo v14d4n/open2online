@@ -2,12 +2,12 @@ package com.v14d4n.opentoonline.server;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.client.AbstractOption;
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.function.Supplier;
 
@@ -15,12 +15,12 @@ import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 public class WhitelistServerOptions {
 
-    public static Option createAddFriendButton(Supplier<String> supplier) {
-        return new Option("+") {
-            @Override
-            public AbstractWidget createButton(Options pOptions, int pX, int pY, int pWidth) {
+    public static AbstractOption createAddFriendButton(Supplier<String> supplier) {
+        return new AbstractOption("+") {
 
-                return new Button(pX, pY, pWidth, 20, new TranslatableComponent("+"),
+            @Override
+            public Widget createButton(GameSettings pOptions, int pX, int pY, int pWidth) {
+                return new Button(pX, pY, pWidth, 20, new TranslationTextComponent("+"),
                         (onClick) -> {
                             OpenToOnlineConfig.friends.get().add(supplier.get());
                             EditWhitelistScreen.update();
@@ -29,11 +29,11 @@ public class WhitelistServerOptions {
         };
     }
 
-    public static Option createNicknameBox(String name, boolean accessible) {
-        return new Option("") {
+    public static AbstractOption createNicknameBox(String name, boolean accessible) {
+        return new AbstractOption("") {
             @Override
-            public AbstractWidget createButton(Options pOptions, int pX, int pY, int pWidth) {
-                EditBox editBox = new EditBox(minecraft.font, pX, pY, pWidth, 20, new TranslatableComponent(""));
+            public Widget createButton(GameSettings pOptions, int pX, int pY, int pWidth) {
+                TextFieldWidget editBox = new TextFieldWidget(minecraft.font, pX, pY, pWidth, 20, new TranslationTextComponent(""));
                 editBox.setCanLoseFocus(false);
                 editBox.setEditable(accessible);
                 editBox.setValue(name);
@@ -45,12 +45,12 @@ public class WhitelistServerOptions {
         };
     }
 
-    public static Option createRemoveFriendButton(int friendIndex) {
-        return new Option("-") {
+    public static AbstractOption createRemoveFriendButton(int friendIndex) {
+        return new AbstractOption("-") {
             @Override
-            public AbstractWidget createButton(Options pOptions, int pX, int pY, int pWidth) {
+            public Widget createButton(GameSettings pOptions, int pX, int pY, int pWidth) {
 
-                return new Button(pX, pY, pWidth, 20, new TranslatableComponent("-"),
+                return new Button(pX, pY, pWidth, 20, new TranslationTextComponent("-"),
                         (onClick) -> {
                             OpenToOnlineConfig.friends.get().remove(friendIndex);
                             EditWhitelistScreen.update();

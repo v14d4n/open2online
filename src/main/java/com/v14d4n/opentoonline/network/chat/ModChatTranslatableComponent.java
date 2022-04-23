@@ -1,10 +1,10 @@
 package com.v14d4n.opentoonline.network.chat;
 
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
-public class ModChatTranslatableComponent extends TextComponent {
+public class ModChatTranslatableComponent extends StringTextComponent {
 
     public ModChatTranslatableComponent(String pKey) {
         this(pKey, MessageTypes.OK);
@@ -18,14 +18,14 @@ public class ModChatTranslatableComponent extends TextComponent {
         String prefixColor;
 
         switch (type) {
-            case WARN ->  prefixColor = "\u00A76";
-            case ERROR ->  prefixColor = "\u00A7c";
-            default -> prefixColor = "\u00A7a";
+            case     WARN:  prefixColor = "\u00A76"; break;
+            case     ERROR: prefixColor = "\u00A7c"; break;
+            default:        prefixColor = "\u00A7a"; break;
         }
 
-        MutableComponent prefix = new TextComponent(prefixColor + "[Open2Online]\u00A7r ");
-        MutableComponent text = new TranslatableComponent(pKey);
-        MutableComponent chatMessage = prefix.append(text);
+        IFormattableTextComponent prefix = new StringTextComponent(prefixColor + "[Open2Online]\u00A7r ");
+        IFormattableTextComponent text = new TranslationTextComponent(pKey);
+        IFormattableTextComponent chatMessage = prefix.append(text);
 
         return chatMessage.getString();
     }

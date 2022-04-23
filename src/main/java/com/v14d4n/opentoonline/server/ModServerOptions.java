@@ -3,12 +3,12 @@ package com.v14d4n.opentoonline.server;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
 import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
-import net.minecraft.client.CycleOption;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.client.AbstractOption;
+import net.minecraft.client.GameSettings;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.settings.BooleanOption;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -29,9 +29,9 @@ public abstract class ModServerOptions {
                 return UPnPLibraries.getById(libraryId);
             },
             (a, b, library) -> libraryId = library.getId()
-    ).setTooltip((pTooltip) -> (p_193636_) -> pTooltip.font.split(new TranslatableComponent("tooltip.opentoonline.library"), 200));
+    ).setTooltip((pTooltip) -> (p_193636_) -> pTooltip.font.split(new TranslationTextComponent("tooltip.opentoonline.library"), 200));
 
-    public static final CycleOption<Boolean> ALLOW_PVP = CycleOption.createOnOff("options.opentoonline.allowPvp",
+    public static final BooleanOption ALLOW_PVP = new BooleanOption("options.opentoonline.allowPvp",
             (getter) -> {
                 allowPvp = OpenToOnlineConfig.allowPvp.get();
                 return allowPvp;
@@ -39,7 +39,7 @@ public abstract class ModServerOptions {
             (pOptions, pOption, pValue) -> allowPvp = pValue
     );
 
-    public static final CycleOption<Boolean> WHITELIST_MODE = CycleOption.createOnOff("gui.opentoonline.whitelistMode",
+    public static final BooleanOption WHITELIST_MODE = new BooleanOption("gui.opentoonline.whitelistMode",
             (getter) -> {
                 whitelistMode = OpenToOnlineConfig.whitelistMode.get();
                 return whitelistMode;
@@ -47,11 +47,11 @@ public abstract class ModServerOptions {
             (pOptions, pOption, pValue) -> whitelistMode = pValue
     );
 
-    public static final Option EDIT_WHITELIST = new Option("gui.opentoonline.editWhitelist") {
-        @Override
-        public AbstractWidget createButton(Options pOptions, int pX, int pY, int pWidth) {
+    public static final AbstractOption EDIT_WHITELIST = new AbstractOption("gui.opentoonline.editWhitelist") {
 
-            return new Button(pX, pY, pWidth, 20, new TranslatableComponent("gui.opentoonline.editWhitelist"),
+        @Override
+        public Widget createButton(GameSettings pOptions, int pX, int pY, int pWidth) {
+            return new Button(pX, pY, pWidth, 20, new TranslationTextComponent("gui.opentoonline.editWhitelist"),
                     (onClick) -> {
                         ModServerOptions.save();
                         minecraft.setScreen(new EditWhitelistScreen(minecraft.screen));

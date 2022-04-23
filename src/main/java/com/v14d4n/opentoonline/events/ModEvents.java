@@ -1,5 +1,6 @@
 package com.v14d4n.opentoonline.events;
 
+import com.mojang.authlib.yggdrasil.response.User;
 import com.v14d4n.opentoonline.OpenToOnline;
 import com.v14d4n.opentoonline.commands.*;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
@@ -7,11 +8,15 @@ import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.User;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.*;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.Session;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,7 +34,7 @@ import static net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED;
 public class ModEvents {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final User clientPlayer = minecraft.getUser();
+    private static final Session clientPlayer = minecraft.getUser();
 
     @SubscribeEvent
     public static void onCommandsRegister(RegisterCommandsEvent event) {
@@ -61,7 +66,7 @@ public class ModEvents {
 
     }
 
-    private static void kickNotWhitelistedPlayer(Player player) {
+    private static void kickNotWhitelistedPlayer(PlayerEntity player) {
         if (clientPlayer.getName().equals(player.getName().getString()))
             return;
 
@@ -70,24 +75,24 @@ public class ModEvents {
                 return;
             }
         }
-        ((ServerPlayer)player).connection.disconnect(new TextComponent("Not in the whitelist"));
+        ((ServerPlayerEntity)player).connection.disconnect(new StringTextComponent("Not in the whitelist"));
     }
 
-    private static void checkUpdates(Player player) {
+    private static void checkUpdates(PlayerEntity player) {
         IModInfo modInfo = ModList.get().getModContainerById(OpenToOnline.MOD_ID).get().getModInfo();
         VersionChecker.CheckResult updateCheckResult = VersionChecker.getResult(modInfo);
 
-        if (updateCheckResult.status().equals(BETA_OUTDATED)) {
+        if (updateCheckResult.status.equals(BETA_OUTDATED)) {
             String currentVersion = modInfo.getVersion().toString().substring(modInfo.getVersion().toString().lastIndexOf('-') + 1);
-            String actualVersion = updateCheckResult.target().toString().substring(updateCheckResult.target().toString().lastIndexOf('-') + 1);
+            String actualVersion = updateCheckResult.target.toString().substring(updateCheckResult.target.toString().lastIndexOf('-') + 1);
 
             String mainText = new ModChatTranslatableComponent("chat.opentoonline.update", ModChatTranslatableComponent.MessageTypes.WARN).getString() + " \u00A7c" + currentVersion + "\u00A7r -> \u00A7a" + actualVersion + "\u00A7r";
-            MutableComponent link = new TranslatableComponent("chat.opentoonline.link")
+            IFormattableTextComponent link = new TranslationTextComponent("chat.opentoonline.link")
                     .setStyle(Style.EMPTY.setUnderlined(true)
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url()))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.openUrl"))));
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("tooltip.opentoonline.openUrl"))));
 
-            MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
+            IFormattableTextComponent message = new StringTextComponent(mainText).append(" [").append(link).append("]");
 
             player.sendMessage(message, UUID.randomUUID());
         }

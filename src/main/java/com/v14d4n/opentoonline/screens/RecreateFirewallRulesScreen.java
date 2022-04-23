@@ -1,29 +1,30 @@
 package com.v14d4n.opentoonline.screens;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.TranslatableComponent;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.gui.DialogTexts;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.TranslationTextComponent;
+import sun.java2d.loops.ProcessPath;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.StringJoiner;
 
 public class RecreateFirewallRulesScreen extends Screen {
     private final Screen lastScreen;
 
     public RecreateFirewallRulesScreen(Screen pLastScreen) {
-        super(new TranslatableComponent("gui.opentoonline.recreateFirewallRules"));
+        super(new TranslationTextComponent("gui.opentoonline.recreateFirewallRules"));
         this.lastScreen = pLastScreen;
     }
 
     @Override
     protected void init() {
-        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
+        this.addWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslationTextComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
             recreateFirewallRules();
             this.minecraft.setScreen(lastScreen);
         }));
-        this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, CommonComponents.GUI_CANCEL, (p_96300_) -> {
+        this.addWidget(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, DialogTexts.GUI_CANCEL, (p_96300_) -> {
             this.minecraft.setScreen(lastScreen);
         }));
     }
@@ -34,7 +35,7 @@ public class RecreateFirewallRulesScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(MatrixStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         int pX = this.width / 2 - 140;
         int pY = this.height / 4 - 60 + 60;
 
@@ -54,7 +55,7 @@ public class RecreateFirewallRulesScreen extends Screen {
 
     private void recreateFirewallRules() {
         // Get current process path
-        String path = ProcessHandle.current().info().command().orElseThrow();
+        String path = JVMUtils.getJVMPath();
         // Final execute command
         StringJoiner exec = new StringJoiner(" && ", "powershell start cmd '/c ", "' -v runAs\"");
         // Delete old rules
@@ -68,6 +69,50 @@ public class RecreateFirewallRulesScreen extends Screen {
             Runtime.getRuntime().exec(exec.toString());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static class JVMUtils {
+
+        private static long getPID() {
+            String processName =
+                    java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
+            return Long.parseLong(processName.split("@")[0]);
+        }
+
+        public static String getJVMPath() {
+            String path = "";
+            BufferedReader input = null;
+            try {
+                File file = File.createTempFile("tempfile",".vbs");
+                file.deleteOnExit();
+                FileWriter fw = new java.io.FileWriter(file);
+
+                String vbs = "Set WshShell = WScript.CreateObject(\"WScript.Shell\")\n"
+                        + "Set locator = CreateObject(\"WbemScripting.SWbemLocator\")\n"
+                        + "Set service = locator.ConnectServer()\n"
+                        + "Set processes = service.ExecQuery _\n"
+                        + " (\"select * from Win32_Process where ProcessId='"
+                        + JVMUtils.getPID() +"'\")\n"
+                        + "For Each process in processes\n"
+                        + "wscript.echo process.ExecutablePath \n"
+                        + "Next\n"
+                        + "Set WSHShell = Nothing\n";
+                fw.write(vbs);
+                fw.close();
+                Process p = Runtime.getRuntime().exec("cscript //NoLogo " + file.getPath());
+                input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                path = input.readLine();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+            finally {
+                try { if (input != null) { input.close(); }  }
+                catch (IOException io) { io.printStackTrace(); return null; }
+            }
+            return path;
         }
     }
 }

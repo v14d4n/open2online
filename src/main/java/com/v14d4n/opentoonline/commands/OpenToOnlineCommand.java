@@ -5,15 +5,18 @@ import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.world.level.GameType;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.Commands;
+import net.minecraft.world.GameType;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 public class OpenToOnlineCommand {
 
-    public OpenToOnlineCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public OpenToOnlineCommand(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("open2online").executes((command) -> open()));
     }
 
@@ -21,7 +24,19 @@ public class OpenToOnlineCommand {
         int port = OpenToOnlineConfig.port.get();
         int maxPlayers = OpenToOnlineConfig.maxPlayers.get();
         GameType gameMode = minecraft.gameMode.getPlayerMode();
-        boolean allowCheats = (minecraft.player.getPermissionLevel() == 4);
+
+
+        Class c = minecraft.player.getClass();
+        Field permissionLevel;
+        boolean allowCheats = false;
+        try {
+            permissionLevel = c.getDeclaredField("field_184845_b"); // TODO: может в этом дело если рантайм ошибОчка
+            permissionLevel.setAccessible(true);
+            allowCheats = (permissionLevel.getInt(c) == 4);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         return open(port, maxPlayers, gameMode, allowCheats);
     }
 

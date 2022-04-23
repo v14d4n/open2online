@@ -1,8 +1,8 @@
 package com.v14d4n.opentoonline.network.upnp;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -29,8 +29,8 @@ public enum UPnPLibraries {
         return librarySupplier.get();
     }
 
-    public Component getTextComponent() {
-        return new TextComponent(this.name());
+    public ITextComponent getTextComponent() {
+        return new StringTextComponent(this.name());
     }
 
     public static UPnPLibraries getById(int id) {
