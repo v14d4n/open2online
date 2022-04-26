@@ -5,7 +5,6 @@ import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.TranslationTextComponent;
-import sun.java2d.loops.ProcessPath;
 
 import java.io.*;
 import java.util.StringJoiner;
@@ -20,11 +19,11 @@ public class RecreateFirewallRulesScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslationTextComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
+        this.addButton(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslationTextComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
             recreateFirewallRules();
             this.minecraft.setScreen(lastScreen);
         }));
-        this.addWidget(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, DialogTexts.GUI_CANCEL, (p_96300_) -> {
+        this.addButton(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, DialogTexts.GUI_CANCEL, (p_96300_) -> {
             this.minecraft.setScreen(lastScreen);
         }));
     }

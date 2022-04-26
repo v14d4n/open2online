@@ -19,11 +19,11 @@ apply plugin: 'maven-publish'
 // Mixin
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.18.2-0.0.3b'
+version = '1.16.5-0.0.3b'
 group = 'com.v14d4n.opentoonline' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'opentoonline'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
@@ -58,7 +58,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.20'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     implementation 'org.bitlet:weupnp:0.1.4'

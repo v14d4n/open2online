@@ -24,18 +24,7 @@ public class OpenToOnlineCommand {
         int port = OpenToOnlineConfig.port.get();
         int maxPlayers = OpenToOnlineConfig.maxPlayers.get();
         GameType gameMode = minecraft.gameMode.getPlayerMode();
-
-
-        Class c = minecraft.player.getClass();
-        Field permissionLevel;
-        boolean allowCheats = false;
-        try {
-            permissionLevel = c.getDeclaredField("field_184845_b"); // TODO: может в этом дело если рантайм ошибОчка
-            permissionLevel.setAccessible(true);
-            allowCheats = (permissionLevel.getInt(c) == 4);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        boolean allowCheats = minecraft.player.hasPermissions(4);
 
         return open(port, maxPlayers, gameMode, allowCheats);
     }

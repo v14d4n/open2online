@@ -49,7 +49,7 @@ public class EditWhitelistScreen extends Screen {
         }
 
         this.addWidget(this.optionsList);
-        this.addWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
+        this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
             this.minecraft.setScreen(lastScreen);
             ModServerOptions.save();
         }));

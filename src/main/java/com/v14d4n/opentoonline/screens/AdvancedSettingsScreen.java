@@ -31,12 +31,13 @@ public class AdvancedSettingsScreen extends Screen {
 
     @Override
     protected void init() {
+        ModServerOptions.update();
         this.optionsList = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.optionsList.addBig(ModServerOptions.LIBRARY);
         this.optionsList.addBig(ModServerOptions.EDIT_WHITELIST);
         this.optionsList.addSmall(OPTIONS);
         this.addWidget(this.optionsList);
-        this.addWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
+        this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
             this.minecraft.setScreen(this.lastScreen);
             ModServerOptions.save();
         }));

@@ -1,16 +1,24 @@
 package com.v14d4n.opentoonline.server;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
 import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
 import net.minecraft.client.AbstractOption;
 import net.minecraft.client.GameSettings;
+import net.minecraft.client.MainWindow;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.settings.BooleanOption;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.renderer.GPUWarning;
+import net.minecraft.client.settings.*;
+import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.lwjgl.system.Library;
+
+import java.util.function.BiFunction;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
@@ -21,30 +29,22 @@ public abstract class ModServerOptions {
     private static boolean allowPvp;
     private static boolean whitelistMode;
 
-    public static final CycleOption<UPnPLibraries> LIBRARY = CycleOption.create("options.opentoonline.library",
-            UPnPLibraries.values(),
-            UPnPLibraries::getTextComponent,
-            (getter) ->  {
-                libraryId = OpenToOnlineConfig.libraryId.get();
-                return UPnPLibraries.getById(libraryId);
-            },
-            (a, b, library) -> libraryId = library.getId()
-    ).setTooltip((pTooltip) -> (p_193636_) -> pTooltip.font.split(new TranslationTextComponent("tooltip.opentoonline.library"), 200));
+    private static final ITextComponent LIBRARY_TOOLTIP = new TranslationTextComponent("tooltip.opentoonline.library");
+    public static final IteratableOption LIBRARY = new IteratableOption("options.opentoonline.library", (p_216577_0_, p_216577_1_) -> {
+        libraryId = UPnPLibraries.getById(libraryId + p_216577_1_).getId();
+    }, (p_216633_0_, p_216633_1_) -> {
+        p_216633_1_.setTooltip(Minecraft.getInstance().font.split(LIBRARY_TOOLTIP, 200));
+        return new TranslationTextComponent("options.opentoonline.library").append(": ").append(UPnPLibraries.getById(libraryId).getTextComponent());
+    });
 
     public static final BooleanOption ALLOW_PVP = new BooleanOption("options.opentoonline.allowPvp",
-            (getter) -> {
-                allowPvp = OpenToOnlineConfig.allowPvp.get();
-                return allowPvp;
-            },
-            (pOptions, pOption, pValue) -> allowPvp = pValue
+        (p_225287_0_) -> allowPvp,
+        (p_225259_0_, p_225259_1_) -> allowPvp = p_225259_1_
     );
 
     public static final BooleanOption WHITELIST_MODE = new BooleanOption("gui.opentoonline.whitelistMode",
-            (getter) -> {
-                whitelistMode = OpenToOnlineConfig.whitelistMode.get();
-                return whitelistMode;
-            },
-            (pOptions, pOption, pValue) -> whitelistMode = pValue
+        (getter) -> whitelistMode,
+        (gameSettings, value) -> whitelistMode = value
     );
 
     public static final AbstractOption EDIT_WHITELIST = new AbstractOption("gui.opentoonline.editWhitelist") {
@@ -58,6 +58,12 @@ public abstract class ModServerOptions {
                     });
         }
     };
+
+    public static void update() {
+        libraryId = OpenToOnlineConfig.libraryId.get();
+        allowPvp = OpenToOnlineConfig.allowPvp.get();
+        whitelistMode = OpenToOnlineConfig.whitelistMode.get();
+    }
 
     public static void save() {
         OpenToOnlineConfig.libraryId.set(libraryId);

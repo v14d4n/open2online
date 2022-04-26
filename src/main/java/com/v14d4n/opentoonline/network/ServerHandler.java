@@ -3,7 +3,11 @@ package com.v14d4n.opentoonline.network;
 import com.mojang.authlib.GameProfile;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.server.management.PlayerList;
+import net.minecraft.util.SharedConstants;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
@@ -63,7 +67,7 @@ public class ServerHandler {
     private static boolean setMaxPlayers(int maxPlayers) {
         PlayerList playerList = minecraft.getSingleplayerServer().getPlayerList();
         try {
-            Field field = PlayerList.class.getDeclaredField("f_11193_"); // Works only in build version
+            Field field = PlayerList.class.getDeclaredField("field_72405_c"); // Works only in build version
             //Field field = PlayerList.class.getDeclaredField("maxPlayers"); // Works only if you run client from IDE
             field.setAccessible(true);
             field.setInt(playerList, maxPlayers);

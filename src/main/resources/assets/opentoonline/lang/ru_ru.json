@@ -41,5 +41,7 @@
   "tooltip.opentoonline.openUrl": "Перейти по ссылке",
   "tooltip.opentoonline.recreateFirewallRules": "Это может помочь, если никто не может подключиться к серверу.",
   "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально.",
-  "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры."
+  "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры.",
+
+  "window.opentoonline.title": "Multiplayer (Open2Online)"
 }
