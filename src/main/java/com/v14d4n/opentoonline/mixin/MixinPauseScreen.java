@@ -24,7 +24,7 @@ public abstract class MixinPauseScreen extends Screen {
         super(pTitle);
     }
 
-    @Inject(method = "createPauseMenu()V", at = @At("TAIL"))
+    @Inject(method = "Lnet/minecraft/client/gui/screen/IngameMenuScreen;createPauseMenu()V", at = @At("TAIL"))
     protected void onInit(CallbackInfo ci) {
         boolean active = !ServerHandler.isServerPublished();
         createOpenToOnlineMenuButton(active);

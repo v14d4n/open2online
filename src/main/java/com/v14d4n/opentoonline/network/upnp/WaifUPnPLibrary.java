@@ -1,6 +1,6 @@
 package com.v14d4n.opentoonline.network.upnp;
 
-import com.dosse.upnp.UPnP;
+import com.simtechdata.waifupnp.UPnP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
