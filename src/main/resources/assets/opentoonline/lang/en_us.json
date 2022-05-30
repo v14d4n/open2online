@@ -8,7 +8,7 @@
   "gui.opentoonline.recreateRules": "Recreate Rules",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
   "gui.opentoonline.whitelistMode": "Whitelist Mode",
-  "gui.opentoonline.editWhitelist": "Edit Whitelist",
+  "gui.opentoonline.editWhitelist": "Whitelist",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
   "chat.opentoonline.error.portOpening": "Failed to open port. Try changing the library",

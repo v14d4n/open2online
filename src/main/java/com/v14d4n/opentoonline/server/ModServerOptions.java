@@ -43,8 +43,8 @@ public abstract class ModServerOptions {
     );
 
     public static final BooleanOption WHITELIST_MODE = new BooleanOption("gui.opentoonline.whitelistMode",
-        (getter) -> whitelistMode,
-        (gameSettings, value) -> whitelistMode = value
+        (getter) -> OpenToOnlineConfig.whitelistMode.get(),
+        (gameSettings, value) -> OpenToOnlineConfig.whitelistMode.set(value)
     );
 
     public static final AbstractOption EDIT_WHITELIST = new AbstractOption("gui.opentoonline.editWhitelist") {
@@ -62,12 +62,10 @@ public abstract class ModServerOptions {
     public static void update() {
         libraryId = OpenToOnlineConfig.libraryId.get();
         allowPvp = OpenToOnlineConfig.allowPvp.get();
-        whitelistMode = OpenToOnlineConfig.whitelistMode.get();
     }
 
     public static void save() {
         OpenToOnlineConfig.libraryId.set(libraryId);
         OpenToOnlineConfig.allowPvp.set(allowPvp);
-        OpenToOnlineConfig.whitelistMode.set(whitelistMode);
     }
 }

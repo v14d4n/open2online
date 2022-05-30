@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class AdvancedSettingsScreen extends Screen {
 
-    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.WHITELIST_MODE, ModServerOptions.ALLOW_PVP };
+    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.EDIT_WHITELIST, ModServerOptions.ALLOW_PVP };
     private OptionsRowList optionsList;
     private final Screen lastScreen;
 
@@ -34,12 +34,11 @@ public class AdvancedSettingsScreen extends Screen {
         ModServerOptions.update();
         this.optionsList = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.optionsList.addBig(ModServerOptions.LIBRARY);
-        this.optionsList.addBig(ModServerOptions.EDIT_WHITELIST);
         this.optionsList.addSmall(OPTIONS);
         this.addWidget(this.optionsList);
         this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
-            this.minecraft.setScreen(this.lastScreen);
             ModServerOptions.save();
+            this.minecraft.setScreen(this.lastScreen);
         }));
     }
 
