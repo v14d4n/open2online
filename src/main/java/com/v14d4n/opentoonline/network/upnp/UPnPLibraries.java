@@ -1,15 +1,20 @@
 package com.v14d4n.opentoonline.network.upnp;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
+import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
+import net.minecraft.util.OptionEnum;
+import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
-public enum UPnPLibraries {
+public enum UPnPLibraries implements OptionEnum {
     WeUPnP(0, WeUPnPLibrary::new),
     WaifUPnP(1, WaifUPnPLibrary::new);
 
@@ -22,15 +27,31 @@ public enum UPnPLibraries {
     }
 
     public int getId(){
-        return id;
+        return this.id;
+    }
+
+    @Override
+    public String getKey() {
+        return this.librarySupplier.toString();
+    }
+
+    @Override
+    public Component getCaption() {
+        return OptionEnum.super.getCaption();
     }
 
     public IUPnPLibrary getHandler() {
         return librarySupplier.get();
     }
 
+    private static final UPnPLibraries[] BY_ID = Arrays.stream(values()).sorted(Comparator.comparingInt(UPnPLibraries::getId)).toArray(UPnPLibraries[]::new);
+
+    public static UPnPLibraries byId(int pId) {
+        return BY_ID[Mth.positiveModulo(pId, BY_ID.length)];
+    }
+
     public Component getTextComponent() {
-        return new TextComponent(this.name());
+        return Component.literal(this.name());
     }
 
     public static UPnPLibraries getById(int id) {

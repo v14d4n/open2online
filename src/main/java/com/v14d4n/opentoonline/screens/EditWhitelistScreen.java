@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class EditWhitelistScreen extends Screen {
     private static EditBox editBox = null;
 
     public EditWhitelistScreen(Screen pLastScreen) {
-        super(new TranslatableComponent("gui.opentoonline.editWhitelist"));
+        super(Component.translatable("gui.opentoonline.editWhitelist"));
         lastScreen = pLastScreen;
     }
 
@@ -31,23 +31,22 @@ public class EditWhitelistScreen extends Screen {
         this.optionsList = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
 
         // creates top widgets
-        this.optionsList.addSmall(
-                WhitelistServerOptions.createNicknameBox("", true),
-                WhitelistServerOptions.createAddFriendButton(() -> editBox.getValue())
-        );
+//        this.optionsList.addSmall(
+//                WhitelistServerOptions.createNicknameBox("", true),
+//                WhitelistServerOptions.createAddFriendButton(() -> editBox.getValue())
+//        );
 
         // creates list of whitelisted players
         for (int i = 0; i < OpenToOnlineConfig.friends.get().size(); i++) {
-            this.optionsList.addSmall(
-                    WhitelistServerOptions.createNicknameBox(OpenToOnlineConfig.friends.get().get(i), false),
-                    WhitelistServerOptions.createRemoveFriendButton(i)
-            );
+//            this.optionsList.addSmall(
+//                    WhitelistServerOptions.createNicknameBox(OpenToOnlineConfig.friends.get().get(i), false),
+//                    WhitelistServerOptions.createRemoveFriendButton(i)
+//            );
         }
 
         this.addWidget(this.optionsList);
         this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, CommonComponents.GUI_DONE, (p_96827_) -> {
             this.minecraft.setScreen(lastScreen);
-            ModServerOptions.save();
         }));
 
         this.setInitialFocus(editBox);

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,11 +18,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ShareToOnlineScreen extends Screen {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private static final Component ALLOW_COMMANDS_LABEL = new TranslatableComponent("selectWorld.allowCommands");
-    private static final Component GAME_MODE_LABEL = new TranslatableComponent("selectWorld.gameMode");
-    private static final Component SETTINGS_INFO_TEXT = new TranslatableComponent("lanServer.otherPlayers");
-    private static final Component PORT_INFO_TEXT = new TranslatableComponent("gui.opentoonline.portInfo");
-    private static final Component MAX_PLAYERS_INFO_TEXT = new TranslatableComponent("gui.opentoonline.maxPlayersInfo");
+    private static final Component ALLOW_COMMANDS_LABEL = Component.translatable("selectWorld.allowCommands");
+    private static final Component GAME_MODE_LABEL = Component.translatable("selectWorld.gameMode");
+    private static final Component SETTINGS_INFO_TEXT = Component.translatable("lanServer.otherPlayers");
+    private static final Component PORT_INFO_TEXT = Component.translatable("gui.opentoonline.portInfo");
+    private static final Component MAX_PLAYERS_INFO_TEXT = Component.translatable("gui.opentoonline.maxPlayersInfo");
     private final Screen lastScreen;
     private GameType gameMode;
     private boolean commands;
@@ -37,7 +36,7 @@ public class ShareToOnlineScreen extends Screen {
     private String initMaxPlayers = OpenToOnlineConfig.maxPlayers.get().toString();
 
     public ShareToOnlineScreen(Screen pLastScreen) {
-        super(new TranslatableComponent("gui.opentoonline.onlineWorld"));
+        super(Component.translatable("gui.opentoonline.onlineWorld"));
         this.lastScreen = pLastScreen;
         this.gameMode = minecraft.gameMode.getPlayerMode();
         this.commands = (minecraft.player.getPermissionLevel() == 4);
@@ -74,15 +73,15 @@ public class ShareToOnlineScreen extends Screen {
     }
 
     private void createRecreateFirewallRulesButton() {
-        this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, new TranslatableComponent("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
+        this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, Component.translatable("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
             minecraft.setScreen(new RecreateFirewallRulesScreen(this));
         }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
-            this.renderTooltip(pPoseStack, minecraft.font.split(new TranslatableComponent("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
+            this.renderTooltip(pPoseStack, minecraft.font.split(Component.translatable("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
         }));
     }
 
     private void createAdvancedSettingsButton() {
-        this.addRenderableWidget(new Button(width / 2 + 5, height / 4 + 69, 150, 20, new TranslatableComponent("gui.opentoonline.advancedSettings"), (p_96657_) -> {
+        this.addRenderableWidget(new Button(width / 2 + 5, height / 4 + 69, 150, 20, Component.translatable("gui.opentoonline.advancedSettings"), (p_96657_) -> {
             minecraft.setScreen(new AdvancedSettingsScreen(this));
         }));
     }
@@ -94,7 +93,7 @@ public class ShareToOnlineScreen extends Screen {
     }
 
     private void createOpenToOnlineButton() {
-        openToOnlineButton = this.addRenderableWidget(new Button(width / 2 - 155, height - 28, 150, 20, new TranslatableComponent("gui.opentoonline.startOnlineWorld"), (p_96660_) -> {
+        openToOnlineButton = this.addRenderableWidget(new Button(width / 2 - 155, height - 28, 150, 20, Component.translatable("gui.opentoonline.startOnlineWorld"), (p_96660_) -> {
             minecraft.setScreen(null);
             int port = Integer.parseInt(portEditBox.getValue());
             int maxPlayers = Integer.parseInt(maxPlayersEditBox.getValue());
@@ -103,7 +102,7 @@ public class ShareToOnlineScreen extends Screen {
     }
 
     private void createPortEditBox() {
-        portEditBox = new EditBox(this.font, width / 2 - 155 + 1, height / 4 + 45, 148, 20, new TextComponent(""));
+        portEditBox = new EditBox(this.font, width / 2 - 155 + 1, height / 4 + 45, 148, 20, Component.literal(""));
         portEditBox.setValue(initPort);
         portEditBox.setResponder((pResponder) -> {
             this.initPort = pResponder;
@@ -113,7 +112,7 @@ public class ShareToOnlineScreen extends Screen {
     }
 
     private void createMaxPlayersEditBox() {
-        maxPlayersEditBox = new EditBox(this.font, width / 2 + 5 + 1, height / 4 + 45, 148, 20, new TextComponent(""));
+        maxPlayersEditBox = new EditBox(this.font, width / 2 + 5 + 1, height / 4 + 45, 148, 20, Component.literal(""));
         maxPlayersEditBox.setValue(initMaxPlayers);
         maxPlayersEditBox.setResponder((pResponder) -> {
             this.initMaxPlayers = pResponder;

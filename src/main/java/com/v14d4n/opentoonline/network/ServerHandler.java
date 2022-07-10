@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -28,9 +27,9 @@ public class ServerHandler {
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
             ServerHandler.setMaxPlayers(maxPlayers);
             setupServerConfiguration();
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
             UPnPHandler.closePort(port);
             return false;
         }
@@ -64,7 +63,7 @@ public class ServerHandler {
             field.setAccessible(true);
             field.setInt(playerList, maxPlayers);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.warn.settingMaxPlayers", ModChatTranslatableComponent.MessageTypes.WARN));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.warn.settingMaxPlayers", ModChatTranslatableComponent.MessageTypes.WARN));
             return false;
         }
 
@@ -79,23 +78,23 @@ public class ServerHandler {
 
             // 0.0.0.0 is a default value
             if (!currentIP.equals(lastIP) && !lastIP.equals("0.0.0.0")) {
-                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.ipIsChanged", ModChatTranslatableComponent.MessageTypes.WARN));
+                minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.ipIsChanged", ModChatTranslatableComponent.MessageTypes.WARN));
             }
             OpenToOnlineConfig.lastIP.set(currentIP);
             return currentIP;
         } catch (IOException e) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.warn.gettingAnExternalIP", ModChatTranslatableComponent.MessageTypes.WARN));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.warn.gettingAnExternalIP", ModChatTranslatableComponent.MessageTypes.WARN));
             return "0.0.0.0";
         }
     }
 
     private static MutableComponent getServerFormattedAddress(int port) {
         String stringAddress = getExternalIP() + ":" + port;
-        MutableComponent serverAddress = new TextComponent(stringAddress).setStyle(Style.EMPTY.setUnderlined(true)
+        MutableComponent serverAddress = Component.literal(stringAddress).setStyle(Style.EMPTY.withUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringAddress))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.copy"))));
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("tooltip.opentoonline.copy"))));
 
-        return new TextComponent(" [").append(serverAddress).append("]");
+        return Component.literal(" [").append(serverAddress).append("]");
     }
 
     public static boolean isPlayerServerOwner(GameProfile gameProfile) {

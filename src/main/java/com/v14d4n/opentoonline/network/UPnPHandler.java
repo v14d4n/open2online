@@ -20,10 +20,10 @@ public class UPnPHandler {
         UPnP = UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()).getHandler();
 
         if (UPnP.isUPnPAvailable()) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpIsAvailable"));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.upnpIsAvailable"));
             return true;
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.upnpIsNotAvailable", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.upnpIsNotAvailable", ModChatTranslatableComponent.MessageTypes.ERROR));
             return false;
         }
     }
@@ -32,14 +32,14 @@ public class UPnPHandler {
         if (!isUPnPAvailable())
             return false;
 
-        minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.openingTcpPort").append(" " + port + "..."));
+        minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.openingTcpPort").append(" " + port + "..."));
 
         if(UPnP.isMappedTCP(port)) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsAlreadyOpen"));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsAlreadyOpen"));
         } else if (UPnP.openPortTCP(port)){
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsOpen"));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsOpen"));
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portOpening", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.portOpening", ModChatTranslatableComponent.MessageTypes.ERROR));
             return false;
         }
         OpenToOnlineConfig.port.set(port);
@@ -50,13 +50,13 @@ public class UPnPHandler {
         if (UPnP == null)
             throw new RuntimeException("UPnP library is not installed");
 
-        minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.closingTcpPort").append(" " + port + "..."));
+        minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.closingTcpPort").append(" " + port + "..."));
         if (!UPnP.isMappedTCP(port)) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsAlreadyClosed"));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsAlreadyClosed"));
         } else if (UPnP.closePortTCP(port)) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.portIsClosed"));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsClosed"));
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portClosing", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.portClosing", ModChatTranslatableComponent.MessageTypes.ERROR));
             return false;
         }
 

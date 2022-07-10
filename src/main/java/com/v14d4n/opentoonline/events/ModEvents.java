@@ -23,6 +23,7 @@ import net.minecraftforge.server.command.ConfigCommand;
 
 import java.util.UUID;
 
+import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 import static net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED;
 
 @Mod.EventBusSubscriber(modid = OpenToOnline.MOD_ID)
@@ -70,7 +71,7 @@ public class ModEvents {
                 return;
             }
         }
-        ((ServerPlayer)player).connection.disconnect(new TextComponent("Not in the whitelist"));
+        ((ServerPlayer)player).connection.disconnect(Component.literal("Not in the whitelist"));
     }
 
     private static void checkUpdates(Player player) {
@@ -81,15 +82,16 @@ public class ModEvents {
             String currentVersion = modInfo.getVersion().toString().substring(modInfo.getVersion().toString().lastIndexOf('-') + 1);
             String actualVersion = updateCheckResult.target().toString().substring(updateCheckResult.target().toString().lastIndexOf('-') + 1);
 
-            String mainText = new ModChatTranslatableComponent("chat.opentoonline.update", ModChatTranslatableComponent.MessageTypes.WARN).getString() + " \u00A7c" + currentVersion + "\u00A7r -> \u00A7a" + actualVersion + "\u00A7r";
-            MutableComponent link = new TranslatableComponent("chat.opentoonline.link")
-                    .setStyle(Style.EMPTY.setUnderlined(true)
+            String mainText = ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.update", ModChatTranslatableComponent.MessageTypes.WARN).getString() + " \u00A7c" + currentVersion + "\u00A7r -> \u00A7a" + actualVersion + "\u00A7r";
+            MutableComponent link = Component.translatable("chat.opentoonline.link")
+                    .setStyle(Style.EMPTY.withUnderlined(true)
                             .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateCheckResult.url()))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("tooltip.opentoonline.openUrl"))));
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("tooltip.opentoonline.openUrl"))));
 
-            MutableComponent message = new TextComponent(mainText).append(" [").append(link).append("]");
+            MutableComponent message = Component.literal(mainText).append(" [").append(link).append("]");
 
-            player.sendMessage(message, UUID.randomUUID());
+            // TODO: Если сообщение выводится для нескольких клиентов при входе
+            minecraft.gui.getChat().addMessage(message);
         }
     }
 

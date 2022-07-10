@@ -28,16 +28,16 @@ public class OpenToOnlineCommand {
     public static int open(int port, int maxPlayers, GameType gameMode, boolean allowCommands) {
 
         if (ServerHandler.isServerPublished()) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.serverIsAlreadyPublished", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.serverIsAlreadyPublished", ModChatTranslatableComponent.MessageTypes.ERROR));
             return 0;
         }
 
         if (!UPnPHandler.isPortAvailable(port)) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
             return 0;
         }
 
-        minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.startingServer"));
+        minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.startingServer"));
         if (!ServerHandler.startServer(port, maxPlayers, gameMode, allowCommands)) {
             return 0;
         }

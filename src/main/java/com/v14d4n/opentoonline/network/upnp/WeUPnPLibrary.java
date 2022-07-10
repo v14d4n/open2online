@@ -110,7 +110,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         if (errorCode == null) {
             return true;
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.code", ModChatTranslatableComponent.MessageTypes.ERROR).append(": " + errorCode));
+            minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.code", ModChatTranslatableComponent.MessageTypes.ERROR).append(": " + errorCode));
             return false;
         }
     }

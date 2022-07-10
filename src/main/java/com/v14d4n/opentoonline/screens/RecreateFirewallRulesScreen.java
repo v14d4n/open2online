@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.util.StringJoiner;
@@ -13,13 +13,13 @@ public class RecreateFirewallRulesScreen extends Screen {
     private final Screen lastScreen;
 
     public RecreateFirewallRulesScreen(Screen pLastScreen) {
-        super(new TranslatableComponent("gui.opentoonline.recreateFirewallRules"));
+        super(Component.translatable("gui.opentoonline.recreateFirewallRules"));
         this.lastScreen = pLastScreen;
     }
 
     @Override
     protected void init() {
-        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableComponent("gui.opentoonline.recreateRules"), (p_96304_) -> {
+        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, Component.translatable("gui.opentoonline.recreateRules"), (p_96304_) -> {
             recreateFirewallRules();
             this.minecraft.setScreen(lastScreen);
         }));

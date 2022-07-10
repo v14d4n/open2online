@@ -1,20 +1,19 @@
 package com.v14d4n.opentoonline.network.chat;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
-public class ModChatTranslatableComponent extends TextComponent {
+public class ModChatTranslatableComponent {
 
-    public ModChatTranslatableComponent(String pKey) {
-        this(pKey, MessageTypes.OK);
+    public static MutableComponent getTranslatableComponentWithPrefix(String pKey) {
+        MutableComponent prefix = Component.literal("\u00A7a" + "[Open2Online]\u00A7r ");
+        MutableComponent text = Component.translatable(pKey);
+        MutableComponent chatMessage = prefix.append(text);
+
+        return chatMessage;
     }
 
-    public ModChatTranslatableComponent(String pKey, MessageTypes type) {
-        super(getTranslatableComponentWithPrefix(pKey, type));
-    }
-
-    private static String getTranslatableComponentWithPrefix(String pKey, MessageTypes type) {
+    public static MutableComponent getTranslatableComponentWithPrefix(String pKey, MessageTypes type) {
         String prefixColor;
 
         switch (type) {
@@ -23,11 +22,11 @@ public class ModChatTranslatableComponent extends TextComponent {
             default -> prefixColor = "\u00A7a";
         }
 
-        MutableComponent prefix = new TextComponent(prefixColor + "[Open2Online]\u00A7r ");
-        MutableComponent text = new TranslatableComponent(pKey);
+        MutableComponent prefix = Component.literal(prefixColor + "[Open2Online]\u00A7r ");
+        MutableComponent text = Component.translatable(pKey);
         MutableComponent chatMessage = prefix.append(text);
 
-        return chatMessage.getString();
+        return chatMessage;
     }
 
     public enum MessageTypes {
