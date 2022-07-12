@@ -25,7 +25,7 @@ public class OpenToOnlineConfig {
         allowPvp = BUILDER.comment("Allow PVP on the server. Default value is true.").define("Allow PVP", true);
         libraryId = BUILDER.comment("Port opening library. Don't change if everything works fine. 0 - Weupnp; 1 - WaifUPnP. Default value is 0.").define("Library", 0);
         whitelistMode = BUILDER.comment("Enable whitelist mode. Default value is false.").define("Whitelist", false);
-        friends = BUILDER.comment("List of friends who can join the server if the whitelist mode is enabled.").define("FriendList", new ArrayList<>());
+        friends = BUILDER.comment("List of friends who can join the server if the whitelist mode is enabled.\nExample: [\"MyFriend1\", \"Nickname\", \"BigFloppa\"]").define("FriendList", new ArrayList<>());
 
         BUILDER.pop();
         SPEC = BUILDER.build();

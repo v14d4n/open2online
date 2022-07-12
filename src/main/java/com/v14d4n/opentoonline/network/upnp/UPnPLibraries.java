@@ -1,11 +1,9 @@
 package com.v14d4n.opentoonline.network.upnp;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
-import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.util.OptionEnum;
-import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -26,7 +24,7 @@ public enum UPnPLibraries implements OptionEnum {
         this.librarySupplier = librarySupplier;
     }
 
-    public int getId(){
+    public int getId() {
         return this.id;
     }
 

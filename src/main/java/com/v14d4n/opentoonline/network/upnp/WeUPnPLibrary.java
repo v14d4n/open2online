@@ -50,7 +50,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
                 discover.discover();
                 gatewayDevice = discover.getValidGateway();
             } catch (IOException | ParserConfigurationException | SAXException e) {
-                LOGGER.error("[Open2Online-Log]: "  + e.getMessage());
+                LOGGER.error("[Open2Online-Log]: " + e.getMessage());
             }
         }
         return gatewayDevice;
@@ -67,7 +67,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         try {
             return WeUPnPLibrary.getValidGateway().getSpecificPortMappingEntry(port, "TCP", WeUPnPLibrary.getPortMappingEntry());
         } catch (IOException | SAXException e) {
-            LOGGER.error("[Open2Online-Log]: "  + e.getMessage());
+            LOGGER.error("[Open2Online-Log]: " + e.getMessage());
         }
         return false;
     }
@@ -77,7 +77,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         try {
             return WeUPnPLibrary.reflectAddPortMapping(getValidGateway(), port, port, localAddress.getHostAddress(), "TCP", "Minecraft");
         } catch (IOException | SAXException e) {
-            LOGGER.error("[Open2Online-Log]: "  + e.getMessage());
+            LOGGER.error("[Open2Online-Log]: " + e.getMessage());
         }
         return false;
     }
@@ -86,7 +86,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         try {
             return WeUPnPLibrary.getValidGateway().deletePortMapping(port, "TCP");
         } catch (IOException | SAXException e) {
-            LOGGER.error("[Open2Online-Log]: "  + e.getMessage());
+            LOGGER.error("[Open2Online-Log]: " + e.getMessage());
         }
         return false;
     }
@@ -103,7 +103,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         args.put("NewLeaseDuration", Integer.toString(0));
 
         String controlURL = (String) getFieldValue(getValidGateway(), "controlURL");
-        String serviceType= (String) getFieldValue(getValidGateway(), "serviceType");
+        String serviceType = (String) getFieldValue(getValidGateway(), "serviceType");
         Map<String, String> nameValue = GatewayDevice.simpleUPnPcommand(controlURL, serviceType, "AddPortMapping", args);
 
         String errorCode = nameValue.get("errorCode");

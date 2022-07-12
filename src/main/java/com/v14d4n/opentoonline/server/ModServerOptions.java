@@ -1,24 +1,14 @@
 package com.v14d4n.opentoonline.server;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
-import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
-import net.minecraft.client.*;
-import net.minecraft.client.gui.chat.NarratorChatListener;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.Options;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.OptionEnum;
-import net.minecraft.world.entity.player.ChatVisiblity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
-
-import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class ModServerOptions {
@@ -30,15 +20,6 @@ public abstract class ModServerOptions {
             UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()),
             (lib) -> OpenToOnlineConfig.libraryId.set(lib.getId()));
 
-//    public static final OptionInstance<UPnPLibraries> LIBRARY = OptionInstance.create("options.opentoonline.library",
-//            UPnPLibraries.values(),
-//            UPnPLibraries::getTextComponent,
-//            (getter) ->  {
-//                libraryId = OpenToOnlineConfig.libraryId.get();
-//                return UPnPLibraries.getById(libraryId);
-//            },
-//            (a, b, library) -> libraryId = library.getId()
-//    ).setTooltip((pTooltip) -> (p_193636_) -> pTooltip.font.split(Component.translatable("tooltip.opentoonline.library"), 200));
 
     public static final OptionInstance<Boolean> ALLOW_PVP = OptionInstance.createBoolean("options.opentoonline.allowPvp",
             OpenToOnlineConfig.allowPvp.get(),
@@ -46,13 +27,23 @@ public abstract class ModServerOptions {
     );
 
     public static final OptionInstance<Boolean> WHITELIST_MODE = OptionInstance.createBoolean("gui.opentoonline.whitelistMode",
+            OptionInstance.cachedConstantTooltip(Component.translatable("tooltip.opentoonline.whitelist")),
             OpenToOnlineConfig.whitelistMode.get(),
             OpenToOnlineConfig.whitelistMode::set
     );
 
+    // TODO: fix friendlist. They made OptionInstance class final >-<*
 //    public static final OptionInstance EDIT_WHITELIST = new OptionInstance(
 //            "gui.opentoonline.editWhitelist",
 //            OptionInstance.noTooltip(),
-//            OptionInstance.forOptionEnum()) {
+//            (p_231581_, p_231582_) -> Component.literal(""),
+//            new OptionInstance.Enum<>(ImmutableList.of(Boolean.FALSE, Boolean.TRUE), Codec.BOOL),
+//            Codec.EMPTY.codec(),
+//            false,
+//            (a) -> minecraft.setScreen(new EditWhitelistScreen(minecraft.screen))) {
+//        @Override
+//        public AbstractWidget createButton(Options p_231508_, int p_231509_, int p_231510_, int p_231511_) {
+//            return super.createButton(p_231508_, p_231509_, p_231510_, p_231511_);
+//        }
 //    };
 }

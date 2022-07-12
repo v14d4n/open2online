@@ -5,14 +5,13 @@ import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.screens.ShareToOnlineScreen;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.PauseScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 
 @Mixin(PauseScreen.class)
 public abstract class MixinPauseScreen extends Screen {

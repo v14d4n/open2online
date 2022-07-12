@@ -19,7 +19,7 @@ apply plugin: 'maven-publish'
 // Mixin
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.19-0.0.3b'
+version = '1.19-0.0.3a'
 group = 'com.v14d4n.opentoonline' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'opentoonline'
 

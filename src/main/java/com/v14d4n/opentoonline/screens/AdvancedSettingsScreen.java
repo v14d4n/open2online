@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.Options;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -19,7 +18,7 @@ import java.util.Optional;
 
 public class AdvancedSettingsScreen extends Screen {
 
-    private static final OptionInstance[] OPTIONS = new OptionInstance[]{ ModServerOptions.WHITELIST_MODE, ModServerOptions.ALLOW_PVP };
+    private static final OptionInstance[] OPTIONS = new OptionInstance[]{ModServerOptions.WHITELIST_MODE, ModServerOptions.ALLOW_PVP};
     private OptionsList optionsList;
     private final Screen lastScreen;
 
@@ -32,7 +31,7 @@ public class AdvancedSettingsScreen extends Screen {
     protected void init() {
         this.optionsList = new OptionsList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.optionsList.addBig(ModServerOptions.LIBRARY);
-//        this.optionsList.addBig(ModServerOptions.EDIT_WHITELIST);
+        //this.optionsList.addBig(ModServerOptions.EDIT_WHITELIST); // TODO: *-*
         this.optionsList.addSmall(OPTIONS);
         this.addWidget(this.optionsList);
         this.addRenderableWidget(new Button(this.width / 2 - 100, this.height - 27, 200, 20, CommonComponents.GUI_DONE, (p_96827_) -> {
@@ -59,6 +58,6 @@ public class AdvancedSettingsScreen extends Screen {
 
     private static List<FormattedCharSequence> tooltipAt(OptionsList p_96288_, int pMouseX, int pMouseY) {
         Optional<AbstractWidget> optional = p_96288_.getMouseOver(pMouseX, pMouseY);
-        return optional.isPresent() && optional.get() instanceof TooltipAccessor ? ((TooltipAccessor)optional.get()).getTooltip() : ImmutableList.of();
+        return optional.isPresent() && optional.get() instanceof TooltipAccessor ? ((TooltipAccessor) optional.get()).getTooltip() : ImmutableList.of();
     }
 }

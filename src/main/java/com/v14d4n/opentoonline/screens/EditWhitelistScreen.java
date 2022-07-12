@@ -3,8 +3,6 @@ package com.v14d4n.opentoonline.screens;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
-import com.v14d4n.opentoonline.server.ModServerOptions;
-import com.v14d4n.opentoonline.server.WhitelistServerOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -77,7 +75,7 @@ public class EditWhitelistScreen extends Screen {
 
     private static List<FormattedCharSequence> tooltipAt(OptionsList p_96288_, int pMouseX, int pMouseY) {
         Optional<AbstractWidget> optional = p_96288_.getMouseOver(pMouseX, pMouseY);
-        return optional.isPresent() && optional.get() instanceof TooltipAccessor ? ((TooltipAccessor)optional.get()).getTooltip() : ImmutableList.of();
+        return optional.isPresent() && optional.get() instanceof TooltipAccessor ? ((TooltipAccessor) optional.get()).getTooltip() : ImmutableList.of();
     }
 
     public static void update() {

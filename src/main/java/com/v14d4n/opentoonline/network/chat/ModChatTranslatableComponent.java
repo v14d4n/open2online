@@ -17,8 +17,8 @@ public class ModChatTranslatableComponent {
         String prefixColor;
 
         switch (type) {
-            case WARN ->  prefixColor = "\u00A76";
-            case ERROR ->  prefixColor = "\u00A7c";
+            case WARN -> prefixColor = "\u00A76";
+            case ERROR -> prefixColor = "\u00A7c";
             default -> prefixColor = "\u00A7a";
         }
 

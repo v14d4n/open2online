@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -124,15 +124,15 @@ public class ShareToOnlineScreen extends Screen {
     private void createAllowCommandsButton() {
         this.addRenderableWidget(CycleButton.onOffBuilder(this.commands)
                 .create(width / 2 + 5, height / 4 + 8, 150, 20, ALLOW_COMMANDS_LABEL, (p_169432_, p_169433_) -> {
-            this.commands = p_169433_;
-        }));
+                    this.commands = p_169433_;
+                }));
     }
 
     private void createGameModeButton() {
         this.addRenderableWidget(CycleButton.builder(GameType::getShortDisplayName).withValues(GameType.SURVIVAL, GameType.SPECTATOR, GameType.CREATIVE, GameType.ADVENTURE).withInitialValue(this.gameMode)
                 .create(width / 2 - 155, height / 4 + 8, 150, 20, GAME_MODE_LABEL, (p_169429_, p_169430_) -> {
-            this.gameMode = p_169430_;
-        }));
+                    this.gameMode = p_169430_;
+                }));
     }
 
     @Override

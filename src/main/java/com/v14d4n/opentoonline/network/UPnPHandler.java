@@ -34,9 +34,9 @@ public class UPnPHandler {
 
         minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.openingTcpPort").append(" " + port + "..."));
 
-        if(UPnP.isMappedTCP(port)) {
+        if (UPnP.isMappedTCP(port)) {
             minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsAlreadyOpen"));
-        } else if (UPnP.openPortTCP(port)){
+        } else if (UPnP.openPortTCP(port)) {
             minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.portIsOpen"));
         } else {
             minecraft.gui.getChat().addMessage(ModChatTranslatableComponent.getTranslatableComponentWithPrefix("chat.opentoonline.error.portOpening", ModChatTranslatableComponent.MessageTypes.ERROR));

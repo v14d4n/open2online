@@ -1,14 +1,13 @@
 package com.v14d4n.opentoonline.events;
 
 import com.v14d4n.opentoonline.OpenToOnline;
-import com.v14d4n.opentoonline.commands.*;
+import com.v14d4n.opentoonline.commands.OpenToOnlineCommand;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.ServerHandler;
 import com.v14d4n.opentoonline.network.UPnPHandler;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -21,9 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.server.command.ConfigCommand;
 
-import java.util.UUID;
-
-import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 import static net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED;
 
 @Mod.EventBusSubscriber(modid = OpenToOnline.MOD_ID)
@@ -67,11 +63,11 @@ public class ModEvents {
             return;
 
         for (String friendName : OpenToOnlineConfig.friends.get()) {
-            if (friendName.equals(player.getName().getString())){
+            if (friendName.equals(player.getName().getString())) {
                 return;
             }
         }
-        ((ServerPlayer)player).connection.disconnect(Component.literal("Not in the whitelist"));
+        ((ServerPlayer) player).connection.disconnect(Component.literal("Not in the whitelist"));
     }
 
     private static void checkUpdates(Player player) {

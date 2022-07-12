@@ -1,18 +1,5 @@
 package com.v14d4n.opentoonline.server;
 
-import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
-import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.chat.Component;
-
-import java.util.function.Supplier;
-
-import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
-
 public class WhitelistServerOptions {
 
 //    public static OptionInstance<?> createAddFriendButton(Supplier<String> supplier) {

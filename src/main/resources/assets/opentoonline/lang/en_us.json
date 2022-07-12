@@ -41,5 +41,6 @@
   "tooltip.opentoonline.openUrl": "Open URL",
   "tooltip.opentoonline.recreateFirewallRules": "This may help if no one can connect to your server.",
   "tooltip.opentoonline.library": "Port opening library. Don't change if everything works fine.",
-  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game."
+  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game.",
+  "tooltip.opentoonline.whitelist": "You can edit the whitelist in the opentoonline-client.toml file in the .minecraft/config/ directory"
 }
