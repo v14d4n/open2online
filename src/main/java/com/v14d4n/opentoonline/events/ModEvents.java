@@ -1,6 +1,5 @@
 package com.v14d4n.opentoonline.events;
 
-import com.mojang.authlib.yggdrasil.response.User;
 import com.v14d4n.opentoonline.OpenToOnline;
 import com.v14d4n.opentoonline.commands.*;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
@@ -79,6 +78,8 @@ public class ModEvents {
     }
 
     private static void checkUpdates(PlayerEntity player) {
+        if (!OpenToOnlineConfig.updateNotifications.get()) return;
+
         IModInfo modInfo = ModList.get().getModContainerById(OpenToOnline.MOD_ID).get().getModInfo();
         VersionChecker.CheckResult updateCheckResult = VersionChecker.getResult(modInfo);
 

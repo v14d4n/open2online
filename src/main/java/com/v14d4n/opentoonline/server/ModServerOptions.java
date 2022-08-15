@@ -1,24 +1,17 @@
 package com.v14d4n.opentoonline.server;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
 import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
 import net.minecraft.client.AbstractOption;
 import net.minecraft.client.GameSettings;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.GPUWarning;
 import net.minecraft.client.settings.*;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.lwjgl.system.Library;
-
-import java.util.function.BiFunction;
 
 import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 
@@ -27,6 +20,7 @@ public abstract class ModServerOptions {
 
     private static int libraryId;
     private static boolean allowPvp;
+    private static boolean updateNotification;
     private static boolean whitelistMode;
 
     private static final ITextComponent LIBRARY_TOOLTIP = new TranslationTextComponent("tooltip.opentoonline.library");
@@ -42,9 +36,14 @@ public abstract class ModServerOptions {
         (p_225259_0_, p_225259_1_) -> allowPvp = p_225259_1_
     );
 
+    public static final BooleanOption UPDATE_NOTIFICATIONS = new BooleanOption("gui.opentoonline.updateNotification",
+            (p_225287_0_) -> updateNotification,
+            (p_225259_0_, p_225259_1_) -> updateNotification = p_225259_1_
+    );
+
     public static final BooleanOption WHITELIST_MODE = new BooleanOption("gui.opentoonline.whitelistMode",
-        (getter) -> whitelistMode,
-        (gameSettings, value) -> whitelistMode = value
+        (getter) -> OpenToOnlineConfig.whitelistMode.get(),
+        (gameSettings, value) -> OpenToOnlineConfig.whitelistMode.set(value)
     );
 
     public static final AbstractOption EDIT_WHITELIST = new AbstractOption("gui.opentoonline.editWhitelist") {
@@ -60,14 +59,14 @@ public abstract class ModServerOptions {
     };
 
     public static void update() {
+        updateNotification = OpenToOnlineConfig.updateNotifications.get();
         libraryId = OpenToOnlineConfig.libraryId.get();
         allowPvp = OpenToOnlineConfig.allowPvp.get();
-        whitelistMode = OpenToOnlineConfig.whitelistMode.get();
     }
 
     public static void save() {
+        OpenToOnlineConfig.updateNotifications.set(updateNotification);
         OpenToOnlineConfig.libraryId.set(libraryId);
         OpenToOnlineConfig.allowPvp.set(allowPvp);
-        OpenToOnlineConfig.whitelistMode.set(whitelistMode);
     }
 }

@@ -3,6 +3,7 @@ buildscript {
         // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
         mavenCentral()
     }
     dependencies {
@@ -11,21 +12,26 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7.+'
     }
 }
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+// Shadow
+apply plugin: 'net.minecraftforge.gradle'
 // Mixin
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.16.5-0.0.3b'
+version = '1.16.5-1.0.0'
 group = 'com.v14d4n.opentoonline' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'opentoonline'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
 
     mappings channel: 'parchment', version: '2022.03.06-1.16.5'
@@ -51,8 +57,8 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 configurations {
-    embed
-    compile.extendsFrom(embed)
+    shade
+    implementation.extendsFrom shade
 }
 repositories {
     mavenCentral()
@@ -61,10 +67,11 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-    implementation 'org.bitlet:weupnp:0.1.4'
-    embed 'org.bitlet:weupnp:0.1.4'
-    implementation fileTree(dir: 'libs', include: '*.jar')
-    embed fileTree(dir: 'libs', include: '*.jar')
+    shade 'com.simtechdata:WaifUPnP:1.0'
+    shade 'org.apache.commons:commons-collections4:4.4'
+    shade 'com.offbynull.portmapper:portmapper:2.0.5'
+    shade 'org.bitlet:weupnp:0.1.4'
+//    shade fileTree(dir: 'libs', include: '*.jar')
 }
 
 mixin {
@@ -75,7 +82,8 @@ mixin {
 
 // Example for how to get properties into the manifest for reading at runtime.
 jar {
-    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+    archiveClassifier = 'slim'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes([
                 "Specification-Title"     : "opentoonline",
@@ -87,12 +95,26 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
-
 }
 
+shadowJar {
+    archiveClassifier = ''
+    configurations = [project.configurations.shade]
+    relocate 'org.apache.commons', "${project.group}.relocated.commons"
+    relocate 'com.offbynull.portmapper', "${project.group}.relocated.portmapper"
+    relocate 'org.bitlet.weupnp', "${project.group}.relocated.weupnp"
+    relocate 'com.simtechdata.waifupnp', "${project.group}.relocated.waifupnp"
+    finalizedBy 'reobfShadowJar'
+}
+
+assemble.dependsOn shadowJar
+
+reobf {
+    shadowJar {}
+}
 // Example configuration to allow publishing using the maven-publish plugin
 // This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
+// jar.finalizedBy('reobfJar')
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
 // publish.dependsOn('reobfJar')
 

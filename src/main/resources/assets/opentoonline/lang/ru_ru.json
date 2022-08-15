@@ -3,15 +3,17 @@
   "gui.opentoonline.portInfo": "Порт онлайн мира",
   "gui.opentoonline.maxPlayersInfo": "Максимум игроков",
   "gui.opentoonline.startOnlineWorld": "Открыть мир для сети",
+  "gui.opentoonline.startLanWorld": "Открыть мир для сети (LAN)",
   "gui.opentoonline.advancedSettings": "Расширенные настройки",
-  "gui.opentoonline.advancedServerSettings": "Расширенные настройки сервера",
+  "gui.opentoonline.advancedServerSettings": "Расширенные настройки Open2Online",
   "gui.opentoonline.recreateRules": "Пересоздать правила",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
-  "gui.opentoonline.whitelistMode": "Белый список",
-  "gui.opentoonline.editWhitelist": "Редактировать белый список",
+  "gui.opentoonline.whitelistMode": "Режим белого списка",
+  "gui.opentoonline.editWhitelist": "Белый список",
+  "gui.opentoonline.updateNotification": "Увед. об обновлении",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуй сменить библиотеку",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуйте сменить библиотеку",
   "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
@@ -21,6 +23,7 @@
   "chat.opentoonline.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
 
   "chat.opentoonline.upnpIsAvailable": "UPnP доступен",
+  "chat.opentoonline.upnpNatPcpIsAvailable": "UPnP/NAT-PMP/PCP доступен",
   "chat.opentoonline.portIsAlreadyOpen": "Порт уже открыт",
   "chat.opentoonline.portIsAlreadyClosed": "Порт уже закрыт",
   "chat.opentoonline.portIsOpen": "Порт открыт",
@@ -29,6 +32,7 @@
   "chat.opentoonline.openingTcpPort": "Открытие TCP порта",
   "chat.opentoonline.closingTcpPort": "Закрытие TCP порта",
   "chat.opentoonline.gameHostedOn": "Игра размещена на:",
+  "chat.opentoonline.localGameHostedOn": "Порт локального сервера:",
   "chat.opentoonline.ipIsChanged": "Внешний IP изменился",
   "chat.opentoonline.update": "Доступно обновление:",
   "chat.opentoonline.link": "Ссылка",
@@ -40,8 +44,9 @@
   "tooltip.opentoonline.copy": "Нажмите, чтобы скопировать",
   "tooltip.opentoonline.openUrl": "Перейти по ссылке",
   "tooltip.opentoonline.recreateFirewallRules": "Это может помочь, если никто не может подключиться к серверу.",
-  "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально.",
+  "tooltip.opentoonline.library": "Библиотека для открытия порта. Не меняй, если все работает нормально.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP",
   "tooltip.opentoonline.licenseRequired": "Требовать интернет соединение и лицензионную версию игры.",
 
-  "window.opentoonline.title": "Multiplayer (Open2Online)"
+  "window.opentoonline.title": "Multiplayer (Open2Online)",
+  "chat.opentoonline.error.upnpNatPcpIsNotAvailable": "UPnP/NAT-PMP/PCP is not available"
 }

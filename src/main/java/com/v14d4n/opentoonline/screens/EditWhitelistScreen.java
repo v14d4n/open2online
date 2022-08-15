@@ -33,6 +33,7 @@ public class EditWhitelistScreen extends Screen {
     @Override
     protected void init() {
         this.optionsList = new OptionsRowList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+        this.optionsList.addBig(ModServerOptions.WHITELIST_MODE);
 
         // creates top widgets
         this.optionsList.addSmall(
@@ -51,7 +52,6 @@ public class EditWhitelistScreen extends Screen {
         this.addWidget(this.optionsList);
         this.addButton(new Button(this.width / 2 - 100, this.height - 27, 200, 20, DialogTexts.GUI_DONE, (p_96827_) -> {
             this.minecraft.setScreen(lastScreen);
-            ModServerOptions.save();
         }));
 
         this.setInitialFocus(editBox);

@@ -11,7 +11,8 @@ import java.util.function.Supplier;
 @OnlyIn(Dist.CLIENT)
 public enum UPnPLibraries {
     WeUPnP(0, WeUPnPLibrary::new),
-    WaifUPnP(1, WaifUPnPLibrary::new);
+    WaifUPnP(1, WaifUPnPLibrary::new),
+    PortMapper(2, PortMapperLibrary::new);
 
     private final int id;
     private final Supplier<IUPnPLibrary> librarySupplier;
