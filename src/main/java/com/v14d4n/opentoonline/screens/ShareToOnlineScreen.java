@@ -55,9 +55,9 @@ public class ShareToOnlineScreen extends Screen {
 
     @Override
     protected void init() {
-//        // GameMode button
+        // GameMode button
         createGameModeButton();
-//        // Allow commands button
+        // Allow commands button
         createAllowCommandsButton();
         // Port edit box
         createPortEditBox();
@@ -65,6 +65,8 @@ public class ShareToOnlineScreen extends Screen {
         createMaxPlayersEditBox();
         // Open to online button
         createOpenToOnlineButton();
+        // Open to lan button
+        createOpenToLanButton();
         // Advanced settings button
         createAdvancedSettingsButton();
         // Fix firewall problem button
@@ -111,6 +113,15 @@ public class ShareToOnlineScreen extends Screen {
             int port = Integer.parseInt(portEditBox.getValue());
             int maxPlayers = Integer.parseInt(maxPlayersEditBox.getValue());
             new Thread(() -> OpenToOnlineCommand.open(port, maxPlayers, gameMode, commands)).start();
+        }));
+    }
+
+    private void createOpenToLanButton() {
+        openToOnlineButton = this.addButton(new Button(width / 2 - 155, height - 51, 150, 20, new TranslationTextComponent("gui.opentoonline.startLanWorld"), (p_213094_1_) -> {
+            minecraft.setScreen(null);
+            int port = Integer.parseInt(portEditBox.getValue());
+            int maxPlayers = Integer.parseInt(maxPlayersEditBox.getValue());
+            new Thread(() -> OpenToOnlineCommand.open(port, maxPlayers, gameMode, commands, false)).start();
         }));
     }
 

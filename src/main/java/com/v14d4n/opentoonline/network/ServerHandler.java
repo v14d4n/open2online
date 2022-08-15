@@ -29,14 +29,13 @@ import static com.v14d4n.opentoonline.OpenToOnline.minecraft;
 @OnlyIn(Dist.CLIENT)
 public class ServerHandler {
 
-    public static boolean startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands) {
-        if (!UPnPHandler.openPort(port))
+    public static boolean startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands, boolean online) {
+        if (online && !UPnPHandler.openPort(port))
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
-            ServerHandler.setMaxPlayers(maxPlayers);
-            setupServerConfiguration();
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
+            setupServerConfiguration(maxPlayers, online);
+            printHostedGameMessage(online, port);
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
             UPnPHandler.closePort(port);
@@ -46,8 +45,17 @@ public class ServerHandler {
         return true;
     }
 
-    private static void setupServerConfiguration() {
-        UPnPHandler.closePortAfterLogout(true);
+    private static void printHostedGameMessage(boolean online, int port) {
+        if (online) {
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
+        } else {
+            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.localGameHostedOn").append(getServerFormattedPort(port)));
+        }
+    }
+
+    private static void setupServerConfiguration(int maxPlayers, boolean closePortAfterLogout) {
+        UPnPHandler.closePortAfterLogout(closePortAfterLogout);
+        ServerHandler.setMaxPlayers(maxPlayers);
 
         ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
     }
@@ -95,6 +103,15 @@ public class ServerHandler {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.warn.gettingAnExternalIP", ModChatTranslatableComponent.MessageTypes.WARN));
             return "0.0.0.0";
         }
+    }
+
+    private static IFormattableTextComponent getServerFormattedPort(int port) {
+        String stringPort = String.valueOf(port);
+        IFormattableTextComponent formattablePort = new StringTextComponent(stringPort).setStyle(Style.EMPTY.setUnderlined(true)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringPort))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("tooltip.opentoonline.copy"))));
+
+        return new StringTextComponent(" [").append(formattablePort).append("]");
     }
 
     private static IFormattableTextComponent getServerFormattedAddress(int port) {

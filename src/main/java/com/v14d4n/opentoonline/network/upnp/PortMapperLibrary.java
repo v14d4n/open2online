@@ -10,6 +10,10 @@ import com.offbynull.portmapper.gateways.process.internalmessages.KillProcessReq
 import com.offbynull.portmapper.mapper.MappedPort;
 import com.offbynull.portmapper.mapper.PortMapper;
 import com.offbynull.portmapper.mapper.PortType;
+import com.offbynull.portmapper.mappers.natpmp.NatPmpPortMapper;
+import com.offbynull.portmapper.mappers.pcp.PcpPortMapper;
+import com.offbynull.portmapper.mappers.upnpigd.UpnpIgdPortMapper;
+import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 
 import java.util.List;
 
@@ -50,17 +54,30 @@ public class PortMapperLibrary implements IUPnPLibrary {
 
     @Override
     public boolean openPortTCP(int port) {
-        for (PortMapper mapper : mappers) {
+        int portMapperIndex = OpenToOnlineConfig.portMapperIndex.get();
+        if (portMapperIndex != -1) {
             try {
-                mappedPort = mapper.mapPort(PortType.TCP, port, port, 1);
-                currentMapper = mapper;
+                mappedPort = mappers.get(portMapperIndex).mapPort(PortType.TCP, port, port, 1);
+                currentMapper = mappers.get(portMapperIndex);
+                updateLifetimeThread.start();
+                isMapped = true;
+                return true;
+            } catch (Exception ignored) { }
+        }
+
+        for (int i = 0; i < mappers.size(); i++) {
+            try {
+                mappedPort = mappers.get(i).mapPort(PortType.TCP, port, port, 1);
+                currentMapper = mappers.get(i);
             } catch (Exception e) {
                 continue;
             }
             updateLifetimeThread.start();
             isMapped = true;
+            OpenToOnlineConfig.portMapperIndex.set(i);
             return true;
         }
+
         return false;
     }
 

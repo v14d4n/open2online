@@ -1,13 +1,11 @@
 package com.v14d4n.opentoonline.screens;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.v14d4n.opentoonline.server.ModServerOptions;
 import net.minecraft.client.AbstractOption;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.IBidiTooltip;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.VideoSettingsScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.gui.widget.list.OptionsRowList;
@@ -20,7 +18,7 @@ import java.util.Optional;
 
 public class AdvancedSettingsScreen extends Screen {
 
-    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.EDIT_WHITELIST, ModServerOptions.ALLOW_PVP };
+    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.EDIT_WHITELIST, ModServerOptions.ALLOW_PVP, ModServerOptions.UPDATE_NOTIFICATIONS};
     private OptionsRowList optionsList;
     private final Screen lastScreen;
 

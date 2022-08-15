@@ -19,13 +19,23 @@ public class UPnPHandler {
     private static boolean isUPnPAvailable() {
         UPnP = UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()).getHandler();
 
-        if (UPnP.isUPnPAvailable()) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpIsAvailable"));
-            return true;
+        if (OpenToOnlineConfig.libraryId.get() != 2) {
+            if (UPnP.isUPnPAvailable()) {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpIsAvailable"));
+                return true;
+            } else {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.upnpIsNotAvailable", ModChatTranslatableComponent.MessageTypes.ERROR));
+            }
         } else {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.upnpIsNotAvailable", ModChatTranslatableComponent.MessageTypes.ERROR));
-            return false;
+            if (UPnP.isUPnPAvailable()) {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.upnpNatPcpIsAvailable"));
+                return true;
+            } else {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.upnpNatPcpIsNotAvailable", ModChatTranslatableComponent.MessageTypes.ERROR));
+            }
         }
+
+        return false;
     }
 
     public static boolean openPort(int port) {
