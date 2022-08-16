@@ -2,8 +2,8 @@ package com.v14d4n.opentoonline.network;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import com.v14d4n.opentoonline.network.upnp.IUPnPLibrary;
-import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
+import com.v14d4n.opentoonline.network.nat.IUPnPLibrary;
+import com.v14d4n.opentoonline.network.nat.UPnPLibraries;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.io.IOException;

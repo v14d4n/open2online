@@ -1,4 +1,4 @@
-package com.v14d4n.opentoonline.network.upnp;
+package com.v14d4n.opentoonline.network.nat;
 
 public interface IUPnPLibrary {
     boolean isUPnPAvailable();

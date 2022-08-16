@@ -1,7 +1,7 @@
 package com.v14d4n.opentoonline.server;
 
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
-import com.v14d4n.opentoonline.network.upnp.UPnPLibraries;
+import com.v14d4n.opentoonline.network.nat.UPnPLibraries;
 import com.v14d4n.opentoonline.screens.EditWhitelistScreen;
 import net.minecraft.client.AbstractOption;
 import net.minecraft.client.GameSettings;
