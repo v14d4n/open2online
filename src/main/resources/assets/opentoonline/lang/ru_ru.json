@@ -13,7 +13,7 @@
   "gui.opentoonline.updateNotification": "Увед. об обновлении",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуйте сменить порт или библиотеку",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуйте сменить его или библиотеку",
   "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
