@@ -14,7 +14,7 @@
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP is not available",
   "chat.opentoonline.error.upnpNatPcpIsNotAvailable": "UPnP/NAT-PMP/PCP is not available",
-  "chat.opentoonline.error.portOpening": "Failed to open port. Try changing the library",
+  "chat.opentoonline.error.portOpening": "Failed to open port. Try changing the port or library",
   "chat.opentoonline.error.portClosing": "Failed to close port",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Server is already published",
   "chat.opentoonline.error.publishFailed": "Unable to host online game. Try changing the port",

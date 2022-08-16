@@ -3,11 +3,7 @@ package com.v14d4n.opentoonline.network;
 import com.mojang.authlib.GameProfile;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.ClientPlayNetHandler;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.util.SharedConstants;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
@@ -34,7 +30,7 @@ public class ServerHandler {
             return false;
 
         if (minecraft.getSingleplayerServer().publishServer(gameMode, allowCommands, port)) {
-            setupServerConfiguration(maxPlayers, online);
+            setupAndSaveServerConfiguration(maxPlayers, port, online);
             printHostedGameMessage(online, port);
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.publishFailed", ModChatTranslatableComponent.MessageTypes.ERROR));
@@ -53,11 +49,13 @@ public class ServerHandler {
         }
     }
 
-    private static void setupServerConfiguration(int maxPlayers, boolean closePortAfterLogout) {
-        UPnPHandler.closePortAfterLogout(closePortAfterLogout);
-        ServerHandler.setMaxPlayers(maxPlayers);
-
+    private static void setupAndSaveServerConfiguration(int maxPlayers,int port, boolean closePortAfterLogout) {
         ServerHandler.setPvpAllowed(OpenToOnlineConfig.allowPvp.get());
+        if (ServerHandler.setMaxPlayers(maxPlayers)) {
+            OpenToOnlineConfig.maxPlayers.set(maxPlayers);
+        }
+        OpenToOnlineConfig.port.set(port);
+        UPnPHandler.closePortAfterLogout(closePortAfterLogout);
     }
 
     public static boolean isServerPublished() {
@@ -84,7 +82,6 @@ public class ServerHandler {
             return false;
         }
 
-        OpenToOnlineConfig.maxPlayers.set(maxPlayers);
         return true;
     }
 

@@ -52,7 +52,7 @@ public class UPnPHandler {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.error.portOpening", ModChatTranslatableComponent.MessageTypes.ERROR));
             return false;
         }
-        OpenToOnlineConfig.port.set(port);
+
         return true;
     }
 
