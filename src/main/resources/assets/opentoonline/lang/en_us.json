@@ -46,7 +46,5 @@
   "tooltip.opentoonline.openUrl": "Open URL",
   "tooltip.opentoonline.recreateFirewallRules": "This may help if no one can connect to your server.",
   "tooltip.opentoonline.library": "Port opening library. Don't change if everything works fine.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP",
-  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game.",
-
-  "window.opentoonline.title": "Multiplayer (Open2Online)"
+  "tooltip.opentoonline.licenseRequired": "Require an internet connection and a licensed version of the game."
 }
