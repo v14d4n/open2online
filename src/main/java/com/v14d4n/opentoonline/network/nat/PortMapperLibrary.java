@@ -1,4 +1,4 @@
-package com.v14d4n.opentoonline.network.upnp;
+package com.v14d4n.opentoonline.network.nat;
 
 import com.offbynull.portmapper.PortMapperFactory;
 import com.offbynull.portmapper.gateway.Bus;
@@ -10,9 +10,6 @@ import com.offbynull.portmapper.gateways.process.internalmessages.KillProcessReq
 import com.offbynull.portmapper.mapper.MappedPort;
 import com.offbynull.portmapper.mapper.PortMapper;
 import com.offbynull.portmapper.mapper.PortType;
-import com.offbynull.portmapper.mappers.natpmp.NatPmpPortMapper;
-import com.offbynull.portmapper.mappers.pcp.PcpPortMapper;
-import com.offbynull.portmapper.mappers.upnpigd.UpnpIgdPortMapper;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 
 import java.util.List;
@@ -66,6 +63,8 @@ public class PortMapperLibrary implements IUPnPLibrary {
         }
 
         for (int i = 0; i < mappers.size(); i++) {
+            if (i == portMapperIndex) continue;
+
             try {
                 mappedPort = mappers.get(i).mapPort(PortType.TCP, port, port, 1);
                 currentMapper = mappers.get(i);

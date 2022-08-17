@@ -3,7 +3,8 @@
   "package": "com.v14d4n.opentoonline.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MixinPauseScreen"
+    "MixinPauseScreen",
+    "MixinMinecraft"
   ],
   "injectors": {
     "defaultRequire": 1

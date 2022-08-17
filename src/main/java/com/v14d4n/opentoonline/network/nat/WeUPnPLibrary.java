@@ -1,4 +1,4 @@
-package com.v14d4n.opentoonline.network.upnp;
+package com.v14d4n.opentoonline.network.nat;
 
 import com.v14d4n.opentoonline.network.chat.ModChatTranslatableComponent;
 import org.apache.logging.log4j.LogManager;
