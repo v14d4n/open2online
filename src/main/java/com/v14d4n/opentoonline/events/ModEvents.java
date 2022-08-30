@@ -42,16 +42,16 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        String loggedInPlayerName = event.getPlayer().getName().getString();
+        String loggedInPlayerName = event.getEntity().getName().getString();
         if (clientPlayer.getName().equals(loggedInPlayerName)) {
-            checkUpdates(event.getPlayer());
+            checkUpdates(event.getEntity());
         }
 
         // runs only on the host side
         if (ServerHandler.isClientRunningOnlineServer() && ServerHandler.isPlayerServerOwner(clientPlayer.getGameProfile())) {
 
             if (OpenToOnlineConfig.whitelistMode.get()) {
-                kickNotWhitelistedPlayer(event.getPlayer());
+                kickNotWhitelistedPlayer(event.getEntity());
             }
 
         }

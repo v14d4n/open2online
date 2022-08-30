@@ -69,7 +69,7 @@ public class UPnPHandler {
 
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         String clientPlayerName = minecraft.getUser().getName();
-        String loggedOutPlayerName = event.getPlayer().getName().getString();
+        String loggedOutPlayerName = event.getEntity().getName().getString();
 
         if (clientPlayerName.equals(loggedOutPlayerName) && UPnPHandler.closePortAfterLogout) {
             UPnPHandler.closePortAfterLogout(false);

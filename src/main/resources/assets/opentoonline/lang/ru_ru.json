@@ -11,7 +11,7 @@
   "gui.opentoonline.editWhitelist": "Редактировать белый список",
 
   "chat.opentoonline.error.upnpIsNotAvailable": "UPnP недоступен",
-  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуй сменить библиотеку",
+  "chat.opentoonline.error.portOpening": "Не удалось открыть порт. Попробуйте сменить его или библиотеку",
   "chat.opentoonline.error.portClosing": "Не удалось закрыть порт",
   "chat.opentoonline.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.opentoonline.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
