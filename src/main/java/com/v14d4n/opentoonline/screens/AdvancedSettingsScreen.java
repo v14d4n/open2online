@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class AdvancedSettingsScreen extends Screen {
 
-    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.EDIT_WHITELIST, ModServerOptions.ALLOW_PVP, ModServerOptions.UPDATE_NOTIFICATIONS};
+    private static final AbstractOption[] OPTIONS = new AbstractOption[]{ ModServerOptions.EDIT_WHITELIST, ModServerOptions.ALLOW_PVP, ModServerOptions.UPDATE_NOTIFICATIONS, ModServerOptions.HIDE_IP};
     private OptionsRowList optionsList;
     private final Screen lastScreen;
 

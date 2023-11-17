@@ -46,6 +46,11 @@ public abstract class ModServerOptions {
         (gameSettings, value) -> OpenToOnlineConfig.whitelistMode.set(value)
     );
 
+    public static final BooleanOption HIDE_IP = new BooleanOption("gui.opentoonline.hideIP",
+            (getter) -> OpenToOnlineConfig.hideIP.get(),
+            (gameSettings, value) -> OpenToOnlineConfig.hideIP.set(value)
+    );
+
     public static final AbstractOption EDIT_WHITELIST = new AbstractOption("gui.opentoonline.editWhitelist") {
 
         @Override
