@@ -101,8 +101,8 @@ public class PortMapperLibrary implements IUPnPLibrary {
                 mappedPort = currentMapper.refreshPort(mappedPort, lifetime * 1000L);
                 Thread.sleep(lifetime * 1000L / 2);
             }
-        } catch (InterruptedException ignored) {
-
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }
