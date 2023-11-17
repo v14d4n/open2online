@@ -26,7 +26,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // Mixin
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.16.5-1.0.1'
+version = '1.16.5-1.0.2'
 group = 'com.v14d4n.opentoonline' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'opentoonline'
 
@@ -112,11 +112,6 @@ assemble.dependsOn shadowJar
 reobf {
     shadowJar {}
 }
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-// jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
 
 publishing {
     publications {

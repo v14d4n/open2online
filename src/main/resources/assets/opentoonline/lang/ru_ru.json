@@ -9,6 +9,7 @@
   "gui.opentoonline.recreateRules": "Пересоздать правила",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
   "gui.opentoonline.whitelistMode": "Режим белого списка",
+  "gui.opentoonline.hideIP": "Скрыть IP",
   "gui.opentoonline.editWhitelist": "Белый список",
   "gui.opentoonline.updateNotification": "Увед. об обновлении",
 

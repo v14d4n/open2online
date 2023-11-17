@@ -17,6 +17,7 @@ public class OpenToOnlineConfig {
     public static final ForgeConfigSpec.ConfigValue<ArrayList<String>> friends;
     public static final ForgeConfigSpec.ConfigValue<Integer> portMapperIndex;
     public static final ForgeConfigSpec.ConfigValue<Boolean> updateNotifications;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> hideIP;
 
     static {
         BUILDER.push("Open2Online config");
@@ -30,6 +31,7 @@ public class OpenToOnlineConfig {
         friends = BUILDER.comment("List of friends who can join the server if the whitelist mode is enabled.").define("FriendList", new ArrayList<>());
         updateNotifications = BUILDER.comment("Chat message about an update.").define("UpdateNotifications", true);
         portMapperIndex = BUILDER.comment("Needed for faster port opening using PortMapper. Don't change it.").define("PortMapperIndex", -1);
+        hideIP = BUILDER.comment("Hide your IP.").define("HideIP", true);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

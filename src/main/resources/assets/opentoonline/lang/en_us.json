@@ -9,6 +9,7 @@
   "gui.opentoonline.recreateRules": "Recreate Rules",
   "gui.opentoonline.recreateFirewallRules": "Recreate Firewall Rules",
   "gui.opentoonline.whitelistMode": "Whitelist Mode",
+  "gui.opentoonline.hideIP": "Hide IP",
   "gui.opentoonline.editWhitelist": "Whitelist",
   "gui.opentoonline.updateNotification": "Update Notifications",
 

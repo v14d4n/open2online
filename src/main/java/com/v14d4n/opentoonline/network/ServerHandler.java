@@ -43,7 +43,11 @@ public class ServerHandler {
 
     private static void printHostedGameMessage(boolean online, int port) {
         if (online) {
-            minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
+            if (OpenToOnlineConfig.hideIP.get()) {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getFormattedClickToCopyText(port)));
+            } else {
+                minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.gameHostedOn").append(getServerFormattedAddress(port)));
+            }
         } else {
             minecraft.gui.getChat().addMessage(new ModChatTranslatableComponent("chat.opentoonline.localGameHostedOn").append(getServerFormattedPort(port)));
         }
@@ -114,6 +118,16 @@ public class ServerHandler {
     private static IFormattableTextComponent getServerFormattedAddress(int port) {
         String stringAddress = getExternalIP() + ":" + port;
         IFormattableTextComponent serverAddress = new StringTextComponent(stringAddress).setStyle(Style.EMPTY.setUnderlined(true)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringAddress))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("tooltip.opentoonline.copy"))));
+
+        return new StringTextComponent(" [").append(serverAddress).append("]");
+    }
+
+    private static IFormattableTextComponent getFormattedClickToCopyText(int port) {
+        String stringAddress = getExternalIP() + ":" + port;
+        String clickToCopyText = new TranslationTextComponent("tooltip.opentoonline.copy").getString();
+        IFormattableTextComponent serverAddress = new StringTextComponent(clickToCopyText).setStyle(Style.EMPTY.setUnderlined(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, stringAddress))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslationTextComponent("tooltip.opentoonline.copy"))));
 
