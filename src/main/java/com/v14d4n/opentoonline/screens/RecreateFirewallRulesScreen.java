@@ -19,13 +19,20 @@ public class RecreateFirewallRulesScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addRenderableWidget(new Button(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, Component.translatable("gui.opentoonline.recreateRules"), (p_96304_) -> {
+        Button.Builder recreateButtonBuilder = new Button.Builder(Component.translatable("gui.opentoonline.recreateRules"), (p_96827_) -> {
             recreateFirewallRules();
-            this.minecraft.setScreen(lastScreen);
-        }));
-        this.addRenderableWidget(new Button(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, CommonComponents.GUI_CANCEL, (p_96300_) -> {
-            this.minecraft.setScreen(lastScreen);
-        }));
+            this.minecraft.setScreen(this.lastScreen);
+        });
+        recreateButtonBuilder.pos(this.width / 2 - 155, this.height / 4 + 120 + 12);
+        recreateButtonBuilder.size(150, 20);
+        this.addRenderableWidget(recreateButtonBuilder.build());
+
+        Button.Builder backButtonBuilder = new Button.Builder(CommonComponents.GUI_CANCEL, (p_96827_) -> {
+            this.minecraft.setScreen(this.lastScreen);
+        });
+        backButtonBuilder.pos(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12);
+        backButtonBuilder.size(150, 20);
+        this.addRenderableWidget(backButtonBuilder.build());
     }
 
     @Override

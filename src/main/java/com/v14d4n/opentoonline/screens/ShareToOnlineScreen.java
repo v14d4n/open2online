@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -68,37 +69,57 @@ public class ShareToOnlineScreen extends Screen {
         this.maxPlayersEditBox.tick();
 
         if (this.portEditBox.isFocused()) {
-            this.maxPlayersEditBox.setFocus(false); // Fix menu bug
+            this.maxPlayersEditBox.setFocused(false); // Fix menu bug
         }
     }
 
     private void createRecreateFirewallRulesButton() {
-        this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, Component.translatable("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
+
+        Button.Builder builder = new Button.Builder(Component.translatable("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
             minecraft.setScreen(new RecreateFirewallRulesScreen(this));
-        }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
-            this.renderTooltip(pPoseStack, minecraft.font.split(Component.translatable("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
-        }));
+        });
+        builder.pos(width / 2 - 155, height / 4 + 69);
+        builder.size(150, 20);
+        builder.tooltip(Tooltip.create(Component.translatable("tooltip.opentoonline.recreateFirewallRules"), null));
+//        this.addRenderableWidget(new Button(width / 2 - 155, height / 4 + 69, 150, 20, Component.translatable("gui.opentoonline.recreateFirewallRules"), (p_96657_) -> {
+//            minecraft.setScreen(new RecreateFirewallRulesScreen(this));
+//        }, (pButton, pPoseStack, pMouseX, pMouseY) -> {
+//            this.renderTooltip(pPoseStack, minecraft.font.split(Component.translatable("tooltip.opentoonline.recreateFirewallRules"), 200), pMouseX, pMouseY);
+//        }));
+
+        this.addRenderableWidget(builder.build());
     }
 
     private void createAdvancedSettingsButton() {
-        this.addRenderableWidget(new Button(width / 2 + 5, height / 4 + 69, 150, 20, Component.translatable("gui.opentoonline.advancedSettings"), (p_96657_) -> {
-            minecraft.setScreen(new AdvancedSettingsScreen(this));
-        }));
+        Button.Builder builder = new Button.Builder(Component.translatable("gui.opentoonline.advancedSettings"), (p_96657_) -> {
+                    minecraft.setScreen(new AdvancedSettingsScreen(this));
+        });
+        builder.pos(width / 2 + 5, height / 4 + 69);
+        builder.size(150, 20);
+        this.addRenderableWidget(builder.build());
     }
 
     private void createCancelButton() {
-        this.addRenderableWidget(new Button(width / 2 + 5, height - 28, 150, 20, CommonComponents.GUI_CANCEL, (p_96657_) -> {
+        Button.Builder builder = new Button.Builder(CommonComponents.GUI_CANCEL, (p_96657_) -> {
             minecraft.setScreen(this.lastScreen);
-        }));
+        });
+        builder.pos(width / 2 + 5, height - 28);
+        builder.size(150, 20);
+
+        this.addRenderableWidget(builder.build());
     }
 
     private void createOpenToOnlineButton() {
-        openToOnlineButton = this.addRenderableWidget(new Button(width / 2 - 155, height - 28, 150, 20, Component.translatable("gui.opentoonline.startOnlineWorld"), (p_96660_) -> {
+        Button.Builder builder = new Button.Builder(Component.translatable("gui.opentoonline.startOnlineWorld"), (p_96657_) -> {
             minecraft.setScreen(null);
             int port = Integer.parseInt(portEditBox.getValue());
             int maxPlayers = Integer.parseInt(maxPlayersEditBox.getValue());
             new Thread(() -> OpenToOnlineCommand.open(port, maxPlayers, gameMode, commands)).start();
-        }));
+        });
+        builder.pos(width / 2 - 155, height - 28);
+        builder.size(150, 20);
+
+        openToOnlineButton = this.addRenderableWidget(builder.build());
     }
 
     private void createPortEditBox() {
@@ -140,8 +161,8 @@ public class ShareToOnlineScreen extends Screen {
         this.renderBackground(pPoseStack);
         drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 22, 16777215);
         drawCenteredString(pPoseStack, this.font, SETTINGS_INFO_TEXT, this.width / 2, Math.max(52, height / 4 - 8), 16777215);
-        drawString(pPoseStack, this.font, PORT_INFO_TEXT, portEditBox.x, portEditBox.y - (portEditBox.getHeight() / 2) - 1, 16777215);
-        drawString(pPoseStack, this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.x, maxPlayersEditBox.y - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
+        drawString(pPoseStack, this.font, PORT_INFO_TEXT, portEditBox.getX(), portEditBox.getY() - (portEditBox.getHeight() / 2) - 1, 16777215);
+        drawString(pPoseStack, this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.getX(), maxPlayersEditBox.getY() - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
     }
 

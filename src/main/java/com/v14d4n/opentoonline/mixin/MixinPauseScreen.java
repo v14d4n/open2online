@@ -31,7 +31,7 @@ public abstract class MixinPauseScreen extends Screen {
         int pYDiff = active ? 20 : 0;
 
         this.addRenderableWidget(new ImageButton(
-                width / 2 + 104, height / 4 + 96 - 16, 20, 20, pXOffset, 0, pYDiff,
+                width / 2 + 104, height / 4 + 96 - 22, 20, 20, pXOffset, 0, pYDiff,
                 new ResourceLocation(OpenToOnline.MOD_ID, "textures/gui/button.png"), 64,
                 64, (p_213088_1_) -> this.getMinecraft().setScreen(new ShareToOnlineScreen(this))
         )).active = active;
