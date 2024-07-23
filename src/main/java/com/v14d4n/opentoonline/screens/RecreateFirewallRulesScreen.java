@@ -1,10 +1,12 @@
 package com.v14d4n.opentoonline.screens;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.StringJoiner;
@@ -41,22 +43,22 @@ public class RecreateFirewallRulesScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(@NotNull GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         int pX = this.width / 2 - 140;
         int pY = this.height / 4 - 60 + 60;
 
-        this.renderBackground(pPoseStack);
-        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 20, 16777215);
-        drawString(pPoseStack, this.font, "Don't use this if everything is working fine!", pX, pY, 16711680);
-        drawString(pPoseStack, this.font, "This should only be used when there are no errors", pX, pY + 18, 10526880);
-        drawString(pPoseStack, this.font, "publishing the server, but no one can connect to it.", pX, pY + 27, 10526880);
-        drawString(pPoseStack, this.font, "Make sure it's necessary.", pX, pY + 36, 10526880);
-        drawString(pPoseStack, this.font, "When you click on \"Recreate Rules\" button, the old Minecraft", pX, pY + 54, 10526880);
-        drawString(pPoseStack, this.font, "firewall rules will be deleted and new correct ones will be", pX, pY + 63, 10526880);
-        drawString(pPoseStack, this.font, "created.", pX, pY + 72, 10526880);
-        drawString(pPoseStack, this.font, "This only works on Windows.", pX, pY + 91, 10526880);
-        drawString(pPoseStack, this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 100, 10526880);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        this.renderBackground(guiGraphics);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 20, 16777215);
+        guiGraphics.drawString(this.font, "Don't use this if everything is working fine!", pX, pY, 16711680);
+        guiGraphics.drawString(this.font, "This should only be used when there are no errors", pX, pY + 18, 10526880);
+        guiGraphics.drawString(this.font, "publishing the server, but no one can connect to it.", pX, pY + 27, 10526880);
+        guiGraphics.drawString(this.font, "Make sure it's necessary.", pX, pY + 36, 10526880);
+        guiGraphics.drawString(this.font, "When you click on \"Recreate Rules\" button, the old Minecraft", pX, pY + 54, 10526880);
+        guiGraphics.drawString(this.font, "firewall rules will be deleted and new correct ones will be", pX, pY + 63, 10526880);
+        guiGraphics.drawString(this.font, "created.", pX, pY + 72, 10526880);
+        guiGraphics.drawString(this.font, "This only works on Windows.", pX, pY + 91, 10526880);
+        guiGraphics.drawString(this.font, "Recreating firewall rules requires administrator rights.", pX, pY + 100, 10526880);
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     private void recreateFirewallRules() {

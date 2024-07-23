@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,6 +27,7 @@ public abstract class MixinPauseScreen extends Screen {
         createOpenToOnlineMenuButton(active);
     }
 
+    @Unique
     private void createOpenToOnlineMenuButton(boolean active) {
         int pXOffset = active ? 0 : 20;
         int pYDiff = active ? 20 : 0;

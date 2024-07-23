@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.v14d4n.opentoonline.commands.OpenToOnlineCommand;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
 public class ShareToOnlineScreen extends Screen {
@@ -157,13 +159,13 @@ public class ShareToOnlineScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
-        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 22, 16777215);
-        drawCenteredString(pPoseStack, this.font, SETTINGS_INFO_TEXT, this.width / 2, Math.max(52, height / 4 - 8), 16777215);
-        drawString(pPoseStack, this.font, PORT_INFO_TEXT, portEditBox.getX(), portEditBox.getY() - (portEditBox.getHeight() / 2) - 1, 16777215);
-        drawString(pPoseStack, this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.getX(), maxPlayersEditBox.getY() - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    public void render(@NotNull GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(guiGraphics);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, Math.max(52, height / 4 - 8) - 22, 16777215);
+        guiGraphics.drawCenteredString(this.font, SETTINGS_INFO_TEXT, this.width / 2, Math.max(52, height / 4 - 8), 16777215);
+        guiGraphics.drawString(this.font, PORT_INFO_TEXT, portEditBox.getX(), portEditBox.getY() - (portEditBox.getHeight() / 2) - 1, 16777215);
+        guiGraphics.drawString(this.font, MAX_PLAYERS_INFO_TEXT, maxPlayersEditBox.getX(), maxPlayersEditBox.getY() - (maxPlayersEditBox.getHeight() / 2) - 1, 16777215);
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
     }
 
     private boolean isEditBoxesValuesValid() {

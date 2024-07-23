@@ -5,12 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.v14d4n.opentoonline.OpenToOnline;
 import com.v14d4n.opentoonline.config.OpenToOnlineConfig;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -72,11 +74,11 @@ public class EditWhitelistScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
-        this.optionsList.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, 13, 16777215);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    public void render(@NotNull GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(guiGraphics);
+        this.optionsList.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 13, 16777215);
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
 //        List<FormattedCharSequence> list = tooltipAt(this.optionsList, pMouseX, pMouseY);
 //        if (list != null) {
 //            this.renderTooltip(pPoseStack, list, pMouseX, pMouseY);

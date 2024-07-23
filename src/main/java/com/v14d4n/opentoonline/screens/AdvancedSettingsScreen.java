@@ -3,11 +3,13 @@ package com.v14d4n.opentoonline.screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.v14d4n.opentoonline.server.ModServerOptions;
 import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 
 public class AdvancedSettingsScreen extends Screen {
@@ -44,11 +46,11 @@ public class AdvancedSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(pPoseStack);
-        this.optionsList.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        drawCenteredString(pPoseStack, this.font, this.title, this.width / 2, 13, 16777215);
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    public void render(@NotNull GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        this.renderBackground(guiGraphics);
+        this.optionsList.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
+        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 13, 16777215);
+        super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
 //        List<FormattedCharSequence> list = tooltipAt(this.optionsList, pMouseX, pMouseY);
 //        if (list != null) {
 //            this.renderTooltip(pPoseStack, list, pMouseX, pMouseY);
