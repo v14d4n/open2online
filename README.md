@@ -1,7 +1,8 @@
-# open2online
-A mod that makes your local (LAN) Minecraft server visible online without manual port forwarding.
 
-Please, visit the [CurseForge page](https://www.curseforge.com/minecraft/mc-mods/open2online) for more info.
+# open2online
+**Please, visit the [CurseForge page](https://www.curseforge.com/minecraft/mc-mods/open2online) for more info.**
+
+This mod makes your local (LAN) Minecraft server visible online without manual port forwarding.
 
 Open2Online seamlessly integrates with Minecraft's built-in "Open to LAN" feature and adds automatic internet exposure using UPnP (Universal Plug and Play), NAT-PMP, or PCP protocols. This opens the required port on your router dynamically.
 
