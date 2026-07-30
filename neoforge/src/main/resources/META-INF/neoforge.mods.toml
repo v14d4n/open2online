@@ -8,7 +8,7 @@ modId = "open2online"
 version = "${version}"
 displayName = "Open2Online"
 authors = "v14d4n"
-displayURL = "https://www.curseforge.com/minecraft/mc-mods/open2online"
+displayURL = "https://modrinth.com/project/open2online"
 logoFile = "logoopen.png"
 description = '''
 Adds the ability to create an online server
