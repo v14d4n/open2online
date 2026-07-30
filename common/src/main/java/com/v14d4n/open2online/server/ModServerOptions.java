@@ -107,7 +107,7 @@ public final class ModServerOptions {
     }
 
     private static OptionInstance<Boolean> booleanOption(String key,
-                                                         net.neoforged.neoforge.common.ModConfigSpec.ConfigValue<Boolean> value) {
+                                                         OpenToOnlineConfig.Value<Boolean> value) {
         return OptionInstance.createBoolean(key, value.get(), updated -> {
             value.set(updated);
             value.save();

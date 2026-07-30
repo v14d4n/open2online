@@ -1,6 +1,7 @@
 package com.v14d4n.open2online;
 
 import com.v14d4n.open2online.commands.OpenToOnlineCommand;
+import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.screens.AdvancedSettingsScreen;
 import dev.architectury.event.events.client.ClientGuiEvent;
@@ -21,6 +22,8 @@ public final class OpenToOnline {
     }
 
     public static void init() {
+        OpenToOnlineConfig.load();
+
         CommandRegistrationEvent.EVENT.register(
                 (dispatcher, registry, selection) -> OpenToOnlineCommand.register(dispatcher));
 
