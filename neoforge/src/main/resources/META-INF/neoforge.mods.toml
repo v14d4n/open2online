@@ -11,7 +11,7 @@ authors = "v14d4n"
 displayURL = "https://www.curseforge.com/minecraft/mc-mods/open2online"
 logoFile = "logoopen.png"
 description = '''
-Adds the ability to create an online server without manual port forwarding.
+Adds the ability to create an online server
 '''
 
 [[dependencies.open2online]]

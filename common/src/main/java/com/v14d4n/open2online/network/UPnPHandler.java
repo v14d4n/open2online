@@ -203,6 +203,7 @@ public final class UPnPHandler {
         }
 
         closePortAfterLogout(false);
+        ServerHandler.refreshWindowTitle();
 
         int port = OpenToOnlineConfig.port.get();
         if (upnp != null && upnp.isMappedTCP(port)) {

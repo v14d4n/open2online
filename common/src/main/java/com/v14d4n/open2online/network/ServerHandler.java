@@ -2,6 +2,7 @@ package com.v14d4n.open2online.network;
 
 import com.mojang.authlib.GameProfile;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.mixin.MinecraftTitleInvoker;
 import com.v14d4n.open2online.network.chat.ModChat;
 import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import net.fabricmc.api.EnvType;
@@ -62,10 +63,12 @@ public final class ServerHandler {
 
         // Must land before publishing: usesAuthentication is read when a client connects, to fill in
         // the shouldAuthenticate flag of the login handshake.
-        applyLicenceRequirement(server, online);
+        applyLicenceRequirement(server);
 
         if (server.publishServer(gameMode, allowCommands, port)) {
             setupAndSaveServerConfiguration(maxPlayers, port, online);
+            // Before the address, so the thing the host actually needs stays the last line in chat.
+            warnAboutOpenAccess(online);
             printHostedGameMessage(online, port);
         } else {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
@@ -100,6 +103,19 @@ public final class ServerHandler {
         OpenToOnlineConfig.port.set(port);
         OpenToOnlineConfig.maxPlayers.save();
         UPnPHandler.closePortAfterLogout(closePortAfterLogout);
+        refreshWindowTitle();
+    }
+
+    /**
+     * Repaints the window title. Publishing does not make vanilla rebuild it, so the marker added by
+     * {@code MixinMinecraft} has to be pushed out explicitly — otherwise it appears only once some
+     * other event happens to refresh the title.
+     */
+    public static void refreshWindowTitle() {
+        Minecraft minecraft = Minecraft.getInstance();
+        // Setting the window title goes through GLFW, which belongs on the main thread; publishing
+        // runs on a worker.
+        minecraft.execute(() -> ((MinecraftTitleInvoker) minecraft).open2online$updateTitle());
     }
 
     public static boolean isServerPublished() {
@@ -113,12 +129,26 @@ public final class ServerHandler {
      * {@code usesAuthentication}. Turning it off is what lets players join when session verification
      * cannot succeed — at the cost of anyone being able to claim any name, hence the warning.
      */
-    private static void applyLicenceRequirement(IntegratedServer server, boolean online) {
-        boolean requireLicense = OpenToOnlineConfig.requireLicense.get();
-        server.setUsesAuthentication(requireLicense);
+    private static void applyLicenceRequirement(IntegratedServer server) {
+        server.setUsesAuthentication(OpenToOnlineConfig.requireLicense.get());
+    }
 
-        if (online && !requireLicense) {
+    /**
+     * Points out the two settings that leave a published server open to strangers. Each can be
+     * silenced separately on the notifications screen.
+     */
+    private static void warnAboutOpenAccess(boolean online) {
+        if (!online) {
+            return;
+        }
+
+        if (!OpenToOnlineConfig.requireLicense.get() && OpenToOnlineConfig.licenseNotifications.get()) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.warn.licenseNotRequired",
+                    ModChatTranslatableComponent.MessageTypes.WARN));
+        }
+
+        if (!OpenToOnlineConfig.whitelistMode.get() && OpenToOnlineConfig.whitelistNotifications.get()) {
+            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.warn.whitelistDisabled",
                     ModChatTranslatableComponent.MessageTypes.WARN));
         }
     }

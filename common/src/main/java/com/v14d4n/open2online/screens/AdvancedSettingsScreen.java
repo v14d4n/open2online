@@ -28,16 +28,23 @@ public class AdvancedSettingsScreen extends OptionsSubScreen {
     @Override
     protected void addOptions() {
         this.list.addBig(ModServerOptions.library());
+        // Buttons that open another screen on one row, plain toggles on the next.
         this.list.addSmall(
                 createEditWhitelistButton(),
-                ModServerOptions.allowPvp().createButton(this.options));
+                createNotificationsButton());
         this.list.addSmall(
-                ModServerOptions.updateNotifications().createButton(this.options),
+                ModServerOptions.allowPvp().createButton(this.options),
                 ModServerOptions.hideIP().createButton(this.options));
 
         // Full width rather than squeezed into a half row: it changes who can get onto the server,
         // and an odd count would leave it dangling in the left column anyway.
         this.list.addBig(ModServerOptions.requireLicense());
+    }
+
+    private Button createNotificationsButton() {
+        return Button.builder(Component.translatable("gui.open2online.notifications"),
+                        press -> this.minecraft.setScreen(new NotificationSettingsScreen(this)))
+                .build();
     }
 
     private Button createEditWhitelistButton() {

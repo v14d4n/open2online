@@ -5,7 +5,6 @@ import com.v14d4n.open2online.network.nat.UPnPLibraries;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 
 
@@ -25,7 +24,9 @@ public final class ModServerOptions {
         return new OptionInstance<>(
                 "options.open2online.library",
                 OptionInstance.cachedConstantTooltip(Component.translatable("tooltip.open2online.library")),
-                (caption, value) -> Options.genericValueLabel(caption, value.caption()),
+                // Only the value: CycleButton prepends "caption: " itself, the same way vanilla's
+                // BOOLEAN_TO_STRING returns a bare ON/OFF.
+                (caption, value) -> value.caption(),
                 new OptionInstance.Enum<>(List.of(UPnPLibraries.values()), UPnPLibraries.CODEC),
                 UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()),
                 value -> {
@@ -50,7 +51,15 @@ public final class ModServerOptions {
     }
 
     public static OptionInstance<Boolean> updateNotifications() {
-        return booleanOption("gui.open2online.updateNotification", OpenToOnlineConfig.updateNotifications);
+        return booleanOption("options.open2online.notify.update", OpenToOnlineConfig.updateNotifications);
+    }
+
+    public static OptionInstance<Boolean> licenseNotifications() {
+        return booleanOption("options.open2online.notify.license", OpenToOnlineConfig.licenseNotifications);
+    }
+
+    public static OptionInstance<Boolean> whitelistNotifications() {
+        return booleanOption("options.open2online.notify.whitelist", OpenToOnlineConfig.whitelistNotifications);
     }
 
     public static OptionInstance<Boolean> whitelistMode() {

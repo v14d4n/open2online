@@ -56,6 +56,7 @@ public class ShareToOnlineScreen extends Screen {
         createOpenToLanButton();
         createAdvancedSettingsButton();
         createRecreateFirewallRulesButton();
+        createSupportDeveloperButton();
         createCancelButton();
 
         updateStartButtons();
@@ -140,6 +141,19 @@ public class ShareToOnlineScreen extends Screen {
                         press -> this.minecraft.setScreen(new RecreateFirewallRulesScreen(this)))
                 .bounds(this.width / 2 - 155, this.height / 4 + 69, 150, 20)
                 .tooltip(Tooltip.create(Component.translatable("tooltip.open2online.recreateFirewallRules")))
+                .build());
+    }
+
+    /** Sits in the free slot beside "Start LAN World"; only offered to Russian players. */
+    private void createSupportDeveloperButton() {
+        if (!SupportDeveloperPopup.isAvailable()) {
+            return;
+        }
+
+        this.addRenderableWidget(Button
+                .builder(Component.translatable("gui.open2online.supportDeveloper"),
+                        press -> this.minecraft.setScreen(SupportDeveloperPopup.create(this)))
+                .bounds(this.width / 2 + 5, this.height - 51, 150, 20)
                 .build());
     }
 
