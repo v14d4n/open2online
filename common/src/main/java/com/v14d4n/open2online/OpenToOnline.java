@@ -3,14 +3,16 @@ package com.v14d4n.open2online;
 import com.v14d4n.open2online.commands.OpenToOnlineCommand;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.screens.AdvancedSettingsScreen;
+import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.event.events.client.ClientPlayerEvent;
+import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.client.ConfigurationScreenRegistry;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class OpenToOnline {
     public static final String MOD_ID = "open2online";
@@ -22,7 +24,9 @@ public final class OpenToOnline {
         CommandRegistrationEvent.EVENT.register(
                 (dispatcher, registry, selection) -> OpenToOnlineCommand.register(dispatcher));
 
-        PlayerEvent.PLAYER_JOIN.register(OpenToOnline::onPlayerJoin);
+        // Only the host leaving matters here, to take the port mapping down with them. Joining needs
+        // no server-side listener: the whitelist is answered through MixinPlayerList, at vanilla's
+        // own login gate.
         PlayerEvent.PLAYER_QUIT.register(UPnPHandler::onPlayerLoggedOut);
 
         // Nested lambda on purpose: the outer supplier only runs on the client, so the screen class
@@ -32,16 +36,16 @@ public final class OpenToOnline {
 
     private static void initClient() {
         ConfigurationScreenRegistry.register(Platform.getMod(MOD_ID), AdvancedSettingsScreen::new);
-    }
 
-    /**
-     * The whitelist is no longer enforced from here — {@code MixinPlayerList} answers vanilla's login
-     * gate instead, which rejects before the player is placed in the world.
-     */
-    private static void onPlayerJoin(ServerPlayer player) {
-        String hostName = Minecraft.getInstance().getUser().getName();
-        if (hostName.equals(player.getName().getString())) {
-            UpdateChecker.checkOnce();
-        }
+        ClientLifecycleEvent.CLIENT_STARTED.register(UpdateChecker::check);
+
+        // Registration order decides which line lands in chat first: listeners run in the order they
+        // were added, and both hand their message to the same queue. The update notice goes first so
+        // the auto start countdown stays the last thing said.
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> UpdateChecker.announceIfPending());
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(AutoStart::onPlayerJoin);
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(AutoStart::onPlayerQuit);
+        ClientTickEvent.CLIENT_POST.register(AutoStart::onClientTick);
+        ClientGuiEvent.INIT_POST.register((screen, access) -> AutoStart.onScreenOpened(screen));
     }
 }

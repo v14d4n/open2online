@@ -27,11 +27,11 @@ public final class ModChatTranslatableComponent {
      * root would tint the message and everything callers append to it. Only the prefix carries a
      * colour, which is what the old {@code §a…§r} form achieved with an explicit reset.
      */
-    public static MutableComponent of(String key, MessageTypes type) {
+    public static MutableComponent of(String key, MessageTypes type, Object... args) {
         return Component.empty()
                 .append(Component.literal(PREFIX).withStyle(type.color))
                 .append(Component.literal(" "))
-                .append(Component.translatable(key));
+                .append(Component.translatable(key, args));
     }
 
     public enum MessageTypes {

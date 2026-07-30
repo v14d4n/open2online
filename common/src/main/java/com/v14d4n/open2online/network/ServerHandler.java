@@ -57,7 +57,12 @@ public final class ServerHandler {
         }
 
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+
+        // The world can be left while the port is still being mapped; the mapping must not outlive it.
         if (server == null) {
+            if (online) {
+                UPnPHandler.closePort(port);
+            }
             return false;
         }
 

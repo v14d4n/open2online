@@ -16,6 +16,8 @@ import net.minecraft.network.chat.Component;
  */
 @Environment(EnvType.CLIENT)
 public class AdvancedSettingsScreen extends OptionsSubScreen {
+    private static final int BUTTON_HEIGHT = 20;
+
     public AdvancedSettingsScreen(Screen lastScreen) {
         super(lastScreen, Minecraft.getInstance().options,
                 Component.translatable("gui.open2online.advancedServerSettings"));
@@ -28,17 +30,28 @@ public class AdvancedSettingsScreen extends OptionsSubScreen {
     @Override
     protected void addOptions() {
         this.list.addBig(ModServerOptions.library());
-        // Buttons that open another screen on one row, plain toggles on the next.
+        // Buttons that open another screen first, then the plain toggles.
         this.list.addSmall(
                 createEditWhitelistButton(),
                 createNotificationsButton());
+        // Alone on its row: the second widget may be null, which is how vanilla lays out an odd
+        // number of options, and the button is built at the full row width to fill it.
+        this.list.addSmall(createAutoStartButton(), null);
         this.list.addSmall(
                 ModServerOptions.allowPvp().createButton(this.options),
                 ModServerOptions.hideIP().createButton(this.options));
-
-        // Full width rather than squeezed into a half row: it changes who can get onto the server,
-        // and an odd count would leave it dangling in the left column anyway.
         this.list.addBig(ModServerOptions.requireLicense());
+    }
+
+    /**
+     * Sized from {@code getRowWidth()} rather than a literal: {@code BIG_BUTTON_WIDTH}, which
+     * {@code addBig} uses, is private.
+     */
+    private Button createAutoStartButton() {
+        return Button.builder(Component.translatable("gui.open2online.autoStart"),
+                        press -> this.minecraft.setScreen(new AutoStartSettingsScreen(this)))
+                .size(this.list.getRowWidth(), BUTTON_HEIGHT)
+                .build();
     }
 
     private Button createNotificationsButton() {

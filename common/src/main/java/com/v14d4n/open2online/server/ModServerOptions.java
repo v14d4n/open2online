@@ -62,6 +62,42 @@ public final class ModServerOptions {
         return booleanOption("options.open2online.notify.whitelist", OpenToOnlineConfig.whitelistNotifications);
     }
 
+    public static OptionInstance<Boolean> autoStart() {
+        return booleanOption("options.open2online.autoStart", OpenToOnlineConfig.autoStart);
+    }
+
+    /** Slider rather than a cycle button: a range of seconds is what vanilla shows as a slider. */
+    public static OptionInstance<Integer> autoStartDelay() {
+        return new OptionInstance<>(
+                "options.open2online.autoStart.delay",
+                OptionInstance.cachedConstantTooltip(
+                        Component.translatable("tooltip.open2online.autoStart.delay")),
+                (caption, value) -> Component.translatable("options.open2online.autoStart.delay.value", value),
+                new OptionInstance.IntRange(OpenToOnlineConfig.AUTO_START_MIN_DELAY,
+                        OpenToOnlineConfig.AUTO_START_MAX_DELAY),
+                OpenToOnlineConfig.autoStartDelay.get(),
+                value -> {
+                    OpenToOnlineConfig.autoStartDelay.set(value);
+                    OpenToOnlineConfig.autoStartDelay.save();
+                });
+    }
+
+    /** A boolean underneath, but shown as the two destinations rather than as on/off. */
+    public static OptionInstance<Boolean> autoStartMode() {
+        return new OptionInstance<>(
+                "options.open2online.autoStart.mode",
+                OptionInstance.noTooltip(),
+                (caption, value) -> Component.translatable(value
+                        ? "options.open2online.autoStart.mode.online"
+                        : "options.open2online.autoStart.mode.lan"),
+                OptionInstance.BOOLEAN_VALUES,
+                OpenToOnlineConfig.autoStartOnline.get(),
+                value -> {
+                    OpenToOnlineConfig.autoStartOnline.set(value);
+                    OpenToOnlineConfig.autoStartOnline.save();
+                });
+    }
+
     public static OptionInstance<Boolean> whitelistMode() {
         return booleanOption("gui.open2online.whitelistMode", OpenToOnlineConfig.whitelistMode);
     }

@@ -12,6 +12,9 @@ import java.util.ArrayList;
  * per-loader and lives in the platform entrypoints.
  */
 public final class OpenToOnlineConfig {
+    public static final int AUTO_START_MIN_DELAY = 3;
+    public static final int AUTO_START_MAX_DELAY = 60;
+
     public static final ModConfigSpec SPEC;
 
     public static final ModConfigSpec.ConfigValue<Integer> port;
@@ -28,6 +31,9 @@ public final class OpenToOnlineConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> licenseNotifications;
     public static final ModConfigSpec.ConfigValue<Boolean> whitelistNotifications;
     public static final ModConfigSpec.ConfigValue<Boolean> hideIP;
+    public static final ModConfigSpec.ConfigValue<Boolean> autoStart;
+    public static final ModConfigSpec.ConfigValue<Boolean> autoStartOnline;
+    public static final ModConfigSpec.ConfigValue<Integer> autoStartDelay;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +53,11 @@ public final class OpenToOnlineConfig {
         whitelistNotifications = builder.comment("Chat warning when the server is published with the whitelist off.").define("WhitelistNotifications", true);
         portMapperIndex = builder.comment("Needed for faster port opening using PortMapper. Don't change it.").define("PortMapperIndex", -1);
         hideIP = builder.comment("Hide your IP.").define("HideIP", true);
+        autoStart = builder.comment("Publish the world automatically after entering it. Default value is false.").define("AutoStart", false);
+        autoStartOnline = builder.comment("Whether auto start publishes to the internet (true) or only to the local network (false). Default value is true.").define("AutoStartOnline", true);
+        // Never below three seconds: the client has to receive its permission level and finish
+        // loading first, and the player needs a moment to cancel by opening the menu.
+        autoStartDelay = builder.comment("Seconds to wait after entering a world before publishing. Minimum 3. Default value is 5.").defineInRange("AutoStartDelay", 5, AUTO_START_MIN_DELAY, AUTO_START_MAX_DELAY);
 
         builder.pop();
         SPEC = builder.build();

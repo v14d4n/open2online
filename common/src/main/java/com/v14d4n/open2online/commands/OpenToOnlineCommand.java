@@ -2,6 +2,7 @@ package com.v14d4n.open2online.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.network.PublishTask;
 import com.v14d4n.open2online.network.ServerHandler;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.network.chat.ModChat;
@@ -34,18 +35,28 @@ public final class OpenToOnlineCommand {
     }
 
     public static int open(int port, int maxPlayers, GameType gameMode, boolean allowCommands, boolean online) {
-        ModChat.send(ModChatTranslatableComponent.of("chat.open2online.startingServer"));
-
-        if (ServerHandler.isServerPublished()) {
-            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.serverIsAlreadyPublished", MessageTypes.ERROR));
+        // One publish at a time: the command can be run again while the first is still working.
+        if (!PublishTask.begin()) {
+            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.alreadyStarting", MessageTypes.ERROR));
             return 0;
         }
 
-        if (online && !UPnPHandler.isPortAvailable(port)) {
-            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed", MessageTypes.ERROR));
-            return 0;
-        }
+        try {
+            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.startingServer"));
 
-        return ServerHandler.startServer(port, maxPlayers, gameMode, allowCommands, online) ? 1 : 0;
+            if (ServerHandler.isServerPublished()) {
+                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.serverIsAlreadyPublished", MessageTypes.ERROR));
+                return 0;
+            }
+
+            if (online && !UPnPHandler.isPortAvailable(port)) {
+                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed", MessageTypes.ERROR));
+                return 0;
+            }
+
+            return ServerHandler.startServer(port, maxPlayers, gameMode, allowCommands, online) ? 1 : 0;
+        } finally {
+            PublishTask.finish();
+        }
     }
 }
