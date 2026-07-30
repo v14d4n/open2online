@@ -8,7 +8,8 @@
     "MixinIntegratedServer",
     "MixinMinecraft",
     "MixinPauseScreen",
-    "MixinPlayerList"
+    "MixinPlayerList",
+    "PauseScreenAccessor"
   ],
   "mixins": [
   ],
