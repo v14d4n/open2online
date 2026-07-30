@@ -1,8 +1,6 @@
 package com.v14d4n.open2online;
 
 import com.v14d4n.open2online.commands.OpenToOnlineCommand;
-import com.v14d4n.open2online.config.OpenToOnlineConfig;
-import com.v14d4n.open2online.network.ServerHandler;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.screens.AdvancedSettingsScreen;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -12,7 +10,6 @@ import dev.architectury.platform.client.ConfigurationScreenRegistry;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class OpenToOnline {
@@ -37,32 +34,14 @@ public final class OpenToOnline {
         ConfigurationScreenRegistry.register(Platform.getMod(MOD_ID), AdvancedSettingsScreen::new);
     }
 
+    /**
+     * The whitelist is no longer enforced from here — {@code MixinPlayerList} answers vanilla's login
+     * gate instead, which rejects before the player is placed in the world.
+     */
     private static void onPlayerJoin(ServerPlayer player) {
-        String joinedName = player.getName().getString();
         String hostName = Minecraft.getInstance().getUser().getName();
-
-        if (hostName.equals(joinedName)) {
+        if (hostName.equals(player.getName().getString())) {
             UpdateChecker.checkOnce();
-            return;
         }
-
-        // Only the host enforces the whitelist, and only while the world is actually exposed.
-        if (!ServerHandler.isClientRunningOnlineServer()
-                || !ServerHandler.isPlayerServerOwner(Minecraft.getInstance().getGameProfile())) {
-            return;
-        }
-
-        if (OpenToOnlineConfig.whitelistMode.get() && !isWhitelisted(joinedName)) {
-            player.connection.disconnect(Component.literal("Not in the whitelist"));
-        }
-    }
-
-    private static boolean isWhitelisted(String playerName) {
-        for (String friend : OpenToOnlineConfig.friends.get()) {
-            if (friend.equals(playerName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

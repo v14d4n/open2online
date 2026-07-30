@@ -251,4 +251,30 @@ public final class ServerHandler {
     public static boolean isClientRunningOnlineServer() {
         return UPnPHandler.getClosePortAfterLogout();
     }
+
+    /**
+     * Membership test behind the whitelist, consulted by {@code MixinPlayerList} from vanilla's own
+     * login gate. Matching is by name because the config stores names: the native whitelist keys its
+     * entries by UUID, which would mean resolving every nickname through Mojang's profile API.
+     */
+    public static boolean isWhitelisted(NameAndId nameAndId) {
+        String name = nameAndId.name();
+
+        // The host is always allowed, whatever the list says.
+        if (name.equals(Minecraft.getInstance().getUser().getName())) {
+            return true;
+        }
+
+        for (String friend : OpenToOnlineConfig.friends.get()) {
+            if (friend.equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Whether the whitelist should gate logins right now. */
+    public static boolean isWhitelistActive() {
+        return isClientRunningOnlineServer() && OpenToOnlineConfig.whitelistMode.get();
+    }
 }

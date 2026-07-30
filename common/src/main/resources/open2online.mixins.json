@@ -6,7 +6,8 @@
   "client": [
     "MixinIntegratedServer",
     "MixinMinecraft",
-    "MixinPauseScreen"
+    "MixinPauseScreen",
+    "MixinPlayerList"
   ],
   "mixins": [
   ],
