@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "open2online",
+  "version": "${version}",
+  "name": "Open2Online",
+  "description": "Adds the ability to create an online server without manual port forwarding.",
+  "authors": [
+    "v14d4n"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/open2online",
+    "sources": "https://github.com/v14d4n/open2online",
+    "issues": "https://github.com/v14d4n/open2online/issues"
+  },
+  "license": "MIT",
+  "icon": "logoopen.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.v14d4n.open2online.fabric.client.OpenToOnlineFabricClient"
+    ]
+  },
+  "mixins": [
+    "open2online.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "architectury": ">=19.0.1",
+    "fabric-api": "*",
+    "forgeconfigapiport": ">=21.11.1"
+  }
+}

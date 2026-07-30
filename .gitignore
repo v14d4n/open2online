@@ -1,0 +1,33 @@
+# gradle
+.gradle
+build
+!gradle/wrapper/gradle-wrapper.jar
+
+# loom / architectury
+.architectury-transformer
+remappedSrc
+run
+runs
+run-data
+
+# idea
+.idea
+out
+*.ipr
+*.iws
+*.iml
+
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+eclipse
+
+# vscode
+.vscode
+
+# tooling
+.claude/settings.local.json

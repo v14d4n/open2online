@@ -1,0 +1,71 @@
+package com.v14d4n.open2online.server;
+
+import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.network.nat.UPnPLibraries;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.Options;
+import net.minecraft.network.chat.Component;
+
+
+import java.util.List;
+
+/**
+ * The 1.16.5 build kept every value in static mutable fields and pushed them into the config from an
+ * explicit {@code save()}. {@code OptionInstance} carries its own change callback, so each option
+ * writes straight through to the config instead.
+ */
+@Environment(EnvType.CLIENT)
+public final class ModServerOptions {
+    private ModServerOptions() {
+    }
+
+    public static OptionInstance<UPnPLibraries> library() {
+        return new OptionInstance<>(
+                "options.open2online.library",
+                OptionInstance.cachedConstantTooltip(Component.translatable("tooltip.open2online.library")),
+                (caption, value) -> Options.genericValueLabel(caption, value.caption()),
+                new OptionInstance.Enum<>(List.of(UPnPLibraries.values()), UPnPLibraries.CODEC),
+                UPnPLibraries.getById(OpenToOnlineConfig.libraryId.get()),
+                value -> {
+                    OpenToOnlineConfig.libraryId.set(value.getId());
+                    OpenToOnlineConfig.libraryId.save();
+                });
+    }
+
+    public static OptionInstance<Boolean> allowPvp() {
+        return booleanOption("options.open2online.allowPvp", OpenToOnlineConfig.allowPvp);
+    }
+
+    /** Carries a tooltip because switching it off has a security consequence worth spelling out. */
+    public static OptionInstance<Boolean> requireLicense() {
+        return OptionInstance.createBoolean("options.open2online.licenseRequired",
+                OptionInstance.cachedConstantTooltip(Component.translatable("tooltip.open2online.licenseRequired")),
+                OpenToOnlineConfig.requireLicense.get(),
+                updated -> {
+                    OpenToOnlineConfig.requireLicense.set(updated);
+                    OpenToOnlineConfig.requireLicense.save();
+                });
+    }
+
+    public static OptionInstance<Boolean> updateNotifications() {
+        return booleanOption("gui.open2online.updateNotification", OpenToOnlineConfig.updateNotifications);
+    }
+
+    public static OptionInstance<Boolean> whitelistMode() {
+        return booleanOption("gui.open2online.whitelistMode", OpenToOnlineConfig.whitelistMode);
+    }
+
+    public static OptionInstance<Boolean> hideIP() {
+        return booleanOption("gui.open2online.hideIP", OpenToOnlineConfig.hideIP);
+    }
+
+    private static OptionInstance<Boolean> booleanOption(String key,
+                                                         net.neoforged.neoforge.common.ModConfigSpec.ConfigValue<Boolean> value) {
+        return OptionInstance.createBoolean(key, value.get(), updated -> {
+            value.set(updated);
+            value.save();
+        });
+    }
+}

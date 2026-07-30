@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.v14d4n.open2online.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "MixinIntegratedServer",
+    "MixinMinecraft",
+    "MixinPauseScreen"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,39 @@
+modLoader = "javafml"
+loaderVersion = "[10,)"
+issueTrackerURL = "https://github.com/v14d4n/open2online/issues"
+license = "MIT"
+
+[[mods]]
+modId = "open2online"
+version = "${version}"
+displayName = "Open2Online"
+authors = "v14d4n"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/open2online"
+logoFile = "logoopen.png"
+description = '''
+Adds the ability to create an online server without manual port forwarding.
+'''
+
+[[dependencies.open2online]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.11,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.open2online]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.11,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.open2online]]
+modId = "architectury"
+type = "required"
+versionRange = "[19.0.1,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[mixins]]
+config = "open2online.mixins.json"

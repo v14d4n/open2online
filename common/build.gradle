@@ -1,0 +1,22 @@
+architectury {
+    common rootProject.enabled_platforms.split(',')
+}
+
+dependencies {
+    // We depend on Fabric Loader here to use the Fabric @Environment annotations,
+    // which get remapped to the correct annotations on each platform.
+    // Do NOT use other classes from Fabric Loader.
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+
+    // Architectury API. This is optional, and you can comment it out if you don't need it.
+    modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
+
+    // ModConfigSpec and friends. NeoForge ships these itself, and on Fabric they come from
+    // Forge Config API Port at runtime, so the common module only needs them to compile against.
+    compileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:$rootProject.forge_config_api_port_version"
+
+    // Bundled into each platform jar; needed here for compilation only.
+    compileOnly "org.bitlet:weupnp:$rootProject.weupnp_version"
+    compileOnly "com.simtechdata:WaifUPnP:$rootProject.waifupnp_version"
+    compileOnly "com.offbynull.portmapper:portmapper:$rootProject.portmapper_version"
+}
