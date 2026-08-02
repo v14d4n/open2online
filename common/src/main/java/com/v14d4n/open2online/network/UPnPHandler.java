@@ -217,8 +217,11 @@ public final class UPnPHandler {
         closePortAfterLogout(false);
         ServerHandler.refreshWindowTitle();
 
+        // Deliberately not asked whether the port is still mapped first. A query that fails looks
+        // exactly like "not mapped", and acting on that would leave the mapping on the router for
+        // good. Deleting one that is not there costs nothing, so the close is unconditional.
         int port = OpenToOnlineConfig.port.get();
-        if (upnp != null && upnp.isMappedTCP(port)) {
+        if (upnp != null) {
             upnp.closePortTCP(port);
         }
     }

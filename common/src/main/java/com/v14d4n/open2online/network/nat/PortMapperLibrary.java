@@ -97,9 +97,17 @@ public class PortMapperLibrary implements IUPnPLibrary {
 
     @Override
     public boolean closePortTCP(int port) {
-        boolean isPortClosed = true;
         // Called off first: a renewal landing after the unmap would put the mapping straight back.
         lease.cancel();
+
+        // Nothing was ever mapped, so nothing failed to close. The host quitting closes the port
+        // without asking whether it is open, and that has to be answerable.
+        if (currentMapper == null || mappedPort == null) {
+            discard();
+            return true;
+        }
+
+        boolean isPortClosed = true;
         try {
             currentMapper.unmapPort(mappedPort);
         } catch (Exception e) {

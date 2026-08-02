@@ -138,11 +138,18 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return false;
     }
 
-    /** Asks the gateway whether the mapping is still there, and puts it back if it is not. */
+    /**
+     * Asks the gateway whether the mapping is still there, and re-adds it if the answer is not a
+     * clear yes.
+     *
+     * <p>The query cannot tell "the mapping is gone" from "the gateway did not answer", so the log
+     * line does not pretend to know which of the two happened. Re-adding is right either way: a
+     * mapping that is already there is simply overwritten with itself.
+     */
     private void verifyMapping() {
         if (!getTcpPortMapping(port)) {
             addTcpPortMapping(port);
-            LOGGER.info("The gateway had dropped the mapping for port {}; it was added again.", port);
+            LOGGER.info("Port {} did not come back as mapped; asked the gateway for it again.", port);
         }
     }
 
