@@ -57,9 +57,12 @@ public final class UPnPHandler {
     }
 
     /**
-     * Walks the backends until one maps the port, starting with whichever worked last time. Each
-     * attempt stays quiet — only the outcome is reported, otherwise a run through three backends
-     * would bury the chat in failures the player cannot act on.
+     * Walks the backends until one maps the port, starting with whichever worked last time.
+     *
+     * <p>Each attempt says which backend it is about to try, because discovery can take tens of
+     * seconds and silence for that long reads as a hang. Failures stay quiet: the next line naming
+     * the next backend already says the previous one did not work, and three spelled-out failures
+     * would bury the chat in things the player cannot act on.
      */
     private static boolean openPortAutomatically(int port) {
         announceOpening(port);
@@ -73,6 +76,9 @@ public final class UPnPHandler {
                 continue;
             }
 
+            ModChat.send(ModChatTranslatableComponent.of("chat.open2online.tryingLibrary",
+                    MessageTypes.OK, candidate.caption()));
+
             boolean opened;
             try {
                 opened = handler.isUPnPAvailable() && map(handler, port, false);
@@ -85,9 +91,9 @@ public final class UPnPHandler {
             if (opened) {
                 upnp = handler;
                 rememberAutoLibrary(candidate);
-                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.autoLibrarySelected")
-                        .append(Component.literal(" "))
-                        .append(candidate.caption()));
+                // Which backend won is already on screen, one line up, so this only has to confirm
+                // the outcome — the same wording the manual path uses.
+                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.portIsOpen"));
                 return true;
             }
 

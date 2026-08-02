@@ -42,7 +42,7 @@
   "chat.open2online.portIsAlreadyClosed": "Порт уже закрыт",
   "chat.open2online.portIsOpen": "Порт открыт",
   "chat.open2online.portIsClosed": "Порт закрыт",
-  "chat.open2online.autoLibrarySelected": "Порт открыт через",
+  "chat.open2online.tryingLibrary": "Пробуем %s...",
   "chat.open2online.startingServer": "Запуск сервера...",
   "chat.open2online.autoStartScheduled": "Автозапуск: сервер откроется через %s с. Нажмите ESC, чтобы отменить",
   "chat.open2online.autoStartCancelled": "Автозапуск отменён",
