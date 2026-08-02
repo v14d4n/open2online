@@ -33,6 +33,7 @@
   "chat.open2online.error.alreadyStarting": "Сервер уже запускается",
   "chat.open2online.warn.gettingAnExternalIP": "Не удалось получить внешний IP",
   "chat.open2online.warn.usingLastKnownIP": "Показан последний известный адрес, он может быть устаревшим",
+  "chat.open2online.warn.routerIPUnknown": "Роутер не сообщил внешний IP, адрес может быть неверным",
   "chat.open2online.warn.whitelistDisabled": "Выключен белый список: зайти может кто угодно",
   "chat.open2online.warn.licenseNotRequired": "Выключена проверка лицензии: зайти можно под любым ником",
   "chat.open2online.upnpIsAvailable": "UPnP доступен",

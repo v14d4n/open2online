@@ -180,10 +180,18 @@ public final class ServerHandler {
      * published by this point, so the message has to go out either way, as it did on 1.16.5.
      */
     private static String resolveExternalIP() {
-        Optional<String> fetched = askRouter().or(ServerHandler::fetchExternalIP);
+        Optional<String> fromRouter = askRouter();
+        Optional<String> fetched = fromRouter.or(ServerHandler::fetchExternalIP);
         String lastIP = OpenToOnlineConfig.lastIP.get();
 
         if (fetched.isPresent()) {
+            // Only worth saying when there is an address to qualify. The paths below already warn,
+            // and more loudly, about one that is stale or missing altogether.
+            if (fromRouter.isEmpty()) {
+                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.warn.routerIPUnknown",
+                        ModChatTranslatableComponent.MessageTypes.WARN));
+            }
+
             String currentIP = fetched.get();
             if (!currentIP.equals(lastIP)) {
                 if (!lastIP.equals(DEFAULT_IP)) {

@@ -33,6 +33,7 @@
   "chat.open2online.error.alreadyStarting": "The server is already starting",
   "chat.open2online.warn.gettingAnExternalIP": "Failed to get external IP",
   "chat.open2online.warn.usingLastKnownIP": "Showing the last known address, it may be out of date",
+  "chat.open2online.warn.routerIPUnknown": "The router did not report an external IP, the address may be wrong",
   "chat.open2online.warn.whitelistDisabled": "Whitelist is off: anyone can join",
   "chat.open2online.warn.licenseNotRequired": "License check is off: anyone can join under any name",
   "chat.open2online.upnpIsAvailable": "UPnP is available",
