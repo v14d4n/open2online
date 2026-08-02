@@ -106,11 +106,12 @@ public final class UPnPHandler {
 
     /** The backend that succeeded last time goes first; the rest keep their declared order. */
     private static List<UPnPLibraries> autoCandidates() {
-        UPnPLibraries remembered = UPnPLibraries.backendById(OpenToOnlineConfig.autoLibraryId.get());
-        if (remembered == null) {
-            return UPnPLibraries.AUTO_ORDER;
-        }
+        return UPnPLibraries.backendById(OpenToOnlineConfig.autoLibraryId.get())
+                .map(UPnPHandler::startingWith)
+                .orElse(UPnPLibraries.AUTO_ORDER);
+    }
 
+    private static List<UPnPLibraries> startingWith(UPnPLibraries remembered) {
         List<UPnPLibraries> ordered = new ArrayList<>(UPnPLibraries.AUTO_ORDER.size());
         ordered.add(remembered);
         for (UPnPLibraries library : UPnPLibraries.AUTO_ORDER) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,28 +91,28 @@ public final class UpdateChecker {
     }
 
     private static void checkAndAnnounce() {
-        String latest = lookUpLatestVersion();
-        if (latest == null || latest.equals(installedVersion())) {
+        Optional<String> latest = lookUpLatestVersion()
+                .filter(published -> !published.equals(installedVersion()));
+        if (latest.isEmpty()) {
             return;
         }
 
-        notice = buildNotice(installedVersion(), latest);
+        notice = buildNotice(installedVersion(), latest.get());
 
         // Already in a world by the time the answer arrived — say it now rather than next join.
         Minecraft.getInstance().execute(UpdateChecker::announceIfPending);
     }
 
     /**
-     * The newest version published for the running Minecraft version, or {@code null} if the lookup
-     * came back empty-handed. A non-null answer also means {@link #downloadPage()} now knows where to
-     * send someone.
+     * The newest version published for the running Minecraft version, empty if the lookup came back
+     * with nothing. An answer also means {@link #downloadPage()} now knows where to send someone.
      *
      * <p>Blocking, so it belongs on a worker thread. Mod Menu asks the same question from a thread of
      * its own, hence the lock and the kept answer: whoever gets there first pays for the request.
      */
-    public static synchronized String lookUpLatestVersion() {
+    public static synchronized Optional<String> lookUpLatestVersion() {
         if (cachedLatestVersion != null) {
-            return cachedLatestVersion;
+            return Optional.of(cachedLatestVersion);
         }
 
         String mcVersion = SharedConstants.getCurrentVersion().name();
@@ -127,7 +128,7 @@ public final class UpdateChecker {
 
             JsonObject promos = root.getAsJsonObject("promos");
             if (promos == null) {
-                return null;
+                return Optional.empty();
             }
 
             // NeoForge reads the same file and only counts "-recommended" as a finished release.
@@ -136,17 +137,17 @@ public final class UpdateChecker {
             // without a release going out. NeoForge shows the same field.
             JsonElement homepage = root.get("homepage");
             if (published == null || homepage == null) {
-                return null;
+                return Optional.empty();
             }
 
             cachedDownloadPage = homepage.getAsString();
             cachedLatestVersion = published.getAsString();
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             LOGGER.warn("Update check failed", e);
-            return null;
+            return Optional.empty();
         }
 
-        return cachedLatestVersion;
+        return Optional.of(cachedLatestVersion);
     }
 
     public static String installedVersion() {

@@ -26,16 +26,18 @@ public final class OpenToOnlineModMenu implements ModMenuApi {
         return OpenToOnlineModMenu::lookUp;
     }
 
-    /** Runs on a Mod Menu worker, which is why it is allowed to sit on the network. */
+    /**
+     * Runs on a Mod Menu worker, which is why it is allowed to sit on the network. Ends in a bare
+     * {@code null} because that is what the interface asks for — "no update" has no other spelling
+     * here.
+     */
     private static UpdateInfo lookUp() {
         // Deliberately not tied to the mod's own update notification setting: that one governs the
         // chat line, while this badge is Mod Menu's, switched on and off in Mod Menu's own settings.
-        String latest = com.v14d4n.open2online.UpdateChecker.lookUpLatestVersion();
-        if (latest == null || latest.equals(com.v14d4n.open2online.UpdateChecker.installedVersion())) {
-            return null;
-        }
-
-        return new Outdated(com.v14d4n.open2online.UpdateChecker.downloadPage());
+        return com.v14d4n.open2online.UpdateChecker.lookUpLatestVersion()
+                .filter(latest -> !latest.equals(com.v14d4n.open2online.UpdateChecker.installedVersion()))
+                .<UpdateInfo>map(latest -> new Outdated(com.v14d4n.open2online.UpdateChecker.downloadPage()))
+                .orElse(null);
     }
 
     /** No update message of its own, so Mod Menu writes the one it uses for every other mod. */

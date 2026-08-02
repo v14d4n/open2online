@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -82,12 +83,7 @@ public enum UPnPLibraries implements StringRepresentable {
      * Resolves a remembered backend, ignoring anything that is not a usable one — a stale id or
      * {@link #AUTO} itself both mean "nothing remembered".
      */
-    public static UPnPLibraries backendById(int id) {
-        for (UPnPLibraries library : AUTO_ORDER) {
-            if (library.getId() == id) {
-                return library;
-            }
-        }
-        return null;
+    public static Optional<UPnPLibraries> backendById(int id) {
+        return AUTO_ORDER.stream().filter(library -> library.getId() == id).findFirst();
     }
 }

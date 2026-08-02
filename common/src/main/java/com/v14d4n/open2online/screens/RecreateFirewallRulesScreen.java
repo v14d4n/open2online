@@ -9,6 +9,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +50,18 @@ public class RecreateFirewallRulesScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addRenderableWidget(Button
+        Button recreate = this.addRenderableWidget(Button
                 .builder(Component.translatable("gui.open2online.recreateRules"), press -> {
                     recreateFirewallRules();
                     this.minecraft.setScreen(this.lastScreen);
                 })
                 .bounds(this.width / 2 - 155, this.height / 4 + 132, 150, 20)
                 .build());
+
+        // netsh and the elevation prompt are Windows only. The paragraph above has always said so;
+        // until now the button did not agree, and elsewhere it launched a powershell that is not
+        // there, logged the failure and told the player nothing.
+        recreate.active = Util.getPlatform() == Util.OS.WINDOWS;
 
         this.addRenderableWidget(Button
                 .builder(CommonComponents.GUI_CANCEL, press -> this.minecraft.setScreen(this.lastScreen))
