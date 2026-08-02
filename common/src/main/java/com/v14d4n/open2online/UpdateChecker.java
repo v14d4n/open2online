@@ -9,6 +9,7 @@ import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -50,18 +51,21 @@ public final class UpdateChecker {
 
     private static volatile MutableComponent notice;
     private static volatile boolean announced;
+    /** The answer from {@link #UPDATE_URL}, so that every surface asking costs one request. */
+    private static volatile String cachedLatestVersion;
 
     private UpdateChecker() {
     }
 
     /** Fires the lookup once, off the main thread. */
     public static void check(Minecraft minecraft) {
-        // Nothing is fetched when the notice is switched off, so the mod stays quiet on the network too.
+        // The switch covers the chat line, so with it off there is nothing this lookup could deliver.
+        // Mod Menu asks separately and is not bound by it — that badge is its own notification.
         if (!OpenToOnlineConfig.updateNotifications.get()) {
             return;
         }
 
-        Thread worker = new Thread(UpdateChecker::lookUpLatestVersion, "Open2Online update check");
+        Thread worker = new Thread(UpdateChecker::checkAndAnnounce, "Open2Online update check");
         worker.setDaemon(true);
         worker.start();
     }
@@ -80,11 +84,31 @@ public final class UpdateChecker {
         ModChat.send(pending);
     }
 
-    private static void lookUpLatestVersion() {
-        String currentVersion = Platform.getMod(OpenToOnline.MOD_ID).getVersion();
-        String key = SharedConstants.getCurrentVersion().name() + "-latest";
+    private static void checkAndAnnounce() {
+        String latest = lookUpLatestVersion();
+        if (latest == null || latest.equals(installedVersion())) {
+            return;
+        }
 
-        String latest;
+        notice = buildNotice(installedVersion(), latest);
+
+        // Already in a world by the time the answer arrived — say it now rather than next join.
+        Minecraft.getInstance().execute(UpdateChecker::announceIfPending);
+    }
+
+    /**
+     * The newest version published for the running Minecraft version, or {@code null} if the lookup
+     * came back empty-handed.
+     *
+     * <p>Blocking, so it belongs on a worker thread. Mod Menu asks the same question from a thread of
+     * its own, hence the lock and the kept answer: whoever gets there first pays for the request.
+     */
+    public static synchronized String lookUpLatestVersion() {
+        if (cachedLatestVersion != null) {
+            return cachedLatestVersion;
+        }
+
+        String mcVersion = SharedConstants.getCurrentVersion().name();
         try {
             HttpURLConnection connection = (HttpURLConnection) URI.create(UPDATE_URL).toURL().openConnection();
             connection.setConnectTimeout(HTTP_TIMEOUT_MS);
@@ -96,25 +120,38 @@ public final class UpdateChecker {
             }
 
             JsonObject promos = root.getAsJsonObject("promos");
-            if (promos == null || !promos.has(key)) {
-                return;
+            if (promos == null) {
+                return null;
             }
-            latest = promos.get(key).getAsString();
+
+            // NeoForge reads the same file and only counts "-recommended" as a finished release, so
+            // that is what a version is published under. "-latest" is still accepted because the file
+            // sits in a branch of its own and can lag a release by a push.
+            JsonElement published = promos.get(mcVersion + "-recommended");
+            if (published == null) {
+                published = promos.get(mcVersion + "-latest");
+            }
+            if (published == null) {
+                return null;
+            }
+
+            cachedLatestVersion = stripMinecraftPrefix(published.getAsString());
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             LOGGER.warn("Update check failed", e);
-            return;
+            return null;
         }
 
-        String latestVersion = stripMinecraftPrefix(latest);
-        String installedVersion = stripMinecraftPrefix(currentVersion);
-        if (latestVersion.equals(installedVersion)) {
-            return;
-        }
+        return cachedLatestVersion;
+    }
 
-        notice = buildNotice(installedVersion, latestVersion);
+    /** The running version, read the same way the published one is, so the two can be compared. */
+    public static String installedVersion() {
+        return stripMinecraftPrefix(Platform.getMod(OpenToOnline.MOD_ID).getVersion());
+    }
 
-        // Already in a world by the time the answer arrived — say it now rather than next join.
-        Minecraft.getInstance().execute(UpdateChecker::announceIfPending);
+    /** Where someone who wants the newer build should be sent. */
+    public static String downloadPage() {
+        return Platform.getMod(OpenToOnline.MOD_ID).getHomepage().orElse(HOMEPAGE);
     }
 
     /** {@code update.json} stores entries as {@code <mcVersion>-<modVersion>}. */
@@ -124,9 +161,7 @@ public final class UpdateChecker {
     }
 
     private static MutableComponent buildNotice(String current, String latest) {
-        String homepage = Platform.getMod(OpenToOnline.MOD_ID)
-                .getHomepage()
-                .orElse(HOMEPAGE);
+        String homepage = downloadPage();
 
         MutableComponent message = ModChatTranslatableComponent
                 .of("chat.open2online.update", MessageTypes.WARN)

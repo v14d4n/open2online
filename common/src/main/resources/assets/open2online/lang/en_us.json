@@ -58,7 +58,7 @@
   "options.open2online.autoStart.mode.online": "Internet",
   "options.open2online.autoStart.mode.lan": "Local network",
   "options.open2online.autoStart.delay": "Delay",
-  "options.open2online.autoStart.delay.value": "%s sec",
+  "options.open2online.autoStart.delay.value": "%s: %s sec",
   "options.open2online.licenseRequired": "Require License",
   "options.open2online.library": "Library",
   "options.open2online.library.auto": "Auto",

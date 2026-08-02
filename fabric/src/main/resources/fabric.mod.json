@@ -18,13 +18,16 @@
   "entrypoints": {
     "client": [
       "com.v14d4n.open2online.fabric.client.OpenToOnlineFabricClient"
+    ],
+    "modmenu": [
+      "com.v14d4n.open2online.fabric.client.OpenToOnlineModMenu"
     ]
   },
   "mixins": [
     "open2online.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.19.3",
+    "fabricloader": ">=0.19.2",
     "minecraft": "~1.21.11",
     "java": ">=21",
     "architectury": ">=19.0.1",

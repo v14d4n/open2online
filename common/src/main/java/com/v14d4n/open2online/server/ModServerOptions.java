@@ -72,7 +72,7 @@ public final class ModServerOptions {
                 "options.open2online.autoStart.delay",
                 OptionInstance.cachedConstantTooltip(
                         Component.translatable("tooltip.open2online.autoStart.delay")),
-                (caption, value) -> Component.translatable("options.open2online.autoStart.delay.value", value),
+                (caption, value) -> Component.translatable("options.open2online.autoStart.delay.value", caption, value),
                 new OptionInstance.IntRange(OpenToOnlineConfig.AUTO_START_MIN_DELAY,
                         OpenToOnlineConfig.AUTO_START_MAX_DELAY),
                 OpenToOnlineConfig.autoStartDelay.get(),

@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.GameType;
 
 /**
@@ -22,16 +23,27 @@ import net.minecraft.world.level.GameType;
  */
 @Environment(EnvType.CLIENT)
 public final class AutoStart {
-    private static final int TICKS_PER_SECOND = 20;
-    private static final int IDLE = -1;
+    private static final long MILLIS_PER_SECOND = 1000L;
+    /** Out of reach of any real timestamp, so an armed deadline can never be mistaken for this. */
+    private static final long IDLE = Long.MIN_VALUE;
 
-    private static int countdown = IDLE;
+    /**
+     * When the publish is due, as a {@link Util#getMillis()} reading, or {@link #IDLE}.
+     *
+     * <p>A deadline rather than a countdown of ticks: the client tick rate is a target, not a
+     * promise, and under load ticks arrive late, which stretches the configured seconds into
+     * something longer. {@code getMillis()} reads a nano time source, so the deadline survives both
+     * a stuttering game and the wall clock being moved.
+     *
+     * <p>Every event that touches this runs on the client thread, so plain access is enough.
+     */
+    private static long publishAt = IDLE;
 
     private AutoStart() {
     }
 
     public static void onPlayerJoin(LocalPlayer player) {
-        countdown = IDLE;
+        publishAt = IDLE;
 
         // Only our own world: joining someone else's server must not arm anything, nor announce it.
         if (!OpenToOnlineConfig.autoStart.get() || !Minecraft.getInstance().hasSingleplayerServer()) {
@@ -39,7 +51,7 @@ public final class AutoStart {
         }
 
         int seconds = OpenToOnlineConfig.autoStartDelay.get();
-        countdown = seconds * TICKS_PER_SECOND;
+        publishAt = Util.getMillis() + seconds * MILLIS_PER_SECOND;
 
         ModChat.send(ModChatTranslatableComponent.of("chat.open2online.autoStartScheduled",
                 ModChatTranslatableComponent.MessageTypes.OK, seconds));
@@ -47,7 +59,7 @@ public final class AutoStart {
 
     /** Leaving the world drops a pending start; there is nothing left to publish. */
     public static void onPlayerQuit(LocalPlayer player) {
-        countdown = IDLE;
+        publishAt = IDLE;
     }
 
     /**
@@ -58,26 +70,25 @@ public final class AutoStart {
      * no safe way to stop it mid-flight, so that stays out of scope.
      */
     public static void onScreenOpened(Screen screen) {
-        if (countdown == IDLE || !(screen instanceof PauseScreen)) {
+        if (publishAt == IDLE || !(screen instanceof PauseScreen)) {
             return;
         }
 
-        countdown = IDLE;
+        publishAt = IDLE;
         ModChat.send(ModChatTranslatableComponent.of("chat.open2online.autoStartCancelled",
                 ModChatTranslatableComponent.MessageTypes.WARN));
     }
 
+    /**
+     * The tick only asks whether the deadline has passed; it is the client thread's turn to speak
+     * that this borrows, not a clock of its own.
+     */
     public static void onClientTick(Minecraft minecraft) {
-        if (countdown == IDLE) {
+        if (publishAt == IDLE || Util.getMillis() < publishAt) {
             return;
         }
 
-        countdown--;
-        if (countdown > 0) {
-            return;
-        }
-        countdown = IDLE;
-
+        publishAt = IDLE;
         publish(minecraft);
     }
 

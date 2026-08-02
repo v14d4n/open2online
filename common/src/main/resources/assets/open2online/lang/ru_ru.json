@@ -58,7 +58,7 @@
   "options.open2online.autoStart.mode.online": "В интернет",
   "options.open2online.autoStart.mode.lan": "В локальную сеть",
   "options.open2online.autoStart.delay": "Задержка",
-  "options.open2online.autoStart.delay.value": "%s с",
+  "options.open2online.autoStart.delay.value": "%s: %s с",
   "options.open2online.licenseRequired": "Требовать лицензию",
   "options.open2online.library": "Библиотека",
   "options.open2online.library.auto": "Авто",
