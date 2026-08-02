@@ -1,6 +1,6 @@
 package com.v14d4n.open2online.screens;
 
-import com.v14d4n.open2online.commands.OpenToOnlineCommand;
+import com.v14d4n.open2online.network.PublishTask;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.network.ServerHandler;
 import net.fabricmc.api.EnvType;
@@ -121,7 +121,7 @@ public class ShareToOnlineScreen extends Screen {
 
         this.minecraft.setScreen(null);
         Thread worker = new Thread(
-                () -> OpenToOnlineCommand.open(port, maxPlayers, mode, allowCommands, online),
+                () -> PublishTask.start(port, maxPlayers, mode, allowCommands, online),
                 "Open2Online publish");
         worker.setDaemon(true);
         worker.start();

@@ -1,7 +1,7 @@
 package com.v14d4n.open2online;
 
-import com.v14d4n.open2online.commands.OpenToOnlineCommand;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.network.PublishTask;
 import com.v14d4n.open2online.network.ServerHandler;
 import com.v14d4n.open2online.network.chat.ModChat;
 import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
@@ -106,7 +106,7 @@ public final class AutoStart {
         boolean allowCommands = ServerHandler.canLocalPlayerUseCheats();
 
         Thread worker = new Thread(
-                () -> OpenToOnlineCommand.open(port, maxPlayers, gameMode, allowCommands, online),
+                () -> PublishTask.start(port, maxPlayers, gameMode, allowCommands, online),
                 "Open2Online auto start");
         worker.setDaemon(true);
         worker.start();
