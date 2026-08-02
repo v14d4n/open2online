@@ -34,6 +34,8 @@
   "chat.open2online.warn.gettingAnExternalIP": "Failed to get external IP",
   "chat.open2online.warn.usingLastKnownIP": "Showing the last known address, it may be out of date",
   "chat.open2online.warn.routerIPUnknown": "The router did not report an external IP, the address may be wrong",
+  "chat.open2online.warn.carrierNat": "Your provider uses CGNAT - the server is most likely unreachable from outside.",
+  "chat.open2online.warn.behindRouter": "Your router is itself behind another router - the server is most likely unreachable from outside",
   "chat.open2online.warn.whitelistDisabled": "Whitelist is off: anyone can join",
   "chat.open2online.warn.licenseNotRequired": "License check is off: anyone can join under any name",
   "chat.open2online.upnpIsAvailable": "UPnP is available",

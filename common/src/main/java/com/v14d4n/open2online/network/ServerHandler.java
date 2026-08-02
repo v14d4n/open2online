@@ -1,5 +1,6 @@
 package com.v14d4n.open2online.network;
 
+import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.mixin.MinecraftTitleInvoker;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.List;
@@ -94,7 +96,10 @@ public final class ServerHandler {
             return;
         }
 
-        String address = resolveExternalIP() + ":" + port;
+        // Built with the same class Minecraft parses it back with, which is what puts an IPv6 literal
+        // in brackets — "[2001:db8::1]:25565". Plain concatenation produced something the server list
+        // cannot read.
+        String address = HostAndPort.fromParts(resolveExternalIP(), port).toString();
         MutableComponent shown = OpenToOnlineConfig.hideIP.get()
                 ? bracketed(copyable(Component.translatable("tooltip.open2online.copy").getString(), address))
                 : bracketed(copyable(address, address));
@@ -181,7 +186,10 @@ public final class ServerHandler {
      * published by this point, so the message has to go out either way, as it did on 1.16.5.
      */
     private static String resolveExternalIP() {
-        Optional<String> fromRouter = askRouter();
+        // Asked once — for some backends this is a round trip to the router — and then judged twice:
+        // whether it can be shown, and failing that, why not.
+        Optional<String> routerSaid = UPnPHandler.externalAddress();
+        Optional<String> fromRouter = routerSaid.filter(ServerHandler::isReachableFromOutside);
         Optional<String> fetched = fromRouter.or(ServerHandler::fetchExternalIP);
         String lastIP = OpenToOnlineConfig.lastIP.get();
 
@@ -189,7 +197,15 @@ public final class ServerHandler {
             // Only worth saying when there is an address to qualify. The paths below already warn,
             // and more loudly, about one that is stale or missing altogether.
             if (fromRouter.isEmpty()) {
-                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.warn.routerIPUnknown",
+                // Which story to tell depends on what the router actually said. Anything unusable —
+                // including the 0.0.0.0 a router reports when it believes its WAN is down, which it
+                // plainly is not, since everything else on this path just worked — falls back to the
+                // vaguest of the three.
+                String warning = routerSaid.flatMap(ServerHandler::parseAddress)
+                        .filter(reported -> !reported.isAnyLocalAddress())
+                        .map(ServerHandler::describeUnusableRouterAddress)
+                        .orElse("chat.open2online.warn.routerIPUnknown");
+                ModChat.send(ModChatTranslatableComponent.of(warning,
                         ModChatTranslatableComponent.MessageTypes.WARN));
             }
 
@@ -218,52 +234,66 @@ public final class ServerHandler {
     }
 
     /**
-     * The address the port mapping protocol already reported. Costs nothing — the backend learned it
-     * during the exchange that opened the port — and it answers even where the echo services are
-     * unreachable.
+     * Which of the two NAT stories the router's own address tells.
      *
-     * <p>Checked rather than trusted: UPnP-IGD and NAT-PMP report the router's own WAN address, and
-     * behind carrier-grade NAT or a second router that address belongs to the carrier or to a private
-     * range, so nobody outside could dial it. Only PCP is told the address the mapping actually got.
+     * <p>Worth spelling out, because both look exactly like success and are not. The address printed
+     * afterwards is genuinely the one the world sees, the port genuinely is open on the router, and
+     * players still cannot connect — because something else sits between that router and the
+     * internet. From inside the game there is no other way for anyone to work that out.
      */
-    private static Optional<String> askRouter() {
-        return UPnPHandler.externalAddress().filter(ServerHandler::isReachableFromOutside);
+    private static String describeUnusableRouterAddress(InetAddress reported) {
+        return isCarrierGradeNat(reported)
+                ? "chat.open2online.warn.carrierNat"
+                : "chat.open2online.warn.behindRouter";
     }
 
     private static boolean isReachableFromOutside(String address) {
-        return parseIPv4(address).filter(ServerHandler::isPublic).isPresent();
+        return parseAddress(address).filter(ServerHandler::isPublic).isPresent();
     }
 
     /**
-     * Parses a literal without ever consulting DNS — which is the whole reason this does not use
-     * {@code InetAddress.getByName}, since that treats anything it cannot parse as a hostname and
-     * goes asking a name server about it.
-     *
-     * <p>Narrowed to IPv4 on purpose: Guava accepts IPv6 literals too, and the checks below read
-     * octets by position.
+     * Parses a literal of either family without ever consulting DNS — which is the whole reason this
+     * does not use {@code InetAddress.getByName}, since that treats anything it cannot parse as a
+     * hostname and goes asking a name server about it.
      */
-    private static Optional<Inet4Address> parseIPv4(String address) {
-        if (!InetAddresses.isInetAddress(address)) {
-            return Optional.empty();
-        }
-
-        return InetAddresses.forString(address) instanceof Inet4Address parsed
-                ? Optional.of(parsed)
+    private static Optional<InetAddress> parseAddress(String address) {
+        return InetAddresses.isInetAddress(address)
+                ? Optional.of(InetAddresses.forString(address))
                 : Optional.empty();
     }
 
     private static boolean isPublic(InetAddress address) {
-        if (address.isAnyLocalAddress() || address.isLoopbackAddress()
-                || address.isLinkLocalAddress() || address.isSiteLocalAddress()
-                || address.isMulticastAddress()) {
+        return !address.isAnyLocalAddress() && !address.isLoopbackAddress()
+                && !address.isMulticastAddress()
+                && !isSiteInternal(address) && !isCarrierGradeNat(address);
+    }
+
+    /**
+     * 100.64.0.0/10 — the range an ISP keeps for its own layer of NAT, and the one case where the
+     * router is telling the truth and the server is still unreachable. Java has no test for it.
+     *
+     * <p>IPv4 only, deliberately: IPv6 has no equivalent, because a carrier running one has no reason
+     * to hand out addresses it will then hide.
+     */
+    private static boolean isCarrierGradeNat(InetAddress address) {
+        if (!(address instanceof Inet4Address)) {
             return false;
         }
 
-        // 100.64.0.0/10, the range carriers keep for their own layer of NAT. Java has no test for it,
-        // and it is exactly the case a router reports while being unreachable from the outside.
         byte[] octets = address.getAddress();
         int second = octets[1] & 0xFF;
-        return !((octets[0] & 0xFF) == 100 && second >= 64 && second <= 127);
+        return (octets[0] & 0xFF) == 100 && second >= 64 && second <= 127;
+    }
+
+    /** Addresses that belong to somebody's own network: another router in front of this one. */
+    private static boolean isSiteInternal(InetAddress address) {
+        if (address.isSiteLocalAddress() || address.isLinkLocalAddress()) {
+            return true;
+        }
+
+        // fc00::/7, the unique local addresses — IPv6's answer to the private ranges, and not covered
+        // above: isSiteLocalAddress only knows the deprecated fec0::/10. The mask takes fc00 and fd00.
+        return address instanceof Inet6Address && (address.getAddress()[0] & 0xFE) == 0xFC;
     }
 
     /** Walks both services, twice each, with a small backoff between rounds. */
@@ -303,10 +333,18 @@ public final class ServerHandler {
                 return Optional.empty();
             }
 
-            // A blocked or misbehaving service can answer 200 with an HTML notice, so the shape of
-            // the reply is checked rather than trusted.
+            // Only the shape is checked, deliberately less than the router's answer is put through.
+            // An echo service reports the address its connection arrived from, which seen from the
+            // internet is public by definition — there is no non-public answer here to reject. The
+            // router, by contrast, reports its own WAN side, and that really can be a carrier or a
+            // private address.
+            //
+            // Both families pass. On a dual-stack connection the request leaves over IPv4 anyway, so
+            // an IPv6 reply means IPv4 was not available at all — precisely the case where refusing
+            // it would leave the player staring at the 0.0.0.0 placeholder instead of a usable
+            // address.
             String candidate = body.trim();
-            return parseIPv4(candidate).isPresent() ? Optional.of(candidate) : Optional.empty();
+            return parseAddress(candidate).isPresent() ? Optional.of(candidate) : Optional.empty();
         } catch (IOException | RuntimeException e) {
             LOGGER.warn("External IP lookup via {} failed", service, e);
             return Optional.empty();
