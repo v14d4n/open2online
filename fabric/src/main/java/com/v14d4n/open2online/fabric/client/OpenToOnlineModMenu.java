@@ -12,9 +12,9 @@ import net.fabricmc.api.Environment;
  * Flags the mod in Mod Menu's list when a newer build exists, the same way Mod Menu flags everything
  * else.
  *
- * <p>Mod Menu's own check matches the jar's hash against Modrinth, where the mod is not published, so
- * nothing would ever match. Answering out of the same {@code update.json} the chat notice reads keeps
- * one source of truth and works wherever the jar was downloaded from.
+ * <p>Mod Menu's own check matches the jar's hash against Modrinth, which only ever recognises jars
+ * downloaded from there. Answering out of the list the chat notice reads keeps one source of truth
+ * and covers the copies that came from anywhere else.
  *
  * <p>The config screen is deliberately left alone: Architectury already hands ours to Mod Menu, and
  * Mod Menu ignores the unset factory this class inherits rather than letting it overwrite that.
@@ -50,7 +50,7 @@ public final class OpenToOnlineModMenu implements ModMenuApi {
             return downloadLink;
         }
 
-        /** {@code update.json} only ever names finished releases. */
+        /** The list only ever names finished releases. */
         @Override
         public UpdateChannel getUpdateChannel() {
             return UpdateChannel.RELEASE;

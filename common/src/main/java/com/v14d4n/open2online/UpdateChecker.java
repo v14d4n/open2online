@@ -32,8 +32,9 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 /**
- * Replaces Forge's {@code VersionChecker}, which has no counterpart on Fabric. Reads the same
- * {@code update.json} the mod already publishes, so the file format does not change.
+ * Replaces Forge's {@code VersionChecker}, which has no counterpart on Fabric. Reads the list the mod
+ * publishes, in the format Forge's checker has always read, so NeoForge can be pointed at the same
+ * file.
  *
  * <p>The lookup runs at client start and the answer is parked until the player is somewhere it can be
  * read. Doing both at world entry meant the notice landed a second or two after everything else the
@@ -44,15 +45,14 @@ import net.minecraft.network.chat.Style;
 public final class UpdateChecker {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
     private static final String UPDATE_URL =
-            "https://raw.githubusercontent.com/v14d4n/open2online/update/update.json";
-    private static final String HOMEPAGE =
-            "https://modrinth.com/project/open2online/versions";
+            "https://raw.githubusercontent.com/v14d4n/open2online/update/updatev2.json";
     private static final int HTTP_TIMEOUT_MS = 5_000;
 
     private static volatile MutableComponent notice;
     private static volatile boolean announced;
     /** The answer from {@link #UPDATE_URL}, so that every surface asking costs one request. */
     private static volatile String cachedLatestVersion;
+    private static volatile String cachedDownloadPage;
 
     private UpdateChecker() {
     }
@@ -98,7 +98,8 @@ public final class UpdateChecker {
 
     /**
      * The newest version published for the running Minecraft version, or {@code null} if the lookup
-     * came back empty-handed.
+     * came back empty-handed. A non-null answer also means {@link #downloadPage()} now knows where to
+     * send someone.
      *
      * <p>Blocking, so it belongs on a worker thread. Mod Menu asks the same question from a thread of
      * its own, hence the lock and the kept answer: whoever gets there first pays for the request.
@@ -124,18 +125,17 @@ public final class UpdateChecker {
                 return null;
             }
 
-            // NeoForge reads the same file and only counts "-recommended" as a finished release, so
-            // that is what a version is published under. "-latest" is still accepted because the file
-            // sits in a branch of its own and can lag a release by a push.
+            // NeoForge reads the same file and only counts "-recommended" as a finished release.
             JsonElement published = promos.get(mcVersion + "-recommended");
-            if (published == null) {
-                published = promos.get(mcVersion + "-latest");
-            }
-            if (published == null) {
+            // Where a build should be downloaded from is the file's to say, so that it can move
+            // without a release going out. NeoForge shows the same field.
+            JsonElement homepage = root.get("homepage");
+            if (published == null || homepage == null) {
                 return null;
             }
 
-            cachedLatestVersion = stripMinecraftPrefix(published.getAsString());
+            cachedDownloadPage = homepage.getAsString();
+            cachedLatestVersion = published.getAsString();
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             LOGGER.warn("Update check failed", e);
             return null;
@@ -144,25 +144,16 @@ public final class UpdateChecker {
         return cachedLatestVersion;
     }
 
-    /** The running version, read the same way the published one is, so the two can be compared. */
     public static String installedVersion() {
-        return stripMinecraftPrefix(Platform.getMod(OpenToOnline.MOD_ID).getVersion());
+        return Platform.getMod(OpenToOnline.MOD_ID).getVersion();
     }
 
-    /** Where someone who wants the newer build should be sent. */
+    /** Where someone who wants the newer build should be sent, once the lookup has answered. */
     public static String downloadPage() {
-        return Platform.getMod(OpenToOnline.MOD_ID).getHomepage().orElse(HOMEPAGE);
-    }
-
-    /** {@code update.json} stores entries as {@code <mcVersion>-<modVersion>}. */
-    private static String stripMinecraftPrefix(String version) {
-        int separator = version.lastIndexOf('-');
-        return separator < 0 ? version : version.substring(separator + 1);
+        return cachedDownloadPage;
     }
 
     private static MutableComponent buildNotice(String current, String latest) {
-        String homepage = downloadPage();
-
         MutableComponent message = ModChatTranslatableComponent
                 .of("chat.open2online.update", MessageTypes.WARN)
                 .append(Component.literal(" "))
@@ -172,7 +163,7 @@ public final class UpdateChecker {
 
         MutableComponent link = Component.translatable("chat.open2online.link").setStyle(Style.EMPTY
                 .withUnderlined(true)
-                .withClickEvent(new ClickEvent.OpenUrl(URI.create(homepage)))
+                .withClickEvent(new ClickEvent.OpenUrl(URI.create(downloadPage())))
                 .withHoverEvent(new HoverEvent.ShowText(Component.translatable("tooltip.open2online.openUrl"))));
 
         return message.append(" [").append(link).append("]");

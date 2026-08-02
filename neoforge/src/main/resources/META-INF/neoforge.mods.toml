@@ -10,7 +10,7 @@ displayName = "Open2Online"
 authors = "v14d4n"
 displayURL = "https://modrinth.com/project/open2online"
 # NeoForge polls this on its own and flags the mod list; the file is the one the in-game notice reads.
-updateJSONURL = "https://raw.githubusercontent.com/v14d4n/open2online/update/update.json"
+updateJSONURL = "https://raw.githubusercontent.com/v14d4n/open2online/update/updatev2.json"
 logoFile = "logoopen.png"
 description = '''
 Adds the ability to create an online server
