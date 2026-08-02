@@ -10,8 +10,17 @@ import java.util.concurrent.TimeUnit;
 public class WaifUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
-    /** The library exposes no way to set a lease, and mappings expire after roughly 10 minutes. */
-    private static final long REFRESH_INTERVAL_SECONDS = 31L;
+    /**
+     * The library asks the router for a permanent mapping — {@code NewLeaseDuration} 0 on the wire,
+     * exactly what WeUPnP sends — and offers no way to say otherwise.
+     *
+     * <p>The interval is inherited from 1.16.5, where the author's own router dropped the mapping
+     * after about ten minutes regardless, and the comment there already suspected other routers would
+     * behave differently. So this is a guard against gateways that ignore the request, not a lease
+     * being renewed before it runs out — and {@code WeUPnPLibrary}, which asks for exactly the same
+     * thing, keeps the same interval.
+     */
+    private static final long VERIFY_INTERVAL_SECONDS = 31L;
 
     private final PortLease lease = new PortLease("Open2Online WaifUPnP lease");
 
@@ -35,7 +44,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         boolean result = UPnP.openPortTCP(port);
 
         if (result) {
-            lease.renewEvery(REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS, this::renewLease);
+            lease.renewEvery(VERIFY_INTERVAL_SECONDS, TimeUnit.SECONDS, this::verifyMapping);
         }
 
         return logFailure(result, "open");
@@ -67,10 +76,15 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         return result;
     }
 
-    private void renewLease() {
+    /**
+     * Asks the gateway whether the mapping is still there, and re-adds it if the answer is not a
+     * clear yes. The library reports that as a bare boolean, so a failed query is indistinguishable
+     * from a missing mapping — hence a log line that does not claim to know which happened.
+     */
+    private void verifyMapping() {
         if (!UPnP.isMappedTCP(port)) {
             UPnP.openPortTCP(port);
-            LOGGER.info("Renewed the UPnP lease for port {}.", port);
+            LOGGER.info("Port {} did not come back as mapped; asked the gateway for it again.", port);
         }
     }
 }

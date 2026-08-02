@@ -17,11 +17,15 @@ public class WeUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
     /**
-     * Deliberately slower than the WaifUPnP one. There the mapping expires on its own and the loop is
-     * a real renewal; here it is asked for with no expiry at all, so this only catches the gateways
-     * that ignore or cap that, and the ones that lose their table on a reboot.
+     * This backend and WaifUPnP put the same {@code NewLeaseDuration} 0 on the wire, so neither
+     * schedule renews a lease: both exist for gateways that ignore or cap the request, and for tables
+     * lost to a reboot.
+     *
+     * <p>The same job, so the same interval as {@code WaifUPnPLibrary}. The number is the one from
+     * 1.16.5, measured against a router that dropped mappings after roughly ten minutes; it is the
+     * only figure here anyone ever checked against real hardware.
      */
-    private static final long VERIFY_INTERVAL_SECONDS = 60L;
+    private static final long VERIFY_INTERVAL_SECONDS = 31L;
 
     private static GatewayDevice gatewayDevice;
 
