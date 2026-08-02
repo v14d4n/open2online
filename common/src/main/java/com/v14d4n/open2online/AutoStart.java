@@ -105,10 +105,6 @@ public final class AutoStart {
         GameType gameMode = minecraft.gameMode != null ? minecraft.gameMode.getPlayerMode() : GameType.SURVIVAL;
         boolean allowCommands = ServerHandler.canLocalPlayerUseCheats();
 
-        Thread worker = new Thread(
-                () -> PublishTask.start(port, maxPlayers, gameMode, allowCommands, online),
-                "Open2Online auto start");
-        worker.setDaemon(true);
-        worker.start();
+        Util.ioPool().execute(() -> PublishTask.start(port, maxPlayers, gameMode, allowCommands, online));
     }
 }

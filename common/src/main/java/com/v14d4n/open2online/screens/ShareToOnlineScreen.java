@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.GameType;
 
 import java.util.OptionalInt;
@@ -122,11 +123,7 @@ public class ShareToOnlineScreen extends Screen {
         boolean allowCommands = this.commands;
 
         this.minecraft.setScreen(null);
-        Thread worker = new Thread(
-                () -> PublishTask.start(port, maxPlayers, mode, allowCommands, online),
-                "Open2Online publish");
-        worker.setDaemon(true);
-        worker.start();
+        Util.ioPool().execute(() -> PublishTask.start(port, maxPlayers, mode, allowCommands, online));
     }
 
     private void createAdvancedSettingsButton() {

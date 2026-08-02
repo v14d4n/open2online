@@ -7,7 +7,7 @@ import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.client.ConfigurationScreenRegistry;
 import dev.architectury.utils.Env;
@@ -22,10 +22,10 @@ public final class OpenToOnline {
     public static void init() {
         OpenToOnlineConfig.load();
 
-        // Only the host leaving matters here, to take the port mapping down with them. Joining needs
-        // no server-side listener: the whitelist is answered through MixinPlayerList, at vanilla's
-        // own login gate.
-        PlayerEvent.PLAYER_QUIT.register(UPnPHandler::onPlayerLoggedOut);
+        // The mapping lives exactly as long as the server does. No player listener is needed at all:
+        // logins are answered by MixinPlayerList at vanilla's own gate, and logouts say nothing the
+        // server stopping does not say better.
+        LifecycleEvent.SERVER_STOPPING.register(UPnPHandler::onServerStopping);
 
         // Nested lambda on purpose: the outer supplier only runs on the client, so the screen class
         // is never loaded on a dedicated server.

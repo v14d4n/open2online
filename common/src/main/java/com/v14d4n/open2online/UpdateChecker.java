@@ -31,6 +31,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.util.Util;
 
 /**
  * Replaces Forge's {@code VersionChecker}, which has no counterpart on Fabric. Reads the list the mod
@@ -66,9 +67,9 @@ public final class UpdateChecker {
             return;
         }
 
-        Thread worker = new Thread(UpdateChecker::checkAndAnnounce, "Open2Online update check");
-        worker.setDaemon(true);
-        worker.start();
+        // The game's own pool for blocking I/O. It is shut down with the game, bounded to a three
+        // second wait, so a lookup still in flight cannot hold the process open.
+        Util.ioPool().execute(UpdateChecker::checkAndAnnounce);
     }
 
     /** Delivers the notice once there is a chat to deliver it to. */

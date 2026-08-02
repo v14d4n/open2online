@@ -9,7 +9,7 @@ import com.v14d4n.open2online.network.nat.UPnPLibraries;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,27 +201,28 @@ public final class UPnPHandler {
         closePortAfterLogout = value;
     }
 
-    /** Fired for every player leaving; only the host quitting should tear the mapping down. */
-    public static void onPlayerLoggedOut(ServerPlayer player) {
+    /**
+     * Ends the mapping together with the server that needed it.
+     *
+     * <p>This is the whole lifetime in one hook: the integrated server stops both when the world is
+     * left and when the game is closed with it still open. A player event cannot say the same — in
+     * the second case nobody ever logs out, which is how a mapping used to outlive the game.
+     *
+     * <p>It also removes a question that had no good answer. Watching for the host's logout meant
+     * telling the host apart from a guest by name, and with licence checking off a name is not
+     * something anyone can verify. Nobody has to be identified for a server to stop.
+     */
+    public static synchronized void onServerStopping(MinecraftServer server) {
         if (!closePortAfterLogout) {
             return;
         }
-
-        // Fires for every player on the host's integrated server, so the leaver has to be identified
-        // before anything is torn down — a guest quitting must not close the host's port.
-        if (!ServerHandler.isPlayerServerOwner(player.nameAndId())) {
-            return;
-        }
-
-        closePortAfterLogout(false);
-        ServerHandler.refreshWindowTitle();
+        closePortAfterLogout = false;
 
         // Deliberately not asked whether the port is still mapped first. A query that fails looks
         // exactly like "not mapped", and acting on that would leave the mapping on the router for
         // good. Deleting one that is not there costs nothing, so the close is unconditional.
-        int port = OpenToOnlineConfig.port.get();
         if (upnp != null) {
-            upnp.closePortTCP(port);
+            upnp.closePortTCP(OpenToOnlineConfig.port.get());
         }
     }
 
