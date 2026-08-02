@@ -192,12 +192,21 @@ public final class UPnPHandler {
         }
     }
 
+    /**
+     * Takes the mapping down, and answers whether the port ended up closed.
+     *
+     * <p>Nothing ever mapped is not a failure to close, so it is a quiet success rather than the
+     * {@code IllegalStateException} this used to throw. That exception made every caller responsible
+     * for knowing whether a backend had been chosen, and the one that forgot took the publish worker
+     * down with it on a LAN game. {@code PortMapperLibrary.closePortTCP} already answers the same way
+     * for the same reason.
+     */
     public static boolean closePort(int port) {
         // Read once into a local: the field can be reassigned by the publish worker, and every
         // decision below has to be about the same backend.
         IUPnPLibrary backend = upnp;
         if (backend == null) {
-            throw new IllegalStateException("No UPnP backend has been selected");
+            return true;
         }
 
         ModChat.send(ModChatTranslatableComponent.of("chat.open2online.closingTcpPort")

@@ -76,7 +76,7 @@
   "tooltip.open2online.recreateFirewallRules": "Это может помочь, если никто не может подключиться к серверу.",
   "tooltip.open2online.autoStart.delay": "Сколько ждать после входа в мир, прежде чем открыть сервер.",
   "tooltip.open2online.licenseRequired": "Проверять, что подключающиеся владеют игрой.\n\n§cС выключенной проверкой зайти можно под любым ником.",
-  "tooltip.open2online.library": "Библиотека для открытия порта. Авто перебирает их по очереди и запоминает сработавшую.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP",
+  "tooltip.open2online.library": "Библиотека для открытия порта. Авто перебирает их по очереди и запоминает сработавшую.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP\n\nPortMapper самый медленный, но рекомендуемый.",
   "title.open2online.multiplayer": "Сетевая игра",
   "modmenu.descriptionTranslation.open2online": "Добавляет возможность создать онлайн-сервер"
 }

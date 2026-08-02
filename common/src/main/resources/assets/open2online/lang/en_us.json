@@ -76,6 +76,6 @@
   "tooltip.open2online.recreateFirewallRules": "This may help if no one can connect to your server.",
   "tooltip.open2online.autoStart.delay": "How long to wait after entering a world before the server is opened.",
   "tooltip.open2online.licenseRequired": "Verify that joining players own the game.\n\n§cTurning this off lets anyone join under any name.",
-  "tooltip.open2online.library": "Port opening library. Auto tries them in turn and remembers what worked.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP",
+  "tooltip.open2online.library": "Port opening library. Auto tries them in turn and remembers what worked.\n\nWeUPnP - UPnP\nWaifUPnP - UPnP\nPortMapper - UPnP, NAT-PMP, PCP\n\nPortMapper is the slowest one, but the recommended one.",
   "title.open2online.multiplayer": "Multiplayer"
 }

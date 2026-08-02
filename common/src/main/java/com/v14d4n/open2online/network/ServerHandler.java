@@ -52,6 +52,10 @@ public final class ServerHandler {
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
 
         // The world can be left while the port is still being mapped; the mapping must not outlive it.
+        //
+        // Asked only of the online path, and now for what it says rather than for safety: a session
+        // that published online earlier leaves its backend in place, so a LAN game that failed here
+        // would narrate the closing of a port it never opened.
         if (server == null) {
             if (online) {
                 UPnPHandler.closePort(port);
@@ -66,8 +70,7 @@ public final class ServerHandler {
         if (!server.publishServer(gameMode, allowCommands, port)) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
                     ModChatTranslatableComponent.MessageTypes.ERROR));
-            // Same guard as the branch above: only the online path ever mapped anything, and
-            // closePort throws when no backend was ever chosen.
+            // Same guard, same reason as the branch above.
             if (online) {
                 UPnPHandler.closePort(port);
             }
