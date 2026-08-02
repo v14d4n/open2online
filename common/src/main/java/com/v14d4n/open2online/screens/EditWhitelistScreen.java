@@ -4,44 +4,55 @@ import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.server.ModServerOptions;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
-public class EditWhitelistScreen extends OptionsSubScreen {
+public class EditWhitelistScreen extends ModOptionsScreen {
     private static final int ROW_WIDTH = 150;
     private static final int ROW_HEIGHT = 20;
 
     private String pendingName;
+
+    private EditBox nameBox;
+    private Button addButton;
 
     public EditWhitelistScreen(Screen lastScreen) {
         this(lastScreen, "");
     }
 
     private EditWhitelistScreen(Screen lastScreen, String pendingName) {
-        super(lastScreen, Minecraft.getInstance().options,
-                Component.translatable("gui.open2online.editWhitelist"));
+        super(lastScreen, Component.translatable("gui.open2online.editWhitelist"));
         this.pendingName = pendingName;
     }
 
     @Override
     protected void addOptions() {
+        OptionsList optionsList = optionsList();
+
         // The whitelist toggle lives here, spanning the full width, as it did in 1.16.5.
-        this.list.addBig(ModServerOptions.whitelistMode());
+        optionsList.addBig(ModServerOptions.whitelistMode());
 
-        EditBox nameBox = new EditBox(this.font, 0, 0, ROW_WIDTH, ROW_HEIGHT, Component.empty());
-        nameBox.setValue(this.pendingName);
-        nameBox.setResponder(value -> this.pendingName = value);
+        this.addButton = Button.builder(Component.literal("+"), press -> addFriend()).build();
 
-        Button addButton = Button.builder(Component.literal("+"), press -> addFriend()).build();
-        this.list.addSmall(nameBox, addButton);
+        this.nameBox = new EditBox(this.font, 0, 0, ROW_WIDTH, ROW_HEIGHT, Component.empty());
+        this.nameBox.setValue(this.pendingName);
+        this.nameBox.setResponder(value -> {
+            this.pendingName = value;
+            updateAddButton();
+        });
+
+        optionsList.addSmall(this.nameBox, this.addButton);
+        // The responder does not fire for the value set above, and a rebuild carries one over.
+        updateAddButton();
 
         List<String> friends = OpenToOnlineConfig.friends.get();
         for (int i = 0; i < friends.size(); i++) {
@@ -51,25 +62,62 @@ public class EditWhitelistScreen extends OptionsSubScreen {
 
             int index = i;
             Button removeButton = Button.builder(Component.literal("-"), press -> removeFriend(index)).build();
-            this.list.addSmall(friendBox, removeButton);
+            optionsList.addSmall(friendBox, removeButton);
         }
 
-        this.setInitialFocus(nameBox);
+        this.setInitialFocus(this.nameBox);
+    }
+
+    /**
+     * Greys out "+" for anything pressing it would not achieve, and says why on the field itself —
+     * the same shape {@code ShareToOnlineScreen} uses for a refused port.
+     */
+    private void updateAddButton() {
+        String name = this.pendingName.trim();
+        this.addButton.active = isAddable(name);
+        this.nameBox.setTooltip(tooltipFor(name));
+    }
+
+    /** Null when there is nothing to say: the name is fine, or nothing has been typed yet. */
+    private static Tooltip tooltipFor(String name) {
+        if (name.isEmpty() || isAddable(name)) {
+            return null;
+        }
+
+        return Tooltip.create(Component.translatable(isAlreadyListed(name)
+                ? "gui.open2online.whitelistName.duplicate"
+                : "gui.open2online.whitelistName.invalid"));
+    }
+
+    /**
+     * Both halves of "pressing + would change nothing".
+     *
+     * <p>The first is vanilla's own rule, the one {@code ServerLoginPacketListenerImpl} applies to
+     * the name in the login handshake: at most 16 characters, all of them printable ASCII. A name it
+     * turns down is one no player can ever arrive under, so an entry holding one is a line the owner
+     * believes in and the whitelist can never match. The emptiness test is ours — {@code
+     * isValidPlayerName} accepts the empty string.
+     */
+    private static boolean isAddable(String name) {
+        return !name.isEmpty() && StringUtil.isValidPlayerName(name) && !isAlreadyListed(name);
+    }
+
+    /** Ignoring case, because {@code ServerHandler.isWhitelisted} matches that way too. */
+    private static boolean isAlreadyListed(String name) {
+        return OpenToOnlineConfig.friends.get().stream().anyMatch(friend -> friend.equalsIgnoreCase(name));
     }
 
     private void addFriend() {
         String name = this.pendingName.trim();
-        if (name.isEmpty()) {
+        if (!isAddable(name)) {
             return;
         }
 
         ArrayList<String> updated = new ArrayList<>(OpenToOnlineConfig.friends.get());
-        if (!updated.contains(name)) {
-            // Newest first, so a fresh entry shows up right under the input instead of at the far
-            // end of a list the player then has to scroll to.
-            updated.add(0, name);
-            OpenToOnlineConfig.setFriends(updated);
-        }
+        // Newest first, so a fresh entry shows up right under the input instead of at the far end of
+        // a list the player then has to scroll to.
+        updated.add(0, name);
+        OpenToOnlineConfig.setFriends(updated);
 
         this.pendingName = "";
         rebuild();

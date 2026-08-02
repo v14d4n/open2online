@@ -3,24 +3,22 @@ package com.v14d4n.open2online.screens;
 import com.v14d4n.open2online.server.ModServerOptions;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.OptionsList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
 
 /**
- * Extends {@link OptionsSubScreen} rather than {@code Screen}: since 1.21 {@code OptionsList} only
+ * Extends {@code OptionsSubScreen} rather than {@code Screen}: since 1.21 {@code OptionsList} only
  * accepts an {@code OptionsSubScreen}, and the base class already supplies the title, the scrolling
  * list, the footer with Done, and the way back to the previous screen.
  */
 @Environment(EnvType.CLIENT)
-public class AdvancedSettingsScreen extends OptionsSubScreen {
+public class AdvancedSettingsScreen extends ModOptionsScreen {
     private static final int BUTTON_HEIGHT = 20;
 
     public AdvancedSettingsScreen(Screen lastScreen) {
-        super(lastScreen, Minecraft.getInstance().options,
-                Component.translatable("gui.open2online.advancedServerSettings"));
+        super(lastScreen, Component.translatable("gui.open2online.advancedServerSettings"));
     }
 
     /**
@@ -29,28 +27,30 @@ public class AdvancedSettingsScreen extends OptionsSubScreen {
      */
     @Override
     protected void addOptions() {
-        this.list.addBig(ModServerOptions.library());
+        OptionsList optionsList = optionsList();
+
+        optionsList.addBig(ModServerOptions.library());
         // Buttons that open another screen first, then the plain toggles.
-        this.list.addSmall(
+        optionsList.addSmall(
                 createEditWhitelistButton(),
                 createNotificationsButton());
         // Alone on its row: the second widget may be null, which is how vanilla lays out an odd
         // number of options, and the button is built at the full row width to fill it.
-        this.list.addSmall(createAutoStartButton(), null);
-        this.list.addSmall(
+        optionsList.addSmall(createAutoStartButton(optionsList), null);
+        optionsList.addSmall(
                 ModServerOptions.allowPvp().createButton(this.options),
                 ModServerOptions.hideIP().createButton(this.options));
-        this.list.addBig(ModServerOptions.requireLicense());
+        optionsList.addBig(ModServerOptions.requireLicense());
     }
 
     /**
      * Sized from {@code getRowWidth()} rather than a literal: {@code BIG_BUTTON_WIDTH}, which
      * {@code addBig} uses, is private.
      */
-    private Button createAutoStartButton() {
+    private Button createAutoStartButton(OptionsList optionsList) {
         return Button.builder(Component.translatable("gui.open2online.autoStart"),
                         press -> this.minecraft.setScreen(new AutoStartSettingsScreen(this)))
-                .size(this.list.getRowWidth(), BUTTON_HEIGHT)
+                .size(optionsList.getRowWidth(), BUTTON_HEIGHT)
                 .build();
     }
 

@@ -22,6 +22,8 @@
   "gui.open2online.firewall.requirements": "This only works on Windows. Recreating firewall rules requires administrator rights.",
   "gui.open2online.port.invalid": "Port must be a whole number between %s and %s",
   "gui.open2online.maxPlayers.invalid": "Max players must be a whole number above 0",
+  "gui.open2online.whitelistName.invalid": "Invalid nickname",
+  "gui.open2online.whitelistName.duplicate": "Already on the list",
   "chat.open2online.error.upnpIsNotAvailable": "UPnP is not available",
   "chat.open2online.error.upnpNatPcpIsNotAvailable": "UPnP/NAT-PMP/PCP is not available",
   "chat.open2online.error.portOpening": "Failed to open port. Try changing it or the library",

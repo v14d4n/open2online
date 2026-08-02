@@ -22,6 +22,8 @@
   "gui.open2online.firewall.requirements": "Работает только на Windows. Пересоздание правил требует прав администратора.",
   "gui.open2online.port.invalid": "Порт должен быть целым числом от %s до %s",
   "gui.open2online.maxPlayers.invalid": "Максимум игроков должен быть целым числом больше 0",
+  "gui.open2online.whitelistName.invalid": "Неправильный никнейм",
+  "gui.open2online.whitelistName.duplicate": "Уже в списке",
   "chat.open2online.error.upnpIsNotAvailable": "UPnP недоступен",
   "chat.open2online.error.upnpNatPcpIsNotAvailable": "UPnP/NAT-PMP/PCP недоступен",
   "chat.open2online.error.portOpening": "Не удалось открыть порт. Попробуйте сменить его или библиотеку",
