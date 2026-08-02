@@ -40,7 +40,9 @@ public class ShareToOnlineScreen extends Screen {
     public ShareToOnlineScreen(Screen lastScreen) {
         super(Component.translatable("gui.open2online.onlineWorld"));
         this.lastScreen = lastScreen;
-        this.gameMode = this.minecraft != null && this.minecraft.gameMode != null
+        // No null check on `minecraft`: since 1.21.11 the Screen constructor fills that field from
+        // Minecraft.getInstance() rather than waiting for init(), so it is set by the time this runs.
+        this.gameMode = this.minecraft.gameMode != null
                 ? this.minecraft.gameMode.getPlayerMode()
                 : GameType.SURVIVAL;
         this.commands = ServerHandler.canLocalPlayerUseCheats();

@@ -52,9 +52,9 @@ public final class ServerHandler {
     private ServerHandler() {
     }
 
-    public static boolean startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands, boolean online) {
+    public static void startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands, boolean online) {
         if (online && !UPnPHandler.openPort(port)) {
-            return false;
+            return;
         }
 
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
@@ -64,19 +64,14 @@ public final class ServerHandler {
             if (online) {
                 UPnPHandler.closePort(port);
             }
-            return false;
+            return;
         }
 
         // Must land before publishing: usesAuthentication is read when a client connects, to fill in
         // the shouldAuthenticate flag of the login handshake.
         applyLicenceRequirement(server);
 
-        if (server.publishServer(gameMode, allowCommands, port)) {
-            setupAndSaveServerConfiguration(maxPlayers, port, online);
-            // Before the address, so the thing the host actually needs stays the last line in chat.
-            warnAboutOpenAccess(online);
-            printHostedGameMessage(online, port);
-        } else {
+        if (!server.publishServer(gameMode, allowCommands, port)) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
                     ModChatTranslatableComponent.MessageTypes.ERROR));
             // Same guard as the branch above: only the online path ever mapped anything, and
@@ -84,10 +79,13 @@ public final class ServerHandler {
             if (online) {
                 UPnPHandler.closePort(port);
             }
-            return false;
+            return;
         }
 
-        return true;
+        setupAndSaveServerConfiguration(maxPlayers, port, online);
+        // Before the address, so the thing the host actually needs stays the last line in chat.
+        warnAboutOpenAccess(online);
+        printHostedGameMessage(online, port);
     }
 
     private static void printHostedGameMessage(boolean online, int port) {
@@ -128,9 +126,10 @@ public final class ServerHandler {
         minecraft.execute(() -> ((MinecraftTitleInvoker) minecraft).open2online$updateTitle());
     }
 
+    /** Read once rather than asked twice: the world can be left between two calls, from this thread. */
     public static boolean isServerPublished() {
-        Minecraft minecraft = Minecraft.getInstance();
-        return !minecraft.hasSingleplayerServer() || minecraft.getSingleplayerServer().isPublished();
+        IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
+        return server == null || server.isPublished();
     }
 
     /**
