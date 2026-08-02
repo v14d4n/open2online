@@ -2,6 +2,7 @@ package com.v14d4n.open2online.config;
 
 import com.google.gson.*;
 import dev.architectury.platform.Platform;
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,8 @@ public final class OpenToOnlineConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
     private static final String FILE_NAME = "open2online.json";
+    /** Previous contents, left behind by every save; {@code _old} is the suffix vanilla uses. */
+    private static final String BACKUP_NAME = FILE_NAME + "_old";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private static final List<Value<?>> VALUES = new ArrayList<>();
@@ -79,21 +82,25 @@ public final class OpenToOnlineConfig {
     public static synchronized void load() {
         Path file = file();
 
-        if (Files.exists(file)) {
-            try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-                for (Value<?> value : VALUES) {
-                    value.readFrom(root);
-                }
-            } catch (Exception e) {
-                LOGGER.warn("Could not read {}, falling back to defaults", FILE_NAME, e);
-            }
+        if (!read(file)) {
+            // Nothing readable usually means a save that was cut short, which is what the backup is
+            // for. Vanilla leaves its own _old files for the player to restore by hand; ours is worth
+            // reading, because the save() below is about to overwrite the backup with the defaults.
+            read(file.resolveSibling(BACKUP_NAME));
         }
 
         save();
     }
 
-    /** Synchronized because option screens and the publish worker both write. */
+    /**
+     * Synchronized because option screens and the publish worker both write.
+     *
+     * <p>The file is never written in place. A whole copy goes to a temporary file beside it, and
+     * only once that has landed does {@link Util#safeReplaceFile} swap the two over and keep the
+     * previous contents as {@value #BACKUP_NAME}. Writing straight to the file truncates it first,
+     * so anything that stops the game in that instant — a crash, a pulled power cable — used to
+     * leave a stump, taking the whitelist with it. Vanilla saves {@code servers.dat} the same way.
+     */
     public static synchronized void save() {
         JsonObject root = new JsonObject();
         for (Value<?> value : VALUES) {
@@ -102,10 +109,32 @@ public final class OpenToOnlineConfig {
 
         Path file = file();
         try {
-            Files.createDirectories(file.getParent());
-            Files.writeString(file, GSON.toJson(root), StandardCharsets.UTF_8);
+            Path folder = file.getParent();
+            Files.createDirectories(folder);
+            // Beside the real file, so the swap stays a rename inside one filesystem, not a copy.
+            Path pending = Files.createTempFile(folder, FILE_NAME, ".tmp");
+            Files.writeString(pending, GSON.toJson(root), StandardCharsets.UTF_8);
+            Util.safeReplaceFile(file, pending, folder.resolve(BACKUP_NAME));
         } catch (IOException e) {
             LOGGER.error("Could not write {}", FILE_NAME, e);
+        }
+    }
+
+    /** True once the values hold what the file said; a missing or broken file leaves them alone. */
+    private static boolean read(Path file) {
+        if (!Files.exists(file)) {
+            return false;
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+            for (Value<?> value : VALUES) {
+                value.readFrom(root);
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.warn("Could not read {}", file.getFileName(), e);
+            return false;
         }
     }
 
