@@ -1,6 +1,5 @@
 package com.v14d4n.open2online.network;
 
-import com.mojang.authlib.GameProfile;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.mixin.MinecraftTitleInvoker;
 import com.v14d4n.open2online.network.chat.ModChat;
@@ -343,9 +342,14 @@ public final class ServerHandler {
                 && player.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.OWNERS));
     }
 
-    public static boolean isPlayerServerOwner(GameProfile gameProfile) {
+    /**
+     * Vanilla's own answer to "is this the person hosting". It compares names, case-insensitively —
+     * which is as far as anyone can get: with licence verification off a player picks their own name,
+     * and the offline UUID is derived from that name, so there is no identity underneath to check.
+     */
+    public static boolean isPlayerServerOwner(NameAndId nameAndId) {
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
-        return server != null && server.isSingleplayerOwner(new NameAndId(gameProfile));
+        return server != null && server.isSingleplayerOwner(nameAndId);
     }
 
     public static boolean isClientRunningOnlineServer() {
@@ -358,13 +362,12 @@ public final class ServerHandler {
      * entries by UUID, which would mean resolving every nickname through Mojang's profile API.
      */
     public static boolean isWhitelisted(NameAndId nameAndId) {
-        String name = nameAndId.name();
-
         // The host is always allowed, whatever the list says.
-        if (name.equals(Minecraft.getInstance().getUser().getName())) {
+        if (isPlayerServerOwner(nameAndId)) {
             return true;
         }
 
+        String name = nameAndId.name();
         for (String friend : OpenToOnlineConfig.friends.get()) {
             if (friend.equalsIgnoreCase(name)) {
                 return true;

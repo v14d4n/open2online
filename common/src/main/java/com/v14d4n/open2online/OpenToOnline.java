@@ -4,11 +4,11 @@ import com.v14d4n.open2online.commands.OpenToOnlineCommand;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.screens.AdvancedSettingsScreen;
+import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.client.ConfigurationScreenRegistry;
@@ -24,9 +24,6 @@ public final class OpenToOnline {
     public static void init() {
         OpenToOnlineConfig.load();
 
-        CommandRegistrationEvent.EVENT.register(
-                (dispatcher, registry, selection) -> OpenToOnlineCommand.register(dispatcher));
-
         // Only the host leaving matters here, to take the port mapping down with them. Joining needs
         // no server-side listener: the whitelist is answered through MixinPlayerList, at vanilla's
         // own login gate.
@@ -39,6 +36,10 @@ public final class OpenToOnline {
 
     private static void initClient() {
         ConfigurationScreenRegistry.register(Platform.getMod(MOD_ID), AdvancedSettingsScreen::new);
+
+        // Client-side on purpose — see OpenToOnlineCommand#register.
+        ClientCommandRegistrationEvent.EVENT.register(
+                (dispatcher, context) -> OpenToOnlineCommand.register(dispatcher));
 
         ClientLifecycleEvent.CLIENT_STARTED.register(client -> UpdateChecker.check());
 

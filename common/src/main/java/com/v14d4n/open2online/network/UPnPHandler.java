@@ -8,7 +8,6 @@ import com.v14d4n.open2online.network.nat.IUPnPLibrary;
 import com.v14d4n.open2online.network.nat.UPnPLibraries;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -203,8 +202,9 @@ public final class UPnPHandler {
             return;
         }
 
-        String clientPlayerName = Minecraft.getInstance().getUser().getName();
-        if (!clientPlayerName.equals(player.getName().getString())) {
+        // Fires for every player on the host's integrated server, so the leaver has to be identified
+        // before anything is torn down — a guest quitting must not close the host's port.
+        if (!ServerHandler.isPlayerServerOwner(player.nameAndId())) {
             return;
         }
 
