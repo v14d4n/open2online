@@ -56,10 +56,17 @@ public final class OpenToOnlineConfig {
     public static final Value<Boolean> requireLicense = bool("requireLicense", false);
     public static final Value<Boolean> hideIP = bool("hideIP", true);
 
-    /** -1 means Auto, which walks the backends in turn. */
-    public static final Value<Integer> libraryId = integer("library", -1, -1, 2);
+    /**
+     * -1 means Auto, which walks the backends in turn.
+     *
+     * <p>Left unclamped on purpose. Which numbers mean anything is {@code UPnPLibraries}' business,
+     * and it already answers Auto for the rest. A range here would be a second, worse copy of that
+     * knowledge: it would have to be widened by hand the day a backend is added, and until someone
+     * remembered, picking the new one would silently save as whichever library sat at the old ceiling.
+     */
+    public static final Value<Integer> libraryId = integer("library", -1);
     /** Backend that last succeeded in Auto mode, so the next run can start with it. */
-    public static final Value<Integer> autoLibraryId = integer("autoLibrary", -1, -1, 2);
+    public static final Value<Integer> autoLibraryId = integer("autoLibrary", -1);
     /** Mapper index PortMapper succeeded with last time; -1 when nothing is remembered. */
     public static final Value<Integer> portMapperIndex = integer("portMapperIndex", -1, -1, Integer.MAX_VALUE);
 
@@ -146,6 +153,11 @@ public final class OpenToOnlineConfig {
 
     private static Path file() {
         return Platform.getConfigFolder().resolve(FILE_NAME);
+    }
+
+    /** For numbers whose meaning is checked by whoever reads them rather than by a range. */
+    private static Value<Integer> integer(String key, int defaultValue) {
+        return integer(key, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
     private static Value<Integer> integer(String key, int defaultValue, int min, int max) {

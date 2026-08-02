@@ -1,6 +1,5 @@
 package com.v14d4n.open2online.network.nat;
 
-import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 
@@ -66,7 +65,17 @@ public enum UPnPLibraries implements StringRepresentable {
         return librarySupplier.get();
     }
 
-    /** Falls back to {@link #AUTO} and repairs the config when the stored id is unknown. */
+    /**
+     * The library a stored id stands for, {@link #AUTO} for anything this version does not know.
+     *
+     * <p>This is the only check the id gets: the config stores it as a plain number precisely so
+     * that the answer to "which numbers are real" lives here, beside the ids themselves. An id from
+     * a newer build, or from a hand-edited file, therefore reads as Auto rather than as nothing.
+     *
+     * <p>It used to write Auto back to the config from here, which was both a surprising thing for a
+     * lookup to do — the settings screen calls it while building itself, on the render thread — and
+     * unreachable, since the config clamped the id into the range where every value was a real one.
+     */
     public static UPnPLibraries getById(int id) {
         for (UPnPLibraries library : values()) {
             if (library.getId() == id) {
@@ -74,8 +83,6 @@ public enum UPnPLibraries implements StringRepresentable {
             }
         }
 
-        OpenToOnlineConfig.libraryId.set(AUTO.getId());
-        OpenToOnlineConfig.libraryId.save();
         return AUTO;
     }
 
