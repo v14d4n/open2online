@@ -28,7 +28,6 @@
   "chat.open2online.error.portClosing": "Не удалось закрыть порт",
   "chat.open2online.error.serverIsAlreadyPublished": "Сервер уже опубликован",
   "chat.open2online.error.publishFailed": "Не удалось запустить сервер. Попробуйте сменить порт",
-  "chat.open2online.error.code": "Код ошибки",
   "chat.open2online.error.autoAllFailed": "Не удалось открыть порт ни одной библиотекой. Попробуйте сменить порт",
   "chat.open2online.error.alreadyStarting": "Сервер уже запускается",
   "chat.open2online.warn.gettingAnExternalIP": "Не удалось получить внешний IP",

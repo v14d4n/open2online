@@ -1,7 +1,5 @@
 package com.v14d4n.open2online.network.nat;
 
-import com.v14d4n.open2online.network.chat.ModChat;
-import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
 import org.bitlet.weupnp.PortMappingEntry;
@@ -11,17 +9,25 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class WeUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
+    /**
+     * Deliberately slower than the WaifUPnP one. There the mapping expires on its own and the loop is
+     * a real renewal; here it is asked for with no expiry at all, so this only catches the gateways
+     * that ignore or cap that, and the ones that lose their table on a reboot.
+     */
+    private static final long VERIFY_INTERVAL_SECONDS = 60L;
+
     private static GatewayDevice gatewayDevice;
-    private static PortMappingEntry portMapping;
+
+    private final PortLease lease = new PortLease("Open2Online WeUPnP lease");
+
+    private volatile int port;
 
     @Override
     public boolean isUPnPAvailable() {
@@ -35,12 +41,27 @@ public class WeUPnPLibrary implements IUPnPLibrary {
 
     @Override
     public boolean openPortTCP(int port) {
-        return addTcpPortMapping(port);
+        this.port = port;
+        boolean result = addTcpPortMapping(port);
+
+        if (result) {
+            lease.renewEvery(VERIFY_INTERVAL_SECONDS, TimeUnit.SECONDS, this::verifyMapping);
+        }
+
+        return result;
     }
 
     @Override
     public boolean closePortTCP(int port) {
+        // Called off first: a re-add landing after the delete would put the mapping straight back.
+        lease.cancel();
+
         return deleteTcpPortMapping(port);
+    }
+
+    @Override
+    public void discard() {
+        lease.cancel();
     }
 
     /** A separate {@code GetExternalIPAddress} call; the gateway is already discovered by this point. */
@@ -72,20 +93,16 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return gatewayDevice;
     }
 
-    private static PortMappingEntry getPortMappingEntry() {
-        if (portMapping == null) {
-            portMapping = new PortMappingEntry();
-        }
-        return portMapping;
-    }
-
     private static boolean getTcpPortMapping(int port) {
         GatewayDevice gateway = getValidGateway();
         if (gateway == null) {
             return false;
         }
         try {
-            return gateway.getSpecificPortMappingEntry(port, "TCP", getPortMappingEntry());
+            // A fresh entry per call rather than one kept around: it is only an out-parameter, and
+            // the verification below asks from a thread of its own while the game may be closing the
+            // port from another.
+            return gateway.getSpecificPortMappingEntry(port, "TCP", new PortMappingEntry());
         } catch (IOException | SAXException e) {
             LOGGER.error("Failed to query TCP mapping for port {}", port, e);
         }
@@ -99,7 +116,9 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         }
         InetAddress localAddress = gateway.getLocalAddress();
         try {
-            return reflectAddPortMapping(gateway, port, port, localAddress.getHostAddress(), "TCP", "Minecraft");
+            // The library sends NewLeaseDuration 0 — no expiry — which is why the schedule above only
+            // checks the mapping rather than renewing it.
+            return gateway.addPortMapping(port, port, localAddress.getHostAddress(), "TCP", "Minecraft");
         } catch (IOException | SAXException e) {
             LOGGER.error("Failed to add TCP mapping for port {}", port, e);
         }
@@ -119,46 +138,12 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return false;
     }
 
-    /**
-     * WeUPnP's own {@code addPortMapping} reports only a boolean, which loses the router's error
-     * code. Issuing the UPnP command directly lets the code reach the player.
-     */
-    private static boolean reflectAddPortMapping(GatewayDevice gateway, int externalPort, int internalPort,
-                                                 String internalClient, String protocol, String description)
-            throws IOException, SAXException {
-        Map<String, String> args = new LinkedHashMap<>();
-        args.put("NewRemoteHost", "");    // wildcard, any remote host matches
-        args.put("NewExternalPort", Integer.toString(externalPort));
-        args.put("NewProtocol", protocol);
-        args.put("NewInternalPort", Integer.toString(internalPort));
-        args.put("NewInternalClient", internalClient);
-        args.put("NewEnabled", Integer.toString(1));
-        args.put("NewPortMappingDescription", description);
-        args.put("NewLeaseDuration", Integer.toString(0));
-
-        String controlURL = (String) getFieldValue(gateway, "controlURL");
-        String serviceType = (String) getFieldValue(gateway, "serviceType");
-        Map<String, String> nameValue = GatewayDevice.simpleUPnPcommand(controlURL, serviceType, "AddPortMapping", args);
-
-        String errorCode = nameValue.get("errorCode");
-        if (errorCode == null) {
-            return true;
+    /** Asks the gateway whether the mapping is still there, and puts it back if it is not. */
+    private void verifyMapping() {
+        if (!getTcpPortMapping(port)) {
+            addTcpPortMapping(port);
+            LOGGER.info("The gateway had dropped the mapping for port {}; it was added again.", port);
         }
-
-        ModChat.send(ModChatTranslatableComponent
-                .of("chat.open2online.error.code", ModChatTranslatableComponent.MessageTypes.ERROR)
-                .append(": " + errorCode));
-        return false;
     }
 
-    private static Object getFieldValue(Object fromObject, String fieldName) {
-        try {
-            Field field = fromObject.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(fromObject);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            LOGGER.error("Failed to read WeUPnP field {}", fieldName, e);
-        }
-        return null;
-    }
 }

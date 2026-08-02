@@ -15,28 +15,28 @@ import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The only backend here that speaks NAT-PMP and PCP in addition to UPnP.
  */
 public class PortMapperLibrary implements IUPnPLibrary {
     private static final long LIFETIME_SECONDS = 20L;
+    /** Renewed at half the lifetime, so a missed round still leaves the mapping standing. */
+    private static final long RENEWAL_PERIOD_SECONDS = LIFETIME_SECONDS / 2;
 
     private final Gateway network = NetworkGateway.create();
     private final Gateway process = ProcessGateway.create();
     private final Bus networkBus = network.getBus();
     private final Bus processBus = process.getBus();
 
-    private final Thread updateLifetimeThread = new Thread(this::updateLifetime, "Open2Online PortMapper lease");
+    private final PortLease lease = new PortLease("Open2Online PortMapper lease");
 
     private List<PortMapper> mappers;
     private PortMapper currentMapper;
-    private MappedPort mappedPort;
-    private boolean isMapped;
-
-    public PortMapperLibrary() {
-        updateLifetimeThread.setDaemon(true);
-    }
+    /** Replaced by every renewal, and read from the thread that publishes and later closes. */
+    private volatile MappedPort mappedPort;
+    private volatile boolean isMapped;
 
     @Override
     public boolean isUPnPAvailable() {
@@ -82,7 +82,7 @@ public class PortMapperLibrary implements IUPnPLibrary {
         } catch (Exception e) {
             return false;
         }
-        updateLifetimeThread.start();
+        lease.renewEvery(RENEWAL_PERIOD_SECONDS, TimeUnit.SECONDS, this::renewLease);
         isMapped = true;
         return true;
     }
@@ -98,7 +98,8 @@ public class PortMapperLibrary implements IUPnPLibrary {
     @Override
     public boolean closePortTCP(int port) {
         boolean isPortClosed = true;
-        updateLifetimeThread.interrupt();
+        // Called off first: a renewal landing after the unmap would put the mapping straight back.
+        lease.cancel();
         try {
             currentMapper.unmapPort(mappedPort);
         } catch (Exception e) {
@@ -113,17 +114,16 @@ public class PortMapperLibrary implements IUPnPLibrary {
     /** The gateways spin up threads in the constructor, so an unused instance still has to be killed. */
     @Override
     public void discard() {
+        lease.cancel();
         networkBus.send(new KillNetworkRequest());
         processBus.send(new KillProcessRequest());
     }
 
-    private void updateLifetime() {
+    private void renewLease() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
-                mappedPort = currentMapper.refreshPort(mappedPort, LIFETIME_SECONDS * 1000L);
-                Thread.sleep(LIFETIME_SECONDS * 1000L / 2);
-            }
+            mappedPort = currentMapper.refreshPort(mappedPort, LIFETIME_SECONDS * 1000L);
         } catch (InterruptedException e) {
+            // Cancelling the lease interrupts a renewal in flight; there is nothing left to renew.
             Thread.currentThread().interrupt();
         }
     }

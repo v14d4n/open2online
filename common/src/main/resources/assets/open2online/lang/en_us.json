@@ -28,7 +28,6 @@
   "chat.open2online.error.portClosing": "Failed to close port",
   "chat.open2online.error.serverIsAlreadyPublished": "Server is already published",
   "chat.open2online.error.publishFailed": "Unable to host online game. Try changing the port",
-  "chat.open2online.error.code": "Error code",
   "chat.open2online.error.autoAllFailed": "Failed to open the port with every library. Try changing the port",
   "chat.open2online.error.alreadyStarting": "The server is already starting",
   "chat.open2online.warn.gettingAnExternalIP": "Failed to get external IP",

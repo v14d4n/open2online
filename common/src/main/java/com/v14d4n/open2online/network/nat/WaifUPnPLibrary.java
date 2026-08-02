@@ -5,20 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class WaifUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
     /** The library exposes no way to set a lease, and mappings expire after roughly 10 minutes. */
-    private static final long REFRESH_INTERVAL_MS = 31_000L;
+    private static final long REFRESH_INTERVAL_SECONDS = 31L;
 
-    private final Thread updateLifetimeThread = new Thread(this::updateLifetime, "Open2Online WaifUPnP lease");
+    private final PortLease lease = new PortLease("Open2Online WaifUPnP lease");
 
-    private int port;
-
-    public WaifUPnPLibrary() {
-        updateLifetimeThread.setDaemon(true);
-    }
+    private volatile int port;
 
     /** Not logged when false: "there is no UPnP here" is an answer, and Auto mode expects to hear it. */
     @Override
@@ -38,7 +35,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         boolean result = UPnP.openPortTCP(port);
 
         if (result) {
-            updateLifetimeThread.start();
+            lease.renewEvery(REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS, this::renewLease);
         }
 
         return logFailure(result, "open");
@@ -46,11 +43,10 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
 
     @Override
     public boolean closePortTCP(int port) {
-        boolean result = UPnP.closePortTCP(port);
+        // Called off first: a renewal landing after the mapping is gone would put it straight back.
+        lease.cancel();
 
-        updateLifetimeThread.interrupt();
-
-        return logFailure(result, "close");
+        return logFailure(UPnP.closePortTCP(port), "close");
     }
 
     @Override
@@ -60,7 +56,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
 
     @Override
     public void discard() {
-        updateLifetimeThread.interrupt();
+        lease.cancel();
     }
 
     /** Only for the two calls that were asked to change something and did not. */
@@ -71,18 +67,10 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         return result;
     }
 
-    private void updateLifetime() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                if (!UPnP.isMappedTCP(port)) {
-                    UPnP.openPortTCP(port);
-                    LOGGER.info("Renewed the UPnP lease for port {}.", port);
-                }
-
-                Thread.sleep(REFRESH_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+    private void renewLease() {
+        if (!UPnP.isMappedTCP(port)) {
+            UPnP.openPortTCP(port);
+            LOGGER.info("Renewed the UPnP lease for port {}.", port);
         }
     }
 }
