@@ -1,21 +1,18 @@
 package com.v14d4n.open2online;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.network.Http;
 import com.v14d4n.open2online.network.chat.ModChat;
 import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent.MessageTypes;
@@ -48,7 +45,7 @@ public final class UpdateChecker {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
     private static final String UPDATE_URL =
             "https://raw.githubusercontent.com/v14d4n/open2online/update/updatev2.json";
-    private static final int HTTP_TIMEOUT_MS = 5_000;
+    private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(5);
 
     private static volatile MutableComponent notice;
     private static volatile boolean announced;
@@ -116,17 +113,14 @@ public final class UpdateChecker {
             return Optional.of(cachedLatestVersion);
         }
 
+        Optional<String> body = Http.get(UPDATE_URL, HTTP_TIMEOUT);
+        if (body.isEmpty()) {
+            return Optional.empty();
+        }
+
         String mcVersion = SharedConstants.getCurrentVersion().name();
         try {
-            HttpURLConnection connection = (HttpURLConnection) URI.create(UPDATE_URL).toURL().openConnection();
-            connection.setConnectTimeout(HTTP_TIMEOUT_MS);
-            connection.setReadTimeout(HTTP_TIMEOUT_MS);
-
-            JsonObject root;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                root = JsonParser.parseReader(reader).getAsJsonObject();
-            }
-
+            JsonObject root = JsonParser.parseString(body.get()).getAsJsonObject();
             JsonObject promos = root.getAsJsonObject("promos");
             if (promos == null) {
                 return Optional.empty();
@@ -143,7 +137,9 @@ public final class UpdateChecker {
 
             cachedDownloadPage = homepage.getAsString();
             cachedLatestVersion = published.getAsString();
-        } catch (JsonIOException | JsonSyntaxException | IOException e) {
+        } catch (JsonParseException | IllegalStateException e) {
+            // Transport failures are already logged and turned into an empty body above; what is left
+            // to go wrong here is the file itself not being the shape this reads.
             LOGGER.warn("Update check failed", e);
             return Optional.empty();
         }

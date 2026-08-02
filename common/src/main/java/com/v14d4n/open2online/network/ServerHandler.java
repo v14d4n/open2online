@@ -21,31 +21,22 @@ import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.gamerules.GameRules;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Environment(EnvType.CLIENT)
 public final class ServerHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
-
     /** Two independent echo services, in case one is blocked or down. */
     private static final List<String> EXTERNAL_IP_SERVICES = List.of(
             "https://checkip.amazonaws.com",
             "https://api.ipify.org");
-    private static final int ATTEMPTS_PER_SERVICE = 2;
-    private static final long RETRY_BACKOFF_MS = 500L;
-    private static final int HTTP_TIMEOUT_MS = 3_000;
+    private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(3);
 
     /** Placeholder the config ships with, meaning "no address has ever been resolved". */
     private static final String DEFAULT_IP = "0.0.0.0";
@@ -296,59 +287,43 @@ public final class ServerHandler {
         return address instanceof Inet6Address && (address.getAddress()[0] & 0xFE) == 0xFC;
     }
 
-    /** Walks both services, twice each, with a small backoff between rounds. */
+    /**
+     * The address as the internet sees it, asked of both services at once.
+     *
+     * <p>They used to be tried one after the other, twice round, with a pause in between — which
+     * meant a service that had gone quiet cost the full timeout before the other was even asked, and
+     * the pause was there to stop the second round treading on the first. Asking together removes
+     * the reason for both: one service being down now costs nothing, because the answer to the same
+     * question was already on its way from the other.
+     */
     private static Optional<String> fetchExternalIP() {
-        for (int round = 1; round <= ATTEMPTS_PER_SERVICE; round++) {
-            for (String service : EXTERNAL_IP_SERVICES) {
-                Optional<String> ip = queryExternalIP(service);
-                if (ip.isPresent()) {
-                    return ip;
-                }
-            }
+        List<CompletableFuture<Optional<String>>> lookups = EXTERNAL_IP_SERVICES.stream()
+                .map(service -> Http.getAsync(service, HTTP_TIMEOUT)
+                        .thenApply(body -> body.flatMap(ServerHandler::readReportedAddress)))
+                .toList();
 
-            if (round < ATTEMPTS_PER_SERVICE) {
-                try {
-                    Thread.sleep(RETRY_BACKOFF_MS * round);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return Optional.empty();
-                }
-            }
-        }
-        return Optional.empty();
+        // Waited on in the order they are listed, so the first service still wins when both answer.
+        // findFirst stops there and never waits on the rest.
+        return lookups.stream()
+                .map(CompletableFuture::join)
+                .flatMap(Optional::stream)
+                .findFirst();
     }
 
-    private static Optional<String> queryExternalIP(String service) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) URI.create(service).toURL().openConnection();
-            connection.setConnectTimeout(HTTP_TIMEOUT_MS);
-            connection.setReadTimeout(HTTP_TIMEOUT_MS);
-
-            String body;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                body = reader.readLine();
-            }
-
-            if (body == null) {
-                return Optional.empty();
-            }
-
-            // Only the shape is checked, deliberately less than the router's answer is put through.
-            // An echo service reports the address its connection arrived from, which seen from the
-            // internet is public by definition — there is no non-public answer here to reject. The
-            // router, by contrast, reports its own WAN side, and that really can be a carrier or a
-            // private address.
-            //
-            // Both families pass. On a dual-stack connection the request leaves over IPv4 anyway, so
-            // an IPv6 reply means IPv4 was not available at all — precisely the case where refusing
-            // it would leave the player staring at the 0.0.0.0 placeholder instead of a usable
-            // address.
-            String candidate = body.trim();
-            return parseAddress(candidate).isPresent() ? Optional.of(candidate) : Optional.empty();
-        } catch (IOException | RuntimeException e) {
-            LOGGER.warn("External IP lookup via {} failed", service, e);
-            return Optional.empty();
-        }
+    /** The address an echo service reported, empty if what came back was not one. */
+    private static Optional<String> readReportedAddress(String body) {
+        // Only the shape is checked, deliberately less than the router's answer is put through. An
+        // echo service reports the address its connection arrived from, which seen from the internet
+        // is public by definition — there is no non-public answer here to reject. The router, by
+        // contrast, reports its own WAN side, and that really can be a carrier or a private address.
+        //
+        // Both families pass. On a dual-stack connection the request leaves over IPv4 anyway, so an
+        // IPv6 reply means IPv4 was not available at all — precisely the case where refusing it would
+        // leave the player staring at the 0.0.0.0 placeholder instead of a usable address.
+        return body.lines()
+                .findFirst()
+                .map(String::trim)
+                .filter(candidate -> parseAddress(candidate).isPresent());
     }
 
     private static MutableComponent getServerFormattedPort(int port) {
