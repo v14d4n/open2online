@@ -79,7 +79,11 @@ public final class ServerHandler {
         } else {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
                     ModChatTranslatableComponent.MessageTypes.ERROR));
-            UPnPHandler.closePort(port);
+            // Same guard as the branch above: only the online path ever mapped anything, and
+            // closePort throws when no backend was ever chosen.
+            if (online) {
+                UPnPHandler.closePort(port);
+            }
             return false;
         }
 

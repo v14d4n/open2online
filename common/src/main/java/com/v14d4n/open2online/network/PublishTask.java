@@ -5,6 +5,7 @@ import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent.MessageTypes;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.HttpUtil;
 import net.minecraft.world.level.GameType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,9 +43,13 @@ public final class PublishTask {
                 return;
             }
 
-            if (online && !UPnPHandler.isPortAvailable(port)) {
-                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
-                        MessageTypes.ERROR));
+            // Asked for both destinations: publishing binds the port either way, so a busy one
+            // stops a LAN game exactly as it stops an online one. Vanilla's own check, the one
+            // ShareToLanScreen validates its port with — it binds a ServerSocket, which is the real
+            // question, rather than probing for something listening.
+            if (!HttpUtil.isPortAvailable(port)) {
+                ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.portInUse",
+                        MessageTypes.ERROR, port));
                 return;
             }
 

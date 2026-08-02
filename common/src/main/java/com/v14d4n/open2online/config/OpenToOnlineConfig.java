@@ -1,11 +1,6 @@
 package com.v14d4n.open2online.config;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import dev.architectury.platform.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +31,22 @@ public final class OpenToOnlineConfig {
     public static final int AUTO_START_MIN_DELAY = 3;
     public static final int AUTO_START_MAX_DELAY = 60;
 
+    /**
+     * One rather than zero: a server cannot listen on port 0, and vanilla's own availability check
+     * turns it down — {@code new ServerSocket(0)} binds some arbitrary free port and the number it
+     * comes back with never matches. Stored values are clamped on load, so an old config holding a
+     * zero repairs itself.
+     */
+    public static final int MIN_PORT = 1;
+    public static final int MAX_PORT = 65535;
+
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
     private static final String FILE_NAME = "open2online.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private static final List<Value<?>> VALUES = new ArrayList<>();
 
-    public static final Value<Integer> port = integer("port", 25565, 0, 65535);
+    public static final Value<Integer> port = integer("port", 25565, MIN_PORT, MAX_PORT);
     public static final Value<Integer> maxPlayers = integer("maxPlayers", 8, 1, Integer.MAX_VALUE);
     public static final Value<String> lastIP = string("lastIP", "0.0.0.0");
     public static final Value<Boolean> allowPvp = bool("allowPvp", true);
@@ -118,13 +122,13 @@ public final class OpenToOnlineConfig {
     private static Value<Integer> integer(String key, int defaultValue, int min, int max) {
         return register(new Value<>(key, defaultValue,
                 json -> Math.clamp(json.getAsInt(), min, max),
-                value -> new com.google.gson.JsonPrimitive(value)));
+                JsonPrimitive::new));
     }
 
     private static Value<Boolean> bool(String key, boolean defaultValue) {
         return register(new Value<>(key, defaultValue,
                 JsonElement::getAsBoolean,
-                value -> new com.google.gson.JsonPrimitive(value)));
+                JsonPrimitive::new));
     }
 
     private static Value<String> string(String key, String defaultValue) {

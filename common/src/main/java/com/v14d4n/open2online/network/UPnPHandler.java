@@ -13,8 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -223,14 +221,6 @@ public final class UPnPHandler {
         int port = OpenToOnlineConfig.port.get();
         if (upnp != null) {
             upnp.closePortTCP(port);
-        }
-    }
-
-    public static boolean isPortAvailable(int port) {
-        try (Socket ignored = new Socket("localhost", port)) {
-            return false;
-        } catch (IOException ignored) {
-            return true;
         }
     }
 

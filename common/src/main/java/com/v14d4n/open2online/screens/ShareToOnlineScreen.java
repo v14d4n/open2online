@@ -175,7 +175,8 @@ public class ShareToOnlineScreen extends Screen {
 
         this.portEditBox.setTooltip(portValid
                 ? null
-                : Tooltip.create(Component.translatable("gui.open2online.port.invalid")));
+                : Tooltip.create(Component.translatable("gui.open2online.port.invalid",
+                        OpenToOnlineConfig.MIN_PORT, OpenToOnlineConfig.MAX_PORT)));
         this.maxPlayersEditBox.setTooltip(maxPlayersValid
                 ? null
                 : Tooltip.create(Component.translatable("gui.open2online.maxPlayers.invalid")));
@@ -188,7 +189,9 @@ public class ShareToOnlineScreen extends Screen {
     private OptionalInt parsePort() {
         try {
             int port = Integer.parseInt(this.portEditBox.getValue().trim());
-            return port >= 0 && port <= 65535 ? OptionalInt.of(port) : OptionalInt.empty();
+            return port >= OpenToOnlineConfig.MIN_PORT && port <= OpenToOnlineConfig.MAX_PORT
+                    ? OptionalInt.of(port)
+                    : OptionalInt.empty();
         } catch (NumberFormatException e) {
             return OptionalInt.empty();
         }
