@@ -12,7 +12,9 @@ import com.offbynull.portmapper.mapper.PortMapper;
 import com.offbynull.portmapper.mapper.PortType;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 
+import java.net.InetAddress;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The only backend here that speaks NAT-PMP and PCP in addition to UPnP.
@@ -83,6 +85,14 @@ public class PortMapperLibrary implements IUPnPLibrary {
         updateLifetimeThread.start();
         isMapped = true;
         return true;
+    }
+
+    /** Comes back with the mapping itself, so there is nothing left to ask the router afterwards. */
+    @Override
+    public Optional<String> externalAddress() {
+        return mappedPort == null
+                ? Optional.empty()
+                : Optional.ofNullable(mappedPort.getExternalAddress()).map(InetAddress::getHostAddress);
     }
 
     @Override

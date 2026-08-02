@@ -4,6 +4,8 @@ import com.simtechdata.waifupnp.UPnP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 public class WaifUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
@@ -47,6 +49,11 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         updateLifetimeThread.interrupt();
 
         return log(result);
+    }
+
+    @Override
+    public Optional<String> externalAddress() {
+        return Optional.ofNullable(UPnP.getExternalIP()).filter(address -> !address.isBlank());
     }
 
     @Override

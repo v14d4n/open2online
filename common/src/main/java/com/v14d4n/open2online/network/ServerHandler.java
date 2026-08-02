@@ -27,7 +27,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -173,12 +175,12 @@ public final class ServerHandler {
     }
 
     /**
-     * Resolves the address to advertise: a fresh lookup, else the last one that worked, else the
-     * {@link #DEFAULT_IP} placeholder. Never fails — the server is already published by this point,
-     * so the message has to go out either way, as it did on 1.16.5.
+     * Resolves the address to advertise: the router first, then an echo service, else the last one
+     * that worked, else the {@link #DEFAULT_IP} placeholder. Never fails — the server is already
+     * published by this point, so the message has to go out either way, as it did on 1.16.5.
      */
     private static String resolveExternalIP() {
-        Optional<String> fetched = fetchExternalIP();
+        Optional<String> fetched = askRouter().or(ServerHandler::fetchExternalIP);
         String lastIP = OpenToOnlineConfig.lastIP.get();
 
         if (fetched.isPresent()) {
@@ -204,6 +206,61 @@ public final class ServerHandler {
         }
 
         return DEFAULT_IP;
+    }
+
+    /**
+     * The address the port mapping protocol already reported. Costs nothing — the backend learned it
+     * during the exchange that opened the port — and it answers even where the echo services are
+     * unreachable.
+     *
+     * <p>Checked rather than trusted: UPnP-IGD and NAT-PMP report the router's own WAN address, and
+     * behind carrier-grade NAT or a second router that address belongs to the carrier or to a private
+     * range, so nobody outside could dial it. Only PCP is told the address the mapping actually got.
+     */
+    private static Optional<String> askRouter() {
+        return UPnPHandler.externalAddress().filter(ServerHandler::isReachableFromOutside);
+    }
+
+    private static boolean isReachableFromOutside(String address) {
+        return parseIPv4(address).filter(ServerHandler::isPublic).isPresent();
+    }
+
+    private static Optional<InetAddress> parseIPv4(String address) {
+        if (!IPV4.matcher(address).matches()) {
+            return Optional.empty();
+        }
+
+        byte[] octets = new byte[4];
+        String[] parts = address.split("\\.");
+        for (int i = 0; i < octets.length; i++) {
+            int octet = Integer.parseInt(parts[i]);
+            if (octet > 255) {
+                return Optional.empty();
+            }
+            octets[i] = (byte) octet;
+        }
+
+        try {
+            // From raw bytes on purpose: getByName treats anything that is not a well-formed literal
+            // as a hostname and goes asking a DNS server about it.
+            return Optional.of(InetAddress.getByAddress(octets));
+        } catch (UnknownHostException e) {
+            return Optional.empty();
+        }
+    }
+
+    private static boolean isPublic(InetAddress address) {
+        if (address.isAnyLocalAddress() || address.isLoopbackAddress()
+                || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                || address.isMulticastAddress()) {
+            return false;
+        }
+
+        // 100.64.0.0/10, the range carriers keep for their own layer of NAT. Java has no test for it,
+        // and it is exactly the case a router reports while being unreachable from the outside.
+        byte[] octets = address.getAddress();
+        int second = octets[1] & 0xFF;
+        return !((octets[0] & 0xFF) == 100 && second >= 64 && second <= 127);
     }
 
     /** Walks both services, twice each, with a small backoff between rounds. */

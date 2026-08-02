@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class WeUPnPLibrary implements IUPnPLibrary {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
@@ -40,6 +41,22 @@ public class WeUPnPLibrary implements IUPnPLibrary {
     @Override
     public boolean closePortTCP(int port) {
         return deleteTcpPortMapping(port);
+    }
+
+    /** A separate {@code GetExternalIPAddress} call; the gateway is already discovered by this point. */
+    @Override
+    public Optional<String> externalAddress() {
+        GatewayDevice gateway = getValidGateway();
+        if (gateway == null) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.ofNullable(gateway.getExternalIPAddress());
+        } catch (IOException | SAXException e) {
+            LOGGER.error("Failed to read the external address from the gateway", e);
+            return Optional.empty();
+        }
     }
 
     private static GatewayDevice getValidGateway() {

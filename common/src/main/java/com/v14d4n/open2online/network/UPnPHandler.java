@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class UPnPHandler {
@@ -185,6 +186,11 @@ public final class UPnPHandler {
         }
 
         return true;
+    }
+
+    /** What the router told the backend that mapped the port, if one did. */
+    public static Optional<String> externalAddress() {
+        return upnp == null ? Optional.empty() : upnp.externalAddress();
     }
 
     public static void closePortAfterLogout(boolean value) {
