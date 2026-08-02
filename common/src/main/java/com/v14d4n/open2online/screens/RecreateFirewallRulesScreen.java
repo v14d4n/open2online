@@ -13,9 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.StringJoiner;
 
 /**
  * Windows-only helper: drops the stale Minecraft firewall rules and adds correct ones, for the case
@@ -97,14 +98,29 @@ public class RecreateFirewallRulesScreen extends Screen {
             return;
         }
 
-        String quoted = "\"\"\"" + path.get() + "\"\"\"";
-        StringJoiner exec = new StringJoiner(" && ", "powershell start cmd '/c ", "' -v runAs\"");
-        exec.add("netsh advfirewall firewall delete rule name=all program=" + quoted);
-        exec.add("netsh advfirewall firewall add rule name=\"\"\"Minecraft_in\"\"\" dir=in action=allow program=" + quoted);
-        exec.add("netsh advfirewall firewall add rule name=\"\"\"Minecraft_out\"\"\" dir=out action=allow program=" + quoted);
+        // Doubled apostrophes: the path lands inside a single-quoted PowerShell string, and that is
+        // how one escapes a quote there. Rare, but "C:\Users\O'Brien\..." exists.
+        String program = '"' + path.get().replace("'", "''") + '"';
+        String commands = String.join(" && ",
+                "netsh advfirewall firewall delete rule name=all program=" + program,
+                "netsh advfirewall firewall add rule name=Minecraft_in dir=in action=allow program=" + program,
+                "netsh advfirewall firewall add rule name=Minecraft_out dir=out action=allow program=" + program);
+        String script = "Start-Process cmd -Verb RunAs -ArgumentList '/c " + commands + "'";
 
         try {
-            Runtime.getRuntime().exec(exec.toString());
+            // Two deliberate choices, both about getting the path through intact.
+            //
+            // ProcessBuilder rather than Runtime.exec(String): that one splits the whole command on
+            // whitespace with a StringTokenizer that knows nothing about quotes, so a path under
+            // "Program Files" arrives in pieces. Its own javadoc warns about exactly that, and it has
+            // been deprecated since Java 18.
+            //
+            // -EncodedCommand rather than -Command: PowerShell parses the latter off the command line
+            // before it is a string, and that parsing eats the quotes the path needs. Base64 of
+            // UTF-16LE reaches the shell untouched. The old """ spelling existed to fight this.
+            new ProcessBuilder("powershell", "-NoProfile", "-EncodedCommand",
+                    Base64.getEncoder().encodeToString(script.getBytes(StandardCharsets.UTF_16LE)))
+                    .start();
         } catch (IOException e) {
             LOGGER.error("Failed to recreate firewall rules", e);
         }
