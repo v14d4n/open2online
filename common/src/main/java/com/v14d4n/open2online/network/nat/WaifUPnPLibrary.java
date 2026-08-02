@@ -20,14 +20,16 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         updateLifetimeThread.setDaemon(true);
     }
 
+    /** Not logged when false: "there is no UPnP here" is an answer, and Auto mode expects to hear it. */
     @Override
     public boolean isUPnPAvailable() {
-        return log(UPnP.isUPnPAvailable());
+        return UPnP.isUPnPAvailable();
     }
 
+    /** Likewise: a port that is not mapped yet is the normal state right before opening one. */
     @Override
     public boolean isMappedTCP(int port) {
-        return log(UPnP.isMappedTCP(port));
+        return UPnP.isMappedTCP(port);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
             updateLifetimeThread.start();
         }
 
-        return log(result);
+        return logFailure(result, "open");
     }
 
     @Override
@@ -48,7 +50,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
 
         updateLifetimeThread.interrupt();
 
-        return log(result);
+        return logFailure(result, "close");
     }
 
     @Override
@@ -61,9 +63,10 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         updateLifetimeThread.interrupt();
     }
 
-    private static boolean log(boolean result) {
+    /** Only for the two calls that were asked to change something and did not. */
+    private static boolean logFailure(boolean result, String action) {
         if (!result) {
-            LOGGER.error("WaifUPnP reported a failure; the library does not expose a reason.");
+            LOGGER.error("WaifUPnP failed to {} the port; the library does not expose a reason.", action);
         }
         return result;
     }
