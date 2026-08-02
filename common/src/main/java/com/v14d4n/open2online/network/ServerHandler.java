@@ -1,6 +1,5 @@
 package com.v14d4n.open2online.network;
 
-import com.google.common.net.HostAndPort;
 import com.google.common.net.InetAddresses;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.mixin.MinecraftTitleInvoker;
@@ -9,6 +8,7 @@ import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.ClickEvent;
@@ -90,10 +90,11 @@ public final class ServerHandler {
             return;
         }
 
-        // Built with the same class Minecraft parses it back with, which is what puts an IPv6 literal
-        // in brackets — "[2001:db8::1]:25565". Plain concatenation produced something the server list
-        // cannot read.
-        String address = HostAndPort.fromParts(resolveExternalIP(), port).toString();
+        // Literally the class Minecraft parses this back with when someone pastes it into the server
+        // list, so whatever it writes is by definition readable there. It is a wrapper over Guava's
+        // HostAndPort, which is where the brackets around an IPv6 literal come from —
+        // "[2001:db8::1]:25565", where plain concatenation produced something unparseable.
+        String address = new ServerAddress(resolveExternalIP(), port).toString();
         MutableComponent shown = OpenToOnlineConfig.hideIP.get()
                 ? bracketed(copyable(Component.translatable("tooltip.open2online.copy").getString(), address))
                 : bracketed(copyable(address, address));
