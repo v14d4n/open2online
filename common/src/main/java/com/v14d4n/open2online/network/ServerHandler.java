@@ -1,5 +1,6 @@
 package com.v14d4n.open2online.network;
 
+import com.google.common.net.InetAddresses;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.mixin.MinecraftTitleInvoker;
 import com.v14d4n.open2online.network.chat.ModChat;
@@ -26,12 +27,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Environment(EnvType.CLIENT)
 public final class ServerHandler {
@@ -47,7 +47,6 @@ public final class ServerHandler {
 
     /** Placeholder the config ships with, meaning "no address has ever been resolved". */
     private static final String DEFAULT_IP = "0.0.0.0";
-    private static final Pattern IPV4 = Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}$");
 
     private ServerHandler() {
     }
@@ -235,28 +234,22 @@ public final class ServerHandler {
         return parseIPv4(address).filter(ServerHandler::isPublic).isPresent();
     }
 
-    private static Optional<InetAddress> parseIPv4(String address) {
-        if (!IPV4.matcher(address).matches()) {
+    /**
+     * Parses a literal without ever consulting DNS — which is the whole reason this does not use
+     * {@code InetAddress.getByName}, since that treats anything it cannot parse as a hostname and
+     * goes asking a name server about it.
+     *
+     * <p>Narrowed to IPv4 on purpose: Guava accepts IPv6 literals too, and the checks below read
+     * octets by position.
+     */
+    private static Optional<Inet4Address> parseIPv4(String address) {
+        if (!InetAddresses.isInetAddress(address)) {
             return Optional.empty();
         }
 
-        byte[] octets = new byte[4];
-        String[] parts = address.split("\\.");
-        for (int i = 0; i < octets.length; i++) {
-            int octet = Integer.parseInt(parts[i]);
-            if (octet > 255) {
-                return Optional.empty();
-            }
-            octets[i] = (byte) octet;
-        }
-
-        try {
-            // From raw bytes on purpose: getByName treats anything that is not a well-formed literal
-            // as a hostname and goes asking a DNS server about it.
-            return Optional.of(InetAddress.getByAddress(octets));
-        } catch (UnknownHostException e) {
-            return Optional.empty();
-        }
+        return InetAddresses.forString(address) instanceof Inet4Address parsed
+                ? Optional.of(parsed)
+                : Optional.empty();
     }
 
     private static boolean isPublic(InetAddress address) {
@@ -313,7 +306,7 @@ public final class ServerHandler {
             // A blocked or misbehaving service can answer 200 with an HTML notice, so the shape of
             // the reply is checked rather than trusted.
             String candidate = body.trim();
-            return IPV4.matcher(candidate).matches() ? Optional.of(candidate) : Optional.empty();
+            return parseIPv4(candidate).isPresent() ? Optional.of(candidate) : Optional.empty();
         } catch (IOException | RuntimeException e) {
             LOGGER.warn("External IP lookup via {} failed", service, e);
             return Optional.empty();
