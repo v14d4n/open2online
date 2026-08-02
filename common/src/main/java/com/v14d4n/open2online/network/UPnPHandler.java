@@ -16,13 +16,33 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Environment(EnvType.CLIENT)
 public final class UPnPHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger("Open2Online");
 
-    private static boolean closePortAfterLogout;
-    private static IUPnPLibrary upnp;
+    /**
+     * Whether this client is hosting a world on the internet right now.
+     *
+     * <p>Three threads want to know, and none of them is the one that sets it. The publish worker
+     * writes it; the server thread reads it at every login, through the whitelist gate in
+     * {@code MixinPlayerList}; the render thread reads it when the window title is rebuilt; and the
+     * server thread takes it back when the server stops. As a plain field none of those readers was
+     * promised the write at all — a player joining moments after the world went online could be let
+     * in against a stale {@code false}, past the whitelist.
+     *
+     * <p>Atomic rather than merely {@code volatile} because stopping the server is a claim, not a
+     * read: whoever flips it back to false is the one that closes the mapping, and that has to
+     * happen exactly once.
+     */
+    private static final AtomicBoolean closePortAfterLogout = new AtomicBoolean();
+
+    /**
+     * The backend holding the mapping, set by the publish worker and read by the server thread when
+     * it stops. Written before the flag above, so a reader that sees the flag set sees this too.
+     */
+    private static volatile IUPnPLibrary upnp;
 
     private UPnPHandler() {
     }
@@ -173,16 +193,19 @@ public final class UPnPHandler {
     }
 
     public static boolean closePort(int port) {
-        if (upnp == null) {
+        // Read once into a local: the field can be reassigned by the publish worker, and every
+        // decision below has to be about the same backend.
+        IUPnPLibrary backend = upnp;
+        if (backend == null) {
             throw new IllegalStateException("No UPnP backend has been selected");
         }
 
         ModChat.send(ModChatTranslatableComponent.of("chat.open2online.closingTcpPort")
                 .append(Component.literal(" " + port + "...")));
 
-        if (!upnp.isMappedTCP(port)) {
+        if (!backend.isMappedTCP(port)) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.portIsAlreadyClosed"));
-        } else if (upnp.closePortTCP(port)) {
+        } else if (backend.closePortTCP(port)) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.portIsClosed"));
         } else {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.portClosing", MessageTypes.ERROR));
@@ -194,11 +217,12 @@ public final class UPnPHandler {
 
     /** What the router told the backend that mapped the port, if one did. */
     public static Optional<String> externalAddress() {
-        return upnp == null ? Optional.empty() : upnp.externalAddress();
+        IUPnPLibrary backend = upnp;
+        return backend == null ? Optional.empty() : backend.externalAddress();
     }
 
     public static void closePortAfterLogout(boolean value) {
-        closePortAfterLogout = value;
+        closePortAfterLogout.set(value);
     }
 
     /**
@@ -212,21 +236,24 @@ public final class UPnPHandler {
      * telling the host apart from a guest by name, and with licence checking off a name is not
      * something anyone can verify. Nobody has to be identified for a server to stop.
      */
-    public static synchronized void onServerStopping(MinecraftServer server) {
-        if (!closePortAfterLogout) {
+    public static void onServerStopping(MinecraftServer server) {
+        // Claiming the flag and acting on it is one step: whoever takes it away from true is the one
+        // that closes the mapping. The synchronized this replaces only kept two stops apart from each
+        // other, and left the publish worker — the thread that actually writes here — outside.
+        if (!closePortAfterLogout.compareAndSet(true, false)) {
             return;
         }
-        closePortAfterLogout = false;
 
         // Deliberately not asked whether the port is still mapped first. A query that fails looks
         // exactly like "not mapped", and acting on that would leave the mapping on the router for
         // good. Deleting one that is not there costs nothing, so the close is unconditional.
-        if (upnp != null) {
-            upnp.closePortTCP(OpenToOnlineConfig.port.get());
+        IUPnPLibrary backend = upnp;
+        if (backend != null) {
+            backend.closePortTCP(OpenToOnlineConfig.port.get());
         }
     }
 
     public static boolean getClosePortAfterLogout() {
-        return closePortAfterLogout;
+        return closePortAfterLogout.get();
     }
 }
