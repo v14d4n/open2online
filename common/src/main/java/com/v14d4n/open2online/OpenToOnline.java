@@ -40,14 +40,14 @@ public final class OpenToOnline {
     private static void initClient() {
         ConfigurationScreenRegistry.register(Platform.getMod(MOD_ID), AdvancedSettingsScreen::new);
 
-        ClientLifecycleEvent.CLIENT_STARTED.register(UpdateChecker::check);
+        ClientLifecycleEvent.CLIENT_STARTED.register(client -> UpdateChecker.check());
 
         // Registration order decides which line lands in chat first: listeners run in the order they
         // were added, and both hand their message to the same queue. The update notice goes first so
         // the auto start countdown stays the last thing said.
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> UpdateChecker.announceIfPending());
-        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(AutoStart::onPlayerJoin);
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(AutoStart::onPlayerQuit);
+        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> AutoStart.onPlayerJoin());
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> AutoStart.onPlayerQuit());
         ClientTickEvent.CLIENT_POST.register(AutoStart::onClientTick);
         ClientGuiEvent.INIT_POST.register((screen, access) -> AutoStart.onScreenOpened(screen));
     }

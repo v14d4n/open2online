@@ -58,7 +58,7 @@ public final class UpdateChecker {
     }
 
     /** Fires the lookup once, off the main thread. */
-    public static void check(Minecraft minecraft) {
+    public static void check() {
         // The switch covers the chat line, so with it off there is nothing this lookup could deliver.
         // Mod Menu asks separately and is not bound by it — that badge is its own notification.
         if (!OpenToOnlineConfig.updateNotifications.get()) {
@@ -76,7 +76,12 @@ public final class UpdateChecker {
         if (pending == null || announced || !OpenToOnlineConfig.updateNotifications.get()) {
             return;
         }
-        if (Minecraft.getInstance().player == null) {
+
+        // Only in the player's own world. The 1.16.5 build got this for free by riding a server-side
+        // login event, which never fired on a client connected to someone else's server; a guest has
+        // no say in which version the host runs, so telling them is noise.
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || !minecraft.hasSingleplayerServer()) {
             return;
         }
 

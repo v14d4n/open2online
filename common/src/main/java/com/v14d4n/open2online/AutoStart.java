@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.GameType;
 
@@ -42,7 +41,7 @@ public final class AutoStart {
     private AutoStart() {
     }
 
-    public static void onPlayerJoin(LocalPlayer player) {
+    public static void onPlayerJoin() {
         publishAt = IDLE;
 
         // Only our own world: joining someone else's server must not arm anything, nor announce it.
@@ -58,7 +57,7 @@ public final class AutoStart {
     }
 
     /** Leaving the world drops a pending start; there is nothing left to publish. */
-    public static void onPlayerQuit(LocalPlayer player) {
+    public static void onPlayerQuit() {
         publishAt = IDLE;
     }
 
