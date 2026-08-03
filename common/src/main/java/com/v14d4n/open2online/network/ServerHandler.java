@@ -44,22 +44,33 @@ public final class ServerHandler {
     private ServerHandler() {
     }
 
-    public static void startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands, boolean online) {
-        if (online && !UPnPHandler.openPort(port)) {
+    /**
+     * @param attempt everything above the call to {@code publishServer} is still callable off, and
+     *                everything below it is not — see {@code PublishAttempt}
+     */
+    public static void startServer(int port, int maxPlayers, GameType gameMode, boolean allowCommands,
+                                   boolean online, PublishAttempt attempt) {
+        if (online && !UPnPHandler.openPort(port, attempt)) {
             return;
         }
 
         IntegratedServer server = Minecraft.getInstance().getSingleplayerServer();
 
         // The world can be left while the port is still being mapped; the mapping must not outlive it.
-        //
-        // Asked only of the online path, and now for what it says rather than for safety: a session
-        // that published online earlier leaves its backend in place, so a LAN game that failed here
-        // would narrate the closing of a port it never opened.
+        // Nobody is left to read chat by then, so this goes quietly.
         if (server == null) {
-            if (online) {
-                UPnPHandler.closePort(port);
-            }
+            UPnPHandler.releaseMapping(port);
+            return;
+        }
+
+        // The point of no return, taken as one step rather than as a question and then an answer:
+        // between checking and publishing there is room for a cancel to land, and honouring it after
+        // the world is already online is not something that can be done.
+        //
+        // Losing the race means the player called it off first — so the mapping goes back and nothing
+        // is said, because cancel() has already said the only thing worth saying.
+        if (!attempt.commit()) {
+            UPnPHandler.releaseMapping(port);
             return;
         }
 
@@ -70,10 +81,9 @@ public final class ServerHandler {
         if (!server.publishServer(gameMode, allowCommands, port)) {
             ModChat.send(ModChatTranslatableComponent.of("chat.open2online.error.publishFailed",
                     ModChatTranslatableComponent.MessageTypes.ERROR));
-            // Same guard, same reason as the branch above.
-            if (online) {
-                UPnPHandler.closePort(port);
-            }
+            // A genuine failure, so this one is narrated: the player is watching a publish they asked
+            // for come apart, and the port going back is part of that story.
+            UPnPHandler.closePort(port);
             return;
         }
 

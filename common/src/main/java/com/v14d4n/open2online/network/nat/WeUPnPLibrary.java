@@ -27,24 +27,41 @@ public class WeUPnPLibrary implements IUPnPLibrary {
      */
     private static final long VERIFY_INTERVAL_SECONDS = 31L;
 
-    private static GatewayDevice gatewayDevice;
+    /**
+     * Found once per instance, which is to say once per attempt at publishing.
+     *
+     * <p>It used to be static, and that bought a saved discovery — three seconds, the library's own
+     * default timeout — at the price of one router being remembered for the life of the game. Two
+     * attempts running at once, which cancelling made an ordinary thing, would race to fill it; a
+     * player whose network changed under them kept talking to a gateway that was no longer there; and
+     * {@link #discard()} could not undo any of it, because there was nothing instance-shaped to undo.
+     * Paying the three seconds again per attempt buys all of that back.
+     */
+    private GatewayDevice gatewayDevice;
 
     private final PortLease lease = new PortLease("Open2Online WeUPnP lease");
 
     private volatile int port;
 
     @Override
-    public boolean isUPnPAvailable() {
+    public synchronized boolean isUPnPAvailable() {
         return getValidGateway() != null;
     }
 
     @Override
-    public boolean isMappedTCP(int port) {
+    public synchronized boolean isMappedTCP(int port) {
         return getTcpPortMapping(port);
     }
 
+    /**
+     * Opening, closing and verifying take turns.
+     *
+     * <p>Cancelling the schedule cannot stop a verification already inside a call to the router, so
+     * without this a close could land in the middle of one and be undone by its second half. Holding
+     * the lock makes the close wait out the run that started first, and then delete whatever it left.
+     */
     @Override
-    public boolean openPortTCP(int port) {
+    public synchronized boolean openPortTCP(int port) {
         this.port = port;
         boolean result = addTcpPortMapping(port);
 
@@ -56,21 +73,21 @@ public class WeUPnPLibrary implements IUPnPLibrary {
     }
 
     @Override
-    public boolean closePortTCP(int port) {
-        // Called off first: a re-add landing after the delete would put the mapping straight back.
+    public synchronized boolean closePortTCP(int port) {
+        // Called off first, so a verification still queued behind this lock finds nothing to do.
         lease.cancel();
 
         return deleteTcpPortMapping(port);
     }
 
     @Override
-    public void discard() {
+    public synchronized void discard() {
         lease.cancel();
     }
 
     /** A separate {@code GetExternalIPAddress} call; the gateway is already discovered by this point. */
     @Override
-    public Optional<String> externalAddress() {
+    public synchronized Optional<String> externalAddress() {
         GatewayDevice gateway = getValidGateway();
         if (gateway == null) {
             return Optional.empty();
@@ -84,7 +101,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         }
     }
 
-    private static GatewayDevice getValidGateway() {
+    private GatewayDevice getValidGateway() {
         if (gatewayDevice == null) {
             try {
                 GatewayDiscover discover = new GatewayDiscover();
@@ -97,7 +114,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return gatewayDevice;
     }
 
-    private static boolean getTcpPortMapping(int port) {
+    private boolean getTcpPortMapping(int port) {
         GatewayDevice gateway = getValidGateway();
         if (gateway == null) {
             return false;
@@ -113,7 +130,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return false;
     }
 
-    private static boolean addTcpPortMapping(int port) {
+    private boolean addTcpPortMapping(int port) {
         GatewayDevice gateway = getValidGateway();
         if (gateway == null) {
             return false;
@@ -129,7 +146,7 @@ public class WeUPnPLibrary implements IUPnPLibrary {
         return false;
     }
 
-    private static boolean deleteTcpPortMapping(int port) {
+    private boolean deleteTcpPortMapping(int port) {
         GatewayDevice gateway = getValidGateway();
         if (gateway == null) {
             return false;
@@ -150,7 +167,13 @@ public class WeUPnPLibrary implements IUPnPLibrary {
      * line does not pretend to know which of the two happened. Re-adding is right either way: a
      * mapping that is already there is simply overwritten with itself.
      */
-    private void verifyMapping() {
+    private synchronized void verifyMapping() {
+        // Asked after the lock, not before: this run may have been waiting here while a close went
+        // through, and re-adding the mapping it just deleted is exactly the mistake being avoided.
+        if (lease.isCancelled()) {
+            return;
+        }
+
         if (!getTcpPortMapping(port)) {
             addTcpPortMapping(port);
             LOGGER.info("Port {} did not come back as mapped; asked the gateway for it again.", port);

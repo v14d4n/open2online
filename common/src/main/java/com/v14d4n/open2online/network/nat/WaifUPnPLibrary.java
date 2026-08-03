@@ -38,8 +38,15 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
         return UPnP.isMappedTCP(port);
     }
 
+    /**
+     * Opening, closing and verifying take turns.
+     *
+     * <p>Cancelling the schedule cannot stop a verification already inside a call to the router, so
+     * without this a close could land in the middle of one and be undone by its second half. Holding
+     * the lock makes the close wait out the run that started first, and then delete whatever it left.
+     */
     @Override
-    public boolean openPortTCP(int port) {
+    public synchronized boolean openPortTCP(int port) {
         this.port = port;
         boolean result = UPnP.openPortTCP(port);
 
@@ -51,8 +58,8 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
     }
 
     @Override
-    public boolean closePortTCP(int port) {
-        // Called off first: a renewal landing after the mapping is gone would put it straight back.
+    public synchronized boolean closePortTCP(int port) {
+        // Called off first, so a verification still queued behind this lock finds nothing to do.
         lease.cancel();
 
         return logFailure(UPnP.closePortTCP(port), "close");
@@ -64,7 +71,7 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
     }
 
     @Override
-    public void discard() {
+    public synchronized void discard() {
         lease.cancel();
     }
 
@@ -81,7 +88,13 @@ public class WaifUPnPLibrary implements IUPnPLibrary {
      * clear yes. The library reports that as a bare boolean, so a failed query is indistinguishable
      * from a missing mapping — hence a log line that does not claim to know which happened.
      */
-    private void verifyMapping() {
+    private synchronized void verifyMapping() {
+        // Asked after the lock, not before: this run may have been waiting here while a close went
+        // through, and re-adding the mapping it just deleted is exactly the mistake being avoided.
+        if (lease.isCancelled()) {
+            return;
+        }
+
         if (!UPnP.isMappedTCP(port)) {
             UPnP.openPortTCP(port);
             LOGGER.info("Port {} did not come back as mapped; asked the gateway for it again.", port);

@@ -1,6 +1,7 @@
 package com.v14d4n.open2online;
 
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
+import com.v14d4n.open2online.network.PublishTask;
 import com.v14d4n.open2online.network.UPnPHandler;
 import com.v14d4n.open2online.screens.AdvancedSettingsScreen;
 import dev.architectury.event.events.client.ClientGuiEvent;
@@ -12,6 +13,7 @@ import dev.architectury.platform.Platform;
 import dev.architectury.platform.client.ConfigurationScreenRegistry;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
+import net.minecraft.client.gui.screens.PauseScreen;
 
 public final class OpenToOnline {
     public static final String MOD_ID = "open2online";
@@ -44,6 +46,15 @@ public final class OpenToOnline {
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> AutoStart.onPlayerJoin());
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> AutoStart.onPlayerQuit());
         ClientTickEvent.CLIENT_POST.register(AutoStart::onClientTick);
-        ClientGuiEvent.INIT_POST.register((screen, access) -> AutoStart.onScreenOpened(screen));
+
+        // One gesture for both of the mod's waits: opening the pause menu calls off a pending auto
+        // start and a publish in flight alike. The pause menu specifically — the inventory or a chest
+        // must not count. Each of the two speaks only if it had something to call off.
+        ClientGuiEvent.INIT_POST.register((screen, access) -> {
+            if (screen instanceof PauseScreen) {
+                AutoStart.cancel();
+                PublishTask.cancel();
+            }
+        });
     }
 }

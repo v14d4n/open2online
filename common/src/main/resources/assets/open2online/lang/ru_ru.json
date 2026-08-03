@@ -50,6 +50,7 @@
   "chat.open2online.startingServer": "Запуск сервера...",
   "chat.open2online.autoStartScheduled": "Автозапуск: сервер откроется через %s с. Нажмите ESC, чтобы отменить",
   "chat.open2online.autoStartCancelled": "Автозапуск отменён",
+  "chat.open2online.publishCancelled": "Публикация отменена",
   "chat.open2online.openingTcpPort": "Открытие TCP порта",
   "chat.open2online.closingTcpPort": "Закрытие TCP порта",
   "chat.open2online.gameHostedOn": "Игра размещена на:",

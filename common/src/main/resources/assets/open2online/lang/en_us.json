@@ -50,6 +50,7 @@
   "chat.open2online.startingServer": "Starting server...",
   "chat.open2online.autoStartScheduled": "Auto start: the server will open in %s sec. Press ESC to cancel",
   "chat.open2online.autoStartCancelled": "Auto start cancelled",
+  "chat.open2online.publishCancelled": "Publishing cancelled",
   "chat.open2online.openingTcpPort": "Opening TCP port",
   "chat.open2online.closingTcpPort": "Closing TCP port",
   "chat.open2online.gameHostedOn": "Your game is hosted on:",

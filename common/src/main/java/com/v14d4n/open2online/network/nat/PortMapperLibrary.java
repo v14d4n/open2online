@@ -53,8 +53,15 @@ public class PortMapperLibrary implements IUPnPLibrary {
         return isMapped;
     }
 
+    /**
+     * Opening, closing and renewing take turns.
+     *
+     * <p>Cancelling the schedule cannot stop a renewal already on the bus, so without this an unmap
+     * could land in the middle of one and be undone by the refresh that follows it. Holding the lock
+     * makes the unmap wait out the run that started first, and then remove whatever it left.
+     */
     @Override
-    public boolean openPortTCP(int port) {
+    public synchronized boolean openPortTCP(int port) {
         // The index of the mapper that worked last time is cached, so the usual case skips discovery.
         int cachedIndex = OpenToOnlineConfig.portMapperIndex.get();
         if (cachedIndex >= 0 && cachedIndex < mappers.size() && tryMap(cachedIndex, port)) {
@@ -96,8 +103,8 @@ public class PortMapperLibrary implements IUPnPLibrary {
     }
 
     @Override
-    public boolean closePortTCP(int port) {
-        // Called off first: a renewal landing after the unmap would put the mapping straight back.
+    public synchronized boolean closePortTCP(int port) {
+        // Called off first, so a renewal still queued behind this lock finds nothing to do.
         lease.cancel();
 
         // Nothing was ever mapped, so nothing failed to close. The host quitting closes the port
@@ -121,13 +128,19 @@ public class PortMapperLibrary implements IUPnPLibrary {
 
     /** The gateways spin up threads in the constructor, so an unused instance still has to be killed. */
     @Override
-    public void discard() {
+    public synchronized void discard() {
         lease.cancel();
         networkBus.send(new KillNetworkRequest());
         processBus.send(new KillProcessRequest());
     }
 
-    private void renewLease() {
+    private synchronized void renewLease() {
+        // Asked after the lock, not before: this run may have been waiting here while an unmap went
+        // through, and refreshing the mapping it just removed is exactly the mistake being avoided.
+        if (lease.isCancelled()) {
+            return;
+        }
+
         try {
             mappedPort = currentMapper.refreshPort(mappedPort, LIFETIME_SECONDS * 1000L);
         } catch (InterruptedException e) {

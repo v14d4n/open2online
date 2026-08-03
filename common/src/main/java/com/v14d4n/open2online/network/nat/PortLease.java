@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Keeps a port mapping alive by re-asking the router for it on a schedule, until told to stop.
@@ -23,6 +24,16 @@ final class PortLease {
 
     /** Written from the publish worker, read again when the host quits, which is the server thread. */
     private volatile ScheduledFuture<?> renewal;
+
+    /**
+     * Whether the schedule has been called off, which a run already under way has to ask for itself.
+     *
+     * <p>{@link ScheduledFuture#cancel} only interrupts, and what these runs are doing when it lands
+     * is an HTTP request to a router — something an interrupt does not stop. So a run can outlive the
+     * call that cancelled it, and without this it would go on to re-add a mapping that was deleted a
+     * moment earlier, leaving one on the router that nothing is left to remove.
+     */
+    private final AtomicBoolean cancelled = new AtomicBoolean();
 
     PortLease(String threadName) {
         this.scheduler = Executors.newSingleThreadScheduledExecutor(task -> {
@@ -52,8 +63,15 @@ final class PortLease {
         }, 0L, period, unit);
     }
 
+    /** True once {@link #cancel()} has been called, whether or not a run was in the middle of one. */
+    boolean isCancelled() {
+        return cancelled.get();
+    }
+
     /** Stops the schedule and releases the thread. Does nothing gracefully if nothing was scheduled. */
     void cancel() {
+        cancelled.set(true);
+
         ScheduledFuture<?> pending = renewal;
         if (pending != null) {
             pending.cancel(true);

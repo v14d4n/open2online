@@ -8,8 +8,6 @@ import com.v14d4n.open2online.network.chat.ModChatTranslatableComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.PauseScreen;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.GameType;
 
@@ -61,15 +59,9 @@ public final class AutoStart {
         publishAt = IDLE;
     }
 
-    /**
-     * Opening the pause menu calls off a pending start. The pause menu specifically, not any screen
-     * — the inventory or a chest should not count.
-     *
-     * <p>Only the countdown is cancellable. Once the worker is off doing the port mapping there is
-     * no safe way to stop it mid-flight, so that stays out of scope.
-     */
-    public static void onScreenOpened(Screen screen) {
-        if (publishAt == IDLE || !(screen instanceof PauseScreen)) {
+    /** Calls off a pending start, saying so only when there was one to call off. */
+    public static void cancel() {
+        if (publishAt == IDLE) {
             return;
         }
 
