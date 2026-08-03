@@ -20,7 +20,6 @@ body:
     id: problem
     attributes:
       label: What problem it solves
-      description: What you do today instead, and why it is awkward.
 
   - type: textarea
     id: extra

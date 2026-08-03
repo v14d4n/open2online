@@ -5,25 +5,15 @@ body:
   - type: markdown
     attributes:
       value: |
-        The mod tries to say in chat why it failed. That message is the most useful thing you can tell me here.
+        The mod tries to say in chat why it failed - that message is the most useful thing you can tell me here.
 
         English or Russian, both are fine.
 
-  - type: dropdown
+  - type: textarea
     id: message
     attributes:
       label: What the mod said in chat
-      options:
-        - "UPnP is not available / UPnP/NAT-PMP/PCP is not available"
-        - "Failed to open the port with every library"
-        - "Failed to open port. Try changing it or the library"
-        - "Port N is already in use"
-        - "Your provider uses CGNAT"
-        - "Your router is itself behind another router"
-        - "Unable to host online game"
-        - "Failed to get external IP"
-        - "Nothing - the port opened and the server started, but nobody can connect"
-        - "Something else, or no message at all"
+      description: Copy the message or attach a screenshot. If it said nothing at all, write that.
     validations:
       required: true
 
@@ -31,23 +21,12 @@ body:
     id: library
     attributes:
       label: Library
-      description: Advanced Settings -> Library.
+      description: Advanced Settings -> Library. Auto tries all three, so it failing means all three failed.
       options:
         - Auto
         - WeUPnP
         - WaifUPnP
         - PortMapper
-    validations:
-      required: true
-
-  - type: dropdown
-    id: tried-portmapper
-    attributes:
-      label: Have you tried PortMapper specifically?
-      description: It is the only one that also speaks NAT-PMP and PCP, so it reaches routers the other two cannot.
-      options:
-        - "Yes, it failed as well"
-        - "No, not yet"
     validations:
       required: true
 
@@ -62,17 +41,23 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: cgnat
+    attributes:
+      label: Does your provider use CGNAT?
+      description: Compare the WAN address in your router with the one a "what is my IP" site shows you. Different addresses mean CGNAT.
+      options:
+        - "No, the two addresses match"
+        - "Yes, they are different"
+        - "I don't know"
+    validations:
+      required: true
+
   - type: input
     id: router
     attributes:
       label: Router model
       placeholder: TP-Link Archer AX55
-
-  - type: input
-    id: provider
-    attributes:
-      label: Country and internet provider
-      description: Helps to tell CGNAT apart from a router that simply refuses.
 
   - type: dropdown
     id: firewall
@@ -82,8 +67,7 @@ body:
       options:
         - "Yes, it did not help"
         - "Yes, and it fixed it"
-        - "No"
-        - "I am not on Windows"
+        - "No, or I am not on Windows"
 
   - type: input
     id: mod-version
@@ -118,9 +102,3 @@ body:
       label: Log
       description: "`.minecraft/logs/latest.log` from the session where it happened. Attach the file, or paste the part around the error."
       render: text
-
-  - type: textarea
-    id: extra
-    attributes:
-      label: Anything else
-      description: Screenshots of the chat, what you have already tried, whether it ever worked before.
