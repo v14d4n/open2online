@@ -56,14 +56,10 @@ public final class UpdateChecker {
     private UpdateChecker() {
     }
 
-    /** Fires the lookup once, off the main thread. */
+    /**
+     * Fires the lookup once, off the main thread.
+     */
     public static void check() {
-        // The switch covers the chat line, so with it off there is nothing this lookup could deliver.
-        // Mod Menu asks separately and is not bound by it — that badge is its own notification.
-        if (!OpenToOnlineConfig.updateNotifications.get()) {
-            return;
-        }
-
         // The game's own pool for blocking I/O. It is shut down with the game, bounded to a three
         // second wait, so a lookup still in flight cannot hold the process open.
         Util.ioPool().execute(UpdateChecker::checkAndAnnounce);
