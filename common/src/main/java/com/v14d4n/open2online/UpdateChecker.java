@@ -135,7 +135,8 @@ public final class UpdateChecker {
 
             cachedDownloadPage = Optional.ofNullable(root.getAsJsonObject("downloads"))
                     .map(downloads -> downloads.getAsJsonObject(mcVersion))
-                    .map(builds -> builds.get(latest))
+                    .map(builds -> builds.getAsJsonObject(latest))
+                    .map(perLoader -> perLoader.get(loaderName()))
                     .map(JsonElement::getAsString)
                     .orElseGet(homepage::getAsString);
 
@@ -155,6 +156,10 @@ public final class UpdateChecker {
 
     public static String installedVersion() {
         return Platform.getMod(OpenToOnline.MOD_ID).getVersion();
+    }
+
+    private static String loaderName() {
+        return Platform.isFabric() ? "fabric" : "neoforge";
     }
 
     /** Where someone who wants the newer build should be sent, once the lookup has answered. */
