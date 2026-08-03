@@ -41,13 +41,8 @@ public final class ModServerOptions {
 
     /** Carries a tooltip because switching it off has a security consequence worth spelling out. */
     public static OptionInstance<Boolean> requireLicense() {
-        return OptionInstance.createBoolean("options.open2online.licenseRequired",
-                OptionInstance.cachedConstantTooltip(Component.translatable("tooltip.open2online.licenseRequired")),
-                OpenToOnlineConfig.requireLicense.get(),
-                updated -> {
-                    OpenToOnlineConfig.requireLicense.set(updated);
-                    OpenToOnlineConfig.requireLicense.save();
-                });
+        return booleanOption("options.open2online.licenseRequired",
+                "tooltip.open2online.licenseRequired", OpenToOnlineConfig.requireLicense);
     }
 
     public static OptionInstance<Boolean> updateNotifications() {
@@ -102,8 +97,10 @@ public final class ModServerOptions {
         return booleanOption("gui.open2online.whitelistMode", OpenToOnlineConfig.whitelistMode);
     }
 
+    /** Explained, because the name reads as a promise it does not make — see the tooltip. */
     public static OptionInstance<Boolean> hideIP() {
-        return booleanOption("gui.open2online.hideIP", OpenToOnlineConfig.hideIP);
+        return booleanOption("gui.open2online.hideIP", "tooltip.open2online.hideIP",
+                OpenToOnlineConfig.hideIP);
     }
 
     private static OptionInstance<Boolean> booleanOption(String key,
@@ -112,5 +109,16 @@ public final class ModServerOptions {
             value.set(updated);
             value.save();
         });
+    }
+
+    private static OptionInstance<Boolean> booleanOption(String key, String tooltipKey,
+                                                         OpenToOnlineConfig.Value<Boolean> value) {
+        return OptionInstance.createBoolean(key,
+                OptionInstance.cachedConstantTooltip(Component.translatable(tooltipKey)),
+                value.get(),
+                updated -> {
+                    value.set(updated);
+                    value.save();
+                });
     }
 }

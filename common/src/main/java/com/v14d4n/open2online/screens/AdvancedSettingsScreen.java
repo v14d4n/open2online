@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -51,6 +52,7 @@ public class AdvancedSettingsScreen extends ModOptionsScreen {
         return Button.builder(Component.translatable("gui.open2online.autoStart"),
                         press -> this.minecraft.setScreen(new AutoStartSettingsScreen(this)))
                 .size(optionsList.getRowWidth(), BUTTON_HEIGHT)
+                .tooltip(Tooltip.create(Component.translatable("tooltip.open2online.autoStart")))
                 .build();
     }
 
@@ -63,6 +65,7 @@ public class AdvancedSettingsScreen extends ModOptionsScreen {
     private Button createEditWhitelistButton() {
         return Button.builder(Component.translatable("gui.open2online.editWhitelist"),
                         press -> this.minecraft.setScreen(new EditWhitelistScreen(this)))
+                .tooltip(Tooltip.create(Component.translatable("tooltip.open2online.editWhitelist")))
                 .build();
     }
 }
