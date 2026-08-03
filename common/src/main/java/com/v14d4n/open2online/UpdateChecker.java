@@ -134,16 +134,18 @@ public final class UpdateChecker {
             String latest = published.getAsString();
 
             cachedDownloadPage = Optional.ofNullable(root.getAsJsonObject("downloads"))
-                    .map(downloads -> downloads.get(latest))
+                    .map(downloads -> downloads.getAsJsonObject(mcVersion))
+                    .map(builds -> builds.get(latest))
                     .map(JsonElement::getAsString)
                     .orElseGet(homepage::getAsString);
 
             // Set last: it is what the cache check above reads, so everything it implies has to be in
             // place before it becomes visible.
             cachedLatestVersion = latest;
-        } catch (JsonParseException | IllegalStateException e) {
+        } catch (JsonParseException | IllegalStateException | ClassCastException e) {
             // Transport failures are already logged and turned into an empty body above; what is left
-            // to go wrong here is the file itself not being the shape this reads.
+            // to go wrong here is the file itself not being the shape this reads — a hand-edited file
+            // with a string where an object belongs included, which is what the cast can throw.
             LOGGER.warn("Update check failed", e);
             return Optional.empty();
         }
