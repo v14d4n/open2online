@@ -13,7 +13,7 @@ body:
     id: message
     attributes:
       label: What the mod said in chat
-      description: Copy the message or attach a screenshot. If it said nothing at all, write that.
+      description: Write the message or attach a screenshot. If it said nothing at all, say so.
     validations:
       required: true
 
