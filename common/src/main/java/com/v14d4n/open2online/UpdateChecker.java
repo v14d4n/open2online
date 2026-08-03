@@ -131,8 +131,16 @@ public final class UpdateChecker {
                 return Optional.empty();
             }
 
-            cachedDownloadPage = homepage.getAsString();
-            cachedLatestVersion = published.getAsString();
+            String latest = published.getAsString();
+
+            cachedDownloadPage = Optional.ofNullable(root.getAsJsonObject("downloads"))
+                    .map(downloads -> downloads.get(latest))
+                    .map(JsonElement::getAsString)
+                    .orElseGet(homepage::getAsString);
+
+            // Set last: it is what the cache check above reads, so everything it implies has to be in
+            // place before it becomes visible.
+            cachedLatestVersion = latest;
         } catch (JsonParseException | IllegalStateException e) {
             // Transport failures are already logged and turned into an empty body above; what is left
             // to go wrong here is the file itself not being the shape this reads.
