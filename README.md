@@ -35,20 +35,20 @@ Open a world, press Escape, and use the Open2Online button next to "Open to LAN"
 Everything lives under **Advanced Settings**.
 
 - **Port** and **Max Players.**
-- **Library** — which protocol implementation opens the port. **Auto** tries them in turn and
+- **Library** - which protocol implementation opens the port. **Auto** tries them in turn and
   remembers what worked; **PortMapper** is the slowest and the recommended one, being the only one
   that also speaks NAT-PMP and PCP.
-- **Whitelist** — let only certain players connect. Names are checked against Minecraft's own rule,
+- **Whitelist** - let only certain players connect. Names are checked against Minecraft's own rule,
   so one nobody could join under cannot be added by mistake.
-- **Require License** — verify that joining players own the game. With it off, anyone can join under
+- **Require License** - verify that joining players own the game. With it off, anyone can join under
   any name.
-- **Hide IP** — show "Click to copy" in chat instead of the address itself, so it cannot be read off
+- **Hide IP** - show "Click to copy" in chat instead of the address itself, so it cannot be read off
   a screenshot or a stream. It changes nothing about who can connect.
-- **Auto Start** — open the world on its own shortly after you enter it, to the internet or to the
+- **Auto Start** - open the world on its own shortly after you enter it, to the internet or to the
   local network, after a delay you choose. The pause menu cancels a pending start.
-- **Notifications** — updates, licence and whitelist warnings, each switched separately.
+- **Notifications** - updates, licence and whitelist warnings, each switched separately.
 - **Allow PVP.**
-- **Recreate Firewall Rules** — Windows only, and only for the case where the server publishes with
+- **Recreate Firewall Rules** - Windows only, and only for the case where the server publishes with
   no errors but nobody can reach it. It replaces Minecraft's firewall rules with correct ones and
   asks for administrator rights to do so.
 
@@ -76,9 +76,9 @@ down.
 
 Bundled and relocated into the mod's own namespace, so they cannot clash with anything else:
 
-- [WeUPnP](https://github.com/bitletorg/weupnp) — UPnP
-- [WaifUPnP](https://github.com/adolfintel/WaifUPnP) — UPnP
-- [PortMapper](https://github.com/offbynull/portmapper) — UPnP, NAT-PMP, PCP
+- [WeUPnP](https://github.com/bitletorg/weupnp) - UPnP
+- [WaifUPnP](https://github.com/adolfintel/WaifUPnP) - UPnP
+- [PortMapper](https://github.com/offbynull/portmapper) - UPnP, NAT-PMP, PCP
 
 ## Building
 
