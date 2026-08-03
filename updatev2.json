@@ -4,6 +4,8 @@
     "1.21.11-recommended": "1.4.0"
   },
   "downloads": {
-    "1.4.0": "https://modrinth.com/project/open2online/versions"
+    "1.21.11": {
+      "1.4.0": "https://modrinth.com/project/open2online/versions"
+    }
   }
 }
