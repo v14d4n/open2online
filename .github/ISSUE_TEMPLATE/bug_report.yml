@@ -70,7 +70,7 @@ body:
     id: logs
     attributes:
       label: Log
-      description: "`.minecraft/logs/latest.log` from the session where it happened. Attach the file, or paste the part around the error."
+      description: "`.minecraft/logs/latest.log` from the session where it happened. Paste the part around the error, or upload the whole file to https://mclo.gs and put the link here."
       render: text
 
   - type: textarea
