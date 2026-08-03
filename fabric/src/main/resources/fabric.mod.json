@@ -3,7 +3,7 @@
   "id": "open2online",
   "version": "${version}",
   "name": "Open2Online",
-  "description": "Adds the ability to create an online server",
+  "description": "Opens your world to the internet, not just your local network.",
   "authors": [
     "v14d4n"
   ],

@@ -13,7 +13,7 @@ displayURL = "https://modrinth.com/project/open2online"
 updateJSONURL = "https://raw.githubusercontent.com/v14d4n/open2online/update/updatev2.json"
 logoFile = "logoopen.png"
 description = '''
-Adds the ability to create an online server
+Opens your world to the internet, not just your local network.
 '''
 
 [[dependencies.open2online]]
