@@ -56,10 +56,10 @@ Everything lives under **Advanced Settings**.
 
 The mod tries to tell you why, in chat, rather than leaving you to guess.
 
-- **"Your provider uses CGNAT"** - your external address is shared with other subscribers, and no
+- **Your provider uses CGNAT** - your external address is shared with other subscribers, and no
   port mapping can make you reachable. Ask your provider for a public address; nothing on your side
   fixes this.
-- **"Your router is itself behind another router"** - the same problem one hop closer to home. The
+- **Your router is itself behind another router** - the same problem one hop closer to home. The
   port was opened on the wrong device.
 - **Port is already in use** - something else on your machine has it. Change the port.
 - **Failed to open the port with every library** - the router refused, or UPnP is switched off in its
