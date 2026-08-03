@@ -1,0 +1,29 @@
+name: Feature request
+description: An idea, a setting, a rough edge worth smoothing
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Requests are as welcome as bug reports, and nothing is too small to write down.
+
+        English or Russian, both are fine.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What you would like
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem it solves
+      description: What you do today instead, and why it is awkward.
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Screenshots, mockups, examples from other mods, alternatives you have considered.

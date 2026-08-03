@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Downloads and changelog
+    url: https://modrinth.com/project/open2online
+    about: Every release, with the changelog for each version.
+  - name: Old Forge versions (1.0.3 and older)
+    url: https://www.curseforge.com/minecraft/mc-mods/open2online
+    about: Legacy builds. They are no longer updated.
