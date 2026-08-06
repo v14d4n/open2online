@@ -76,17 +76,6 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
-
-    // Keep the bundled backends out of the global namespace so other mods shipping the same
-    // libraries cannot clash with ours.
-    relocate 'org.bitlet.weupnp', "${project.group}.relocated.weupnp"
-    relocate 'com.simtechdata.waifupnp', "${project.group}.relocated.waifupnp"
-    relocate 'com.offbynull.portmapper', "${project.group}.relocated.portmapper"
-    // Whole namespace, not just collections4: PortMapper drags in commons-lang3 3.4 and
-    // commons-io 2.5 transitively, and unrelocated they shadow the far newer copies Minecraft
-    // ships — MutableObject.get() only exists from commons-lang3 3.14, so the game dies at
-    // bootstrap with NoSuchMethodError.
-    relocate 'org.apache.commons', "${project.group}.relocated.commons"
 }
 
 remapJar {

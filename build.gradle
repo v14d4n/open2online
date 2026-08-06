@@ -1,3 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.ApacheNoticeResourceTransformer
+
 plugins {
     id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
@@ -48,6 +51,23 @@ subprojects {
 
     tasks.withType(JavaCompile).configureEach {
         it.options.release = 21
+    }
+    
+    plugins.withId('com.gradleup.shadow') {
+        tasks.named('shadowJar', ShadowJar) {
+            // Keep the bundled backends out of the global namespace so other mods shipping the same
+            // libraries cannot clash with ours.
+            relocate 'org.bitlet.weupnp', "${project.group}.relocated.weupnp"
+            relocate 'com.simtechdata.waifupnp', "${project.group}.relocated.waifupnp"
+            relocate 'com.offbynull.portmapper', "${project.group}.relocated.portmapper"
+            // Whole namespace, not just collections4: PortMapper drags in commons-lang3 3.4 and
+            // commons-io 2.5 transitively, and unrelocated they shadow the far newer copies
+            // Minecraft ships — MutableObject.get() only exists from commons-lang3 3.14, so the
+            // game dies at bootstrap with NoSuchMethodError.
+            relocate 'org.apache.commons', "${project.group}.relocated.commons"
+
+            transform(ApacheNoticeResourceTransformer) { addHeader = false }
+        }
     }
 
     // Configure Maven publishing.
