@@ -1,5 +1,6 @@
 package com.v14d4n.open2online.screens;
 
+import com.v14d4n.open2online.OpenToOnline;
 import com.v14d4n.open2online.network.PublishTask;
 import com.v14d4n.open2online.config.OpenToOnlineConfig;
 import com.v14d4n.open2online.network.ServerHandler;
@@ -9,10 +10,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.CommonColors;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.GameType;
@@ -26,6 +30,13 @@ public class ShareToOnlineScreen extends Screen {
     private static final Component SETTINGS_INFO_TEXT = Component.translatable("lanServer.otherPlayers");
     private static final Component PORT_INFO_TEXT = Component.translatable("gui.open2online.portInfo");
     private static final Component MAX_PLAYERS_INFO_TEXT = Component.translatable("gui.open2online.maxPlayersInfo");
+
+    /** Disabled and focused-disabled share a sprite, as the pause menu button already does. */
+    private static final WidgetSprites DISCORD_SPRITES = new WidgetSprites(
+            Identifier.fromNamespaceAndPath(OpenToOnline.MOD_ID, "discord"),
+            Identifier.fromNamespaceAndPath(OpenToOnline.MOD_ID, "discord_disabled"),
+            Identifier.fromNamespaceAndPath(OpenToOnline.MOD_ID, "discord_focused"),
+            Identifier.fromNamespaceAndPath(OpenToOnline.MOD_ID, "discord_disabled"));
 
     private final Screen lastScreen;
 
@@ -58,6 +69,7 @@ public class ShareToOnlineScreen extends Screen {
         createOpenToOnlineButton();
         createOpenToLanButton();
         createAdvancedSettingsButton();
+        createDiscordButton();
         createRecreateFirewallRulesButton();
         createSupportDeveloperButton();
         createCancelButton();
@@ -132,6 +144,20 @@ public class ShareToOnlineScreen extends Screen {
                         press -> this.minecraft.setScreen(new AdvancedSettingsScreen(this)))
                 .bounds(this.width / 2 + 5, this.height / 4 + 69, 150, 20)
                 .build());
+    }
+
+    private void createDiscordButton() {
+        ImageButton button = new ImageButton(
+                this.width / 2 + 157, this.height / 4 + 69, 20, 20,
+                DISCORD_SPRITES,
+                press -> this.minecraft.setScreen(DiscordPopup.create(this)),
+                Component.translatable("gui.open2online.discord"));
+
+        button.active = DiscordPopup.isAvailable();
+        button.setTooltip(Tooltip.create(Component.translatable(button.active
+                ? "tooltip.open2online.discord"
+                : "tooltip.open2online.discord.unavailable")));
+        this.addRenderableWidget(button);
     }
 
     private void createRecreateFirewallRulesButton() {

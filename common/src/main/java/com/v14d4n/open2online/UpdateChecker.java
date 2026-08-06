@@ -52,6 +52,7 @@ public final class UpdateChecker {
     /** The answer from {@link #UPDATE_URL}, so that every surface asking costs one request. */
     private static volatile String cachedLatestVersion;
     private static volatile String cachedDownloadPage;
+    private static volatile String cachedDiscordInvite;
 
     private UpdateChecker() {
     }
@@ -117,6 +118,9 @@ public final class UpdateChecker {
         String mcVersion = SharedConstants.getCurrentVersion().name();
         try {
             JsonObject root = JsonParser.parseString(body.get()).getAsJsonObject();
+
+            cachedDiscordInvite = readInvite(root);
+
             JsonObject promos = root.getAsJsonObject("promos");
             if (promos == null) {
                 return Optional.empty();
@@ -160,6 +164,25 @@ public final class UpdateChecker {
 
     private static String loaderName() {
         return Platform.isFabric() ? "fabric" : "neoforge";
+    }
+
+    private static String readInvite(JsonObject root) {
+        JsonElement invite = root.get("discord");
+        if (invite == null) {
+            return null;
+        }
+
+        String url = invite.getAsString();
+        try {
+            return "https".equalsIgnoreCase(URI.create(url).getScheme()) ? url : null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** Where the mod's Discord is, empty until the lookup has answered — or if it never names one. */
+    public static Optional<String> discordInvite() {
+        return Optional.ofNullable(cachedDiscordInvite);
     }
 
     /** Where someone who wants the newer build should be sent, once the lookup has answered. */
